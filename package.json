@@ -10,29 +10,30 @@
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "apps/*",
-      "libs/*"
+      "api",
+      "ui",
+      "shared"
     ]
   },
   "scripts": {
     "dev:all:start": "concurrently --names \"SHARED,VUE,NEST\" -c \"yellow.bold,yellow.bold\" \"yarn dev:shared:start\" \"yarn dev:vue:start\" \"yarn dev:nest:start\"",
     "dev:all:build": "yarn dev:shared:build && yarn dev:vue:build && yarn dev:nest:build",
-    "dev:vue:start": "cd apps/ui && yarn serve",
-    "dev:vue:build": "cd apps/ui && yarn build",
-    "dev:vue:lint": "cd apps/ui && yarn lint",
-    "test:vue:unit": "cd apps/ui && yarn test:unit",
-    "test:vue:e2e": "cd apps/ui && yarn test:e2e",
-    "dev:nest:build": "cd apps/api && yarn build",
-    "dev:nest:start": "cd apps/api && yarn start:dev",
-    "dev:nest:lint": "cd apps/api && yarn lint",
-    "prod:nest:start": "cd apps/api && yarn start:prod",
-    "dev:shared:start": "cd libs/shared && yarn build:watch",
-    "dev:shared:build": "cd libs/shared && rimraf dist && yarn build",
+    "dev:vue:start": "cd ui && yarn serve",
+    "dev:vue:build": "cd ui && yarn build",
+    "dev:vue:lint": "cd ui && yarn lint",
+    "test:vue:unit": "cd ui && yarn test:unit",
+    "test:vue:e2e": "cd ui && yarn test:e2e",
+    "dev:nest:build": "cd api && yarn build",
+    "dev:nest:start": "cd api && yarn start:dev",
+    "dev:nest:lint": "cd api && yarn lint",
+    "prod:nest:start": "cd api && yarn start:prod",
+    "dev:shared:start": "cd shared && yarn build:watch",
+    "dev:shared:build": "cd shared && rimraf dist && yarn build",
     "dev-shared:vue:start": "concurrently --names \"SHARED,VUE\" -c \"yellow.bold,yellow.bold\" \"yarn dev:shared:start\" \"yarn dev:vue:start\"",
     "dev-shared:server:start": "concurrently --names \"SHARED,SERVER\" -c \"yellow.bold,yellow.bold\" \"yarn dev:shared:start\" \"yarn dev:nest:start\"",
     "dev-shared:vue:build": "yarn dev:shared:build && arn dev:vue:build",
     "dev-shared:server:build": "yarn dev:shared:build && arn dev:nest:build",
-    "utils:remove-node-modules": "rimraf node_modules apps/ui/node_modules apps/api/node_modules libs/shared/node_modules"
+    "utils:remove-node-modules": "rimraf node_modules ui/node_modules api/node_modules shared/node_modules"
   },
   "devDependencies": {
     "@types/jest": "^24.0.25",

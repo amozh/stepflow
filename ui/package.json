@@ -1,11 +1,11 @@
 {
   "name": "stepflow-ui",
   "version": "1.0.0",
-  "description": "A boilerplate for Full stack VueJS and nestJS and other typescript frameworks too. But i believe you can add JS frameworks too (with little modification)",
+  "description": "Stepflow UI",
   "private": true,
   "author": {
-    "name": "Em Ji Madhu",
-    "email": "emjimadhu@gmail.com"
+    "name": "Andrii Mozharovskyi",
+    "email": "andrii.mozharovskyi@gmail.com"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

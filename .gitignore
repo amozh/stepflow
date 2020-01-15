@@ -1,18 +1,18 @@
 .DS_Store
 node_modules
-apps/ui/node_modules
-apps/ui/dist
-apps/api/node_modules
-apps/api/dist
-libs/shared/node_modules
-libs/shared/dist
+ui/node_modules
+ui/dist
+api/node_modules
+api/dist
+shared/node_modules
+shared/dist
 
 /tests/e2e/videos/
 /tests/e2e/screenshots/
 
 # local env files
-apps/ui/.env.local
-apps/ui/.env.*.local
+ui/.env.local
+ui/.env.*.local
 
 # Log files
 npm-debug.log*

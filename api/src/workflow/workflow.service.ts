@@ -2,6 +2,7 @@ import {
   Injectable,
   OnModuleInit,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Workflow } from './workflow.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,16 +19,16 @@ export class WorkflowService implements OnModuleInit {
 
   onModuleInit() {
     //generate default data
-    this.workflowRepository.save({
-      name: 'Basic Workflow 1',
-      description: '',
-      steps: [
-        {
-          name: 'Basic Step 1',
-          description: '',
-        },
-      ],
-    });
+    // this.workflowRepository.save({
+    //   name: 'Basic Workflow 1',
+    //   description: '',
+    //   steps: [
+    //     {
+    //       name: 'Basic Step 1',
+    //       description: '',
+    //     },
+    //   ],
+    // });
   }
 
   create(workflowDto: CreateWorkflowDto): Promise<Workflow> {
@@ -57,7 +58,12 @@ export class WorkflowService implements OnModuleInit {
     return this.workflowRepository.find();
   }
 
-  findById(id: number): Promise<Workflow> {
-    return this.workflowRepository.findOne({ id });
+  async findById(id: number): Promise<Workflow> {
+    const workflow = await this.workflowRepository.findOne({ id })
+    if(!workflow){
+      throw new NotFoundException(`Workflow with id ${id} is not found`);
+    }else{
+      return workflow
+    }
   }
 }

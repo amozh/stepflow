@@ -6,9 +6,9 @@ import {
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
-  TreeParent
+  TreeParent,
 } from 'typeorm';
-import { Workflow } from "../workflow/workflow.entity";
+import { Workflow } from '../workflow/workflow.entity';
 
 @Entity()
 // @Tree("nested-set")
@@ -19,21 +19,24 @@ export class WorkflowStep {
   @Column({ length: 500 })
   name: string;
 
-  @Column('text', { default: '' })
+  @Column({ length: 500 })
   description: string;
 
-  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
 
-  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated: Date;
 
   @BeforeUpdate()
   updateTimestamp() {
-    this.updated = new Date;
+    this.updated = new Date();
   }
 
-  @ManyToOne(type => Workflow, wf => wf.steps)
+  @ManyToOne(
+    type => Workflow,
+    wf => wf.steps,
+  )
   workflow: Workflow;
 
   // @TreeChildren()

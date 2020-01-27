@@ -3,12 +3,15 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
   TreeParent,
+  JoinColumn
 } from 'typeorm';
 import { Workflow } from '../workflow/workflow.entity';
+import { Answer } from '../answer/answer.entity';
 
 @Entity()
 // @Tree("nested-set")
@@ -39,9 +42,12 @@ export class WorkflowStep {
   )
   workflow: Workflow;
 
-  // @TreeChildren()
-  // steps: WorkflowStep[];
-  //
-  // @TreeParent()
-  // parent: WorkflowStep;
+
+  @OneToOne(
+    type => Answer,
+    answ => answ.workFlowStep,
+    {eager:false, cascade:true}
+  )
+  answer: Answer
+
 }

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
-import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
+import { CreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
@@ -38,5 +38,5 @@ export class WorkflowController {
     @Query("step", ParseIntPipe) step:number)
   : void {
     return console.log("workflowNumber:", workflow, "stepNumber:",step)
-  }
+  } 
 }

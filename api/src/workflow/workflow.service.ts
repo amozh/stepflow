@@ -1,3 +1,4 @@
+import { Answer } from '../answer/answer.entity';
 import {
   Injectable,
   OnModuleInit,
@@ -7,7 +8,7 @@ import {
 import { Workflow } from './workflow.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
+import { CreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Injectable()
@@ -19,26 +20,35 @@ export class WorkflowService implements OnModuleInit {
 
   onModuleInit() {
     //generate default data
-    // this.workflowRepository.save({
-    //   name: 'Basic Workflow 1',
-    //   description: '',
-    //   steps: [
-    //     {
-    //       name: 'Basic Step 1',
-    //       description: '',
-    //     },
-    //   ],
-    // });
+    this.workflowRepository.save({
+      name: 'Basic Workflow 1',
+      description: '',
+      steps: [
+        {
+          name: 'Basic Step 1',
+          description: '',
+          answer:{
+            answer:"putin"
+          }
+        },
+      ],
+    });
   }
 
-  create(workflowDto: CreateWorkflowDto): Promise<Workflow> {
+ async create(workflowDto: CreateWorkflowDto): Promise<Workflow> {
+    try {
     const { name, description, steps } = workflowDto;
 
-    let wokflowSteps = steps.map(step => {
+    let wokflowSteps =  steps.map(step => {
       const workflowStep = new WorkflowStep();
+
+      const stepAnswer = new Answer();
+      stepAnswer.answer = step.answer.answer
+
+      workflowStep.answer = stepAnswer;
       workflowStep.name = step.name;
       workflowStep.description = step.description;
-
+     
       return workflowStep;
     });
 
@@ -46,8 +56,7 @@ export class WorkflowService implements OnModuleInit {
     workflow.name = name;
     workflow.description = description;
     workflow.steps = wokflowSteps;
-
-    try {
+    
       return this.workflowRepository.save(workflow);
     } catch (error) {
       throw new InternalServerErrorException();

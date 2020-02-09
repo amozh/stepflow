@@ -1,33 +1,41 @@
 <template>
-    <div id="app">
-        <div id="nav">
-            <router-link to="/">Home</router-link>
-            |
-            <router-link to="/about">About</router-link>
-        </div>
-        <router-view/>
-    </div>
+  <v-app class="grey">
+    <v-layout class="grey lighten-4">
+      <v-app-bar-nav-icon class="black--text" large></v-app-bar-nav-icon>
+      <v-btn to="/about" color="primary" width="100">
+        About
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn to="/" width="100" color="error">Home</v-btn>
+
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </v-layout>
+  </v-app>
 </template>
+<script lang="ts">
+import Vue from "vue";
 
-<style lang="scss">
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-    }
+export default {
+  name: "app"
+};
+</script>
 
-    #nav {
-        padding: 30px;
+<style lang="scss" scoped>
+@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons";
+.fade-enter-active,
+.fade-leave-active {
+  transition-property: opacity;
+  transition-duration: 0.15s;
+}
 
-        a {
-            font-weight: bold;
-            color: #2c3e50;
+.fade-enter-active {
+  transition-delay: 0.15s;
+}
 
-            &.router-link-exact-active {
-                color: #42b983;
-            }
-        }
-    }
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
 </style>

@@ -1,17 +1,22 @@
 <template>
-    <div class="home">
-        <img alt="Vue logo" src="../assets/logo.png">
-        <HelloWorld msg="Welcome to Your Vue.js App"/>
-    </div>
+  <div class="home">
+    <h1>{{hello}}</h1>
+    <v-btn class="ma-2" tile outlined color="success">
+      <v-icon left>mdi-pencil</v-icon>Edit
+    </v-btn>
+    <span class="group pa-2">
+      <v-icon>home</v-icon>
+      <v-icon>event</v-icon>
+      <v-icon>info</v-icon>
+    </span>
+  </div>
 </template>
 
-<script>
-    import HelloWorld from '@/components/HelloWorld.vue';
+<script lang="ts">
+import { Component, Prop, Vue, Provide } from "vue-property-decorator";
 
-    export default {
-        name: 'home',
-        components: {
-            HelloWorld
-        }
-    };
+@Component
+export default class About extends Vue {
+  @Provide() hello: string = "Home page";
+}
 </script>

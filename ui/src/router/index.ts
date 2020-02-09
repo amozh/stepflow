@@ -1,20 +1,27 @@
 import Vue, { VueConstructor } from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import About from "../views/About.vue";
+//
+import AllWorkflows from "../views/AllWorkflows.vue";
+import CreateWf from "../views/CreateWf.vue";
+import Workflow from "../views/Workflow.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: Home as VueConstructor<Vue>
+    name: "all_workflows",
+    component: AllWorkflows as VueConstructor<Vue>
   },
   {
-    path: "/about",
-    name: "about",
-    component: About as VueConstructor<Vue>
+    path: "/create",
+    name: "create_wf",
+    component: CreateWf as VueConstructor<Vue>
+  },
+  {
+    path: "/workflow/:id",
+    name: "workflow",
+    component: Workflow as VueConstructor<Vue>
   }
 ];
 

@@ -1,27 +1,25 @@
 <template>
-  <v-app class="grey">
+  <v-app class="grey lighten-4">
     <v-layout class="grey lighten-4">
-      <v-app-bar-nav-icon class="black--text" large></v-app-bar-nav-icon>
-      <v-btn to="/about" color="primary" width="100">
-        About
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-      <v-btn to="/" width="100" color="error">Home</v-btn>
-
-      <transition name="fade">
-        <router-view></router-view>
-      </transition>
+      <Navbar />
+      <v-content class="mx-4 my-4">
+        <transition name="fade">
+          <router-view></router-view>
+        </transition>
+      </v-content>
     </v-layout>
   </v-app>
 </template>
+
 <script lang="ts">
 import Vue from "vue";
+import Navbar from "@/components/Navbar.vue";
 
 export default {
-  name: "app"
+  name: "app",
+  components: { Navbar }
 };
 </script>
-
 <style lang="scss" scoped>
 @import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons";
 .fade-enter-active,

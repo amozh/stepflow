@@ -5,6 +5,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "outDir": "./dist",
-    "incremental": true
+    "incremental": true,
+   
   }
 }

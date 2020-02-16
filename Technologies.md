@@ -1,6 +1,7 @@
 # Monorepo
 This project is a "monorepo" which contains both Frontend and Backend, it has been created based on  
 https://github.com/emjimadhu/monorepify
+
 #### Other monorepo examples to be used to improve
 https://github.com/slanatech/vue-monorepo-boilerplate (+Docker)  
 https://github.com/ahrnee/nestjs-bff (+NestJS advanced)  
@@ -14,11 +15,13 @@ Best practices:
 
 Simple tutorial  
 https://ordina-jworks.github.io/frontend/2019/03/04/vue-with-typescript.html
+
 ### Vuex (State management) + TypeScript
- 
 https://habr.com/ru/post/459050/
 https://dou.ua/lenta/articles/typing-legacy-vuex-store/?from=tg
+
 ### Vuetify (component library) + TypeScript
+[How I married Vuetify with Typescript](https://medium.com/@attiewilly/how-i-married-vuetify-with-typescript-d6441dedd16)
 
 
 # Backend

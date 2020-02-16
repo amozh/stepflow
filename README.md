@@ -13,7 +13,8 @@ Execute next script to create database
 ```
 create schema stepflow CHARACTER SET utf8mb4;
 ``` 
-#### Update `ormconfig.json`
+#### Create `ormconfig.json`
+Create `ormconfig.json` file and copy content of `ormconfig.json.example` into it.
 Set your `username` and `password` configured while database installation. 
 
 ### Application

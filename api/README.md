@@ -1,3 +1,7 @@
+Use 
+https://github.com/lujakob/nestjs-realworld-example-app/blob/master/src/article/article.service.ts
+as an example
+
 ## Installation
 
 ```bash

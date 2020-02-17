@@ -4,6 +4,8 @@ import VueRouter from "vue-router";
 import AllWorkflows from "../views/AllWorkflows.vue";
 import CreateWf from "../views/CreateWf.vue";
 import Workflow from "../views/Workflow.vue";
+import LoginLogout from '../views/LoginLogout.vue'
+import CreateUser from "../views/CreateUser.vue"
 
 Vue.use(VueRouter);
 
@@ -22,6 +24,16 @@ const routes = [
     path: "/workflow/:id",
     name: "workflow",
     component: Workflow as VueConstructor<Vue>
+  },
+  {
+    path: "/me",
+    name:"user_page",
+    component: LoginLogout as VueConstructor<Vue>
+  },
+  {
+    path: "/create_user",
+    name:"create_user",
+    component: CreateUser as VueConstructor<Vue>
   }
 ];
 

@@ -18,3 +18,36 @@ export const workflowApi = {
     return instance.post("workflows", workflow);
   }
 };
+
+export const userApi = {
+  getUserById(id: string) {
+    return instance.get(`user/${id}`)
+  },
+  createUser(user: any) {
+    return instance.post("user", user)
+  },
+  updateUser(user: any, id: string) {
+    return instance.put(`user/${id}`, user)
+  },
+  deleteUser(id: string) {
+    return instance.delete(`user/${id}`)
+  },
+  login(user: any) {
+    return instance.post("user/login", user)
+  }
+}
+
+export const groupApi = {
+  getGroupById(id: string) {
+    return instance.get(`group/${id}`)
+  },
+  createUser(group: any) {
+    return instance.post("group", group)
+  },
+  updateGroup(group: any, id: string) {
+    return instance.put(`group/${id}`, group)
+  },
+  deleteGroup(id: string) {
+    return instance.delete(`group/${id}`)
+  },
+}

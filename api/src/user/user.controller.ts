@@ -37,4 +37,9 @@ export class UserController {
         return this.userService.updateUser(id, userDto)
     }
 
+    @Post("login")
+    login(@Body() userDto: UserDto): Promise<UserDto> {
+        return this.userService.login(userDto)
+    }
+
 }

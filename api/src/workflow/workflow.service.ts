@@ -20,19 +20,19 @@ export class WorkflowService implements OnModuleInit {
 
   onModuleInit() {
     //generate default data
-    this.workflowRepository.save({
-      name: 'Basic Workflow 1',
-      description: '',
-      steps: [
-        {
-          name: 'Basic Step 1',
-          description: '',
-          answer: {
-            answer: "putin"
-          }
-        },
-      ],
-    });
+    // this.workflowRepository.save({
+    //   name: 'Basic Workflow 1',
+    //   description: '',
+    //   steps: [
+    //     {
+    //       name: 'Basic Step 1',
+    //       description: '',
+    //       answer: {
+    //         answer: "putin"
+    //       }
+    //     },
+    //   ],
+    // });
   }
 
   async create(workflowDto: CreateWorkflowDto): Promise<Workflow> {

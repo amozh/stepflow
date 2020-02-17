@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { Injectable, HttpException, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { Injectable, HttpException, NotFoundException, OnModuleInit, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UserDto } from '@stepflow/shared';
@@ -18,8 +18,7 @@ export class UserService implements OnModuleInit {
             userGroup: [
                 {
                     groupName: "Группа 222"
-                },
-                { groupName: "333" }
+                }
             ]
         });
     }
@@ -39,6 +38,10 @@ export class UserService implements OnModuleInit {
 
     async createUser(userDto: UserDto): Promise<UserDto> {
         const { username, password, userRole, userGroups } = userDto
+        const user = await this.userRepo.findOne({ username })
+        if (user) {
+            throw new InternalServerErrorException("A user with that name already exists")
+        }
         const newUser = new UserEntity()
         //Переписать
         const newUserGroup = new UserGroupEntity()
@@ -69,6 +72,17 @@ export class UserService implements OnModuleInit {
             return userDto
         } catch (e) {
             throw new NotFoundException(`User with id ${id} is not found`)
+        }
+    }
+
+    // Вернёт пользователя, который имеет это имя и пароль. Если что-то не подойдёт, вернёт ошибку
+    async login(userDto: UserDto): Promise<UserDto> {
+        const { username, password } = userDto
+        const user = await this.userRepo.findOne({ username, password })
+        if (user) {
+            return user
+        } else {
+            throw new InternalServerErrorException("Login or password is incorrect222")
         }
     }
 }

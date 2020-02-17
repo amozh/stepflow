@@ -33,6 +33,7 @@ export class UserGroupEntity {
     @ManyToMany(
         () => UserEntity,
         user => user.userGroups,
+        { cascade: true }
     )
     @JoinTable()
     users: UserEntity[]

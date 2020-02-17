@@ -43,7 +43,7 @@ export class UserEntity {
     @ManyToMany(
         () => UserGroupEntity,
         userGroup => userGroup.users,
-        { eager: true, cascade: true }
+        { eager: true }
     )
     userGroups: UserGroupEntity[]
 }

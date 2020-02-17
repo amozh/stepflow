@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Injectable, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
+import { UserRole } from './../user/user.entity';
 
 @Injectable()
 export class UserGroupService implements OnModuleInit {
@@ -13,8 +14,28 @@ export class UserGroupService implements OnModuleInit {
             groupName: "Какая-то группа 123",
             workflows: [
                 {
-                    name: 'wf wf2',
-                    description: 'описание',
+                    name: 'workflow 1',
+                    description: 'описание 111',
+                    steps: [
+                        {
+                            name: 'one',
+                            description: '000',
+                            answer: {
+                                answer: "obama"
+                            }
+                        },
+                        {
+                            name: 'two',
+                            description: 'dawwad',
+                            answer: {
+                                answer: "obama2"
+                            }
+                        }
+                    ],
+                },
+                {
+                    name: 'workflow 2',
+                    description: 'описание 222',
                     steps: [
                         {
                             name: 'step222',
@@ -24,6 +45,18 @@ export class UserGroupService implements OnModuleInit {
                             }
                         },
                     ],
+                }
+            ],
+            users: [
+                {
+                    username: "New user",
+                    password: "12dwa3",
+                    userRole: UserRole.STUDENT,
+                },
+                {
+                    username: "Second user",
+                    password: "888",
+                    userRole: UserRole.STUDENT,
                 }
             ]
         });

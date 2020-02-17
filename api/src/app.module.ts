@@ -8,9 +8,18 @@ import { AppService } from './app.service';
 import { AnswerModule } from './answer/answer.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { WfStepModule } from './wf-step/wf-step.module';
+import { UserModule } from './user/user.module';
+import { UserGroupModule } from './user-group/user-group.module';
 
 @Module({
-    imports: [TypeOrmModule.forRoot(), WorkflowModule, WfStepModule, AnswerModule],
+    imports: [
+        TypeOrmModule.forRoot(),
+        WorkflowModule,
+        WfStepModule,
+        AnswerModule,
+        UserModule,
+        UserGroupModule
+    ],
     controllers: [AppController],
     providers: [AppService],
 })

@@ -46,7 +46,7 @@ export class WorkflowStep {
   @OneToOne(
     type => Answer,
     answ => answ.workFlowStep,
-    {eager:false, cascade:true}
+    { eager: false, cascade: true }
   )
   answer: Answer
 

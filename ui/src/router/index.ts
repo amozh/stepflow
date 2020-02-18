@@ -4,8 +4,9 @@ import VueRouter from "vue-router";
 import AllWorkflows from "../views/AllWorkflows.vue";
 import CreateWf from "../views/CreateWf.vue";
 import Workflow from "../views/Workflow.vue";
-import LoginLogout from '../views/LoginLogout.vue'
+import Login from '../views/Login.vue'
 import CreateUser from "../views/CreateUser.vue"
+import Groups from "../views/Groups.vue"
 
 Vue.use(VueRouter);
 
@@ -26,14 +27,19 @@ const routes = [
     component: Workflow as VueConstructor<Vue>
   },
   {
-    path: "/me",
-    name:"user_page",
-    component: LoginLogout as VueConstructor<Vue>
+    path: "/login",
+    name: "login",
+    component: Login as VueConstructor<Vue>
   },
   {
     path: "/create_user",
-    name:"create_user",
+    name: "create_user",
     component: CreateUser as VueConstructor<Vue>
+  },
+  {
+    path: "/groups",
+    name: "groups",
+    component: Groups as VueConstructor<Vue>
   }
 ];
 

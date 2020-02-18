@@ -49,13 +49,13 @@ export class UserGroupService implements OnModuleInit {
             ],
             users: [
                 {
-                    username: "New user",
-                    password: "12dwa3",
+                    username: "2",
+                    password: "2",
                     userRole: UserRole.STUDENT,
                 },
                 {
-                    username: "Second user",
-                    password: "888",
+                    username: "3",
+                    password: "3",
                     userRole: UserRole.STUDENT,
                 }
             ]
@@ -69,6 +69,7 @@ export class UserGroupService implements OnModuleInit {
     async getGroupById(id: number): Promise<UserGroupDto> {
         try {
             const group = await this.userGroupRepo.findOne({ id })
+            // console.log(group,id, "группа?")
             return group
         } catch (e) {
             throw new NotFoundException(`User group with id ${id} is not found`)

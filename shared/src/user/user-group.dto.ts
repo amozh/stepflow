@@ -1,3 +1,5 @@
-export interface UserGroupDTO {
-  name: string
+export interface UserGroupDto {
+  readonly groupName: string;
+  readonly workflows: any;
+  readonly users: any;
 }

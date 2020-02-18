@@ -1,3 +1,4 @@
+
 import { Repository } from 'typeorm';
 import { Injectable, HttpException, NotFoundException, OnModuleInit, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,8 +13,8 @@ export class UserService implements OnModuleInit {
     onModuleInit() {
         //generate default user
         this.userRepo.save({
-            username: "DefaultUser",
-            password: "123",
+            username: "1",
+            password: "1",
             userRole: UserRole.ADMIN,
             userGroup: [
                 {
@@ -78,11 +79,11 @@ export class UserService implements OnModuleInit {
     // Вернёт пользователя, который имеет это имя и пароль. Если что-то не подойдёт, вернёт ошибку
     async login(userDto: UserDto): Promise<UserDto> {
         const { username, password } = userDto
-        const user = await this.userRepo.findOne({ username, password })
-        if (user) {
-            return user
-        } else {
-            throw new InternalServerErrorException("Login or password is incorrect222")
+        try {
+            return await this.userRepo.findOneOrFail({ username, password })
+        } catch (e) {
+            throw new InternalServerErrorException("Login or password is incorrect")
         }
+
     }
 }

@@ -43,5 +43,6 @@ export class UserGroupEntity {
         workflow => workflow.userGroup,
         { eager: true, cascade: true }
     )
+    @JoinColumn()
     workflows: Workflow[]
 }

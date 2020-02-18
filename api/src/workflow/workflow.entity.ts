@@ -45,5 +45,5 @@ export class Workflow {
     userGroup => userGroup.workflows
   )
   @JoinColumn()
-  userGroup: UserGroupEntity
+  userGroup?: UserGroupEntity
 }

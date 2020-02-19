@@ -51,6 +51,7 @@ import {
   Inject,
   Ref
 } from "vue-property-decorator";
+import { CreateWorkflowStepDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({});
 
@@ -59,18 +60,18 @@ export default class WfStep extends Mappers {
   @Prop() saveStep: any;
   // @Prop() deleteStep: any;
   @Prop() inputRules!: [];
-  @Prop() step: any;
-  @Prop() index: any;
+  @Prop() step!: CreateWorkflowStepDto; 
+  @Prop() index!: number;
 
   @Provide() name: string = "";
   @Provide() description: string = "";
   @Provide() answer: string = "";
   @Provide() isSave: boolean = false;
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
-  addNewStep(): any {
+  addNewStep(): void {
     if (this.$refs.form.validate()) {
       const newStep = {
         name: this.name,

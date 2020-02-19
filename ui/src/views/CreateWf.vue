@@ -45,7 +45,8 @@ import {
 } from "vue-property-decorator";
 import WorkflowStore from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
-
+import { CreateWorkflowDto } from '@stepflow/shared';
+import { CreateWorkflowStepDto } from '@stepflow/shared';
 const Mappers = Vue.extend({
   components: {
     CreateStep
@@ -64,7 +65,7 @@ export default class CreateWorkflow extends Mappers {
   @Provide() inputRules = [
     (v: string) => (v && v.length >= 0) || "Field is required"
   ];
-  @Provide() steps: any = [
+  @Provide() steps: any = [  //--fix
     {
       name: "",
       description: "",
@@ -72,7 +73,7 @@ export default class CreateWorkflow extends Mappers {
     }
   ];
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   //methods
   @Emit()
@@ -84,7 +85,7 @@ export default class CreateWorkflow extends Mappers {
     });
   }
   @Emit()
-  saveStep(newStep: any, index: number) {
+  saveStep(newStep: CreateWorkflowStepDto, index: number) {
     this.steps.splice(index, 1, newStep);
   }
 

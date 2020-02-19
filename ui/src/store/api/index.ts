@@ -1,4 +1,6 @@
 import axios from "axios";
+import { CreateWorkflowDto } from '@stepflow/shared';
+import { AnswerDto } from '@stepflow/shared';
 
 const instance = axios.create({
   baseURL: "http://localhost:4000/"
@@ -11,10 +13,10 @@ export const workflowApi = {
   getById(id: string) {
     return instance.get(`workflows/${id}`);
   },
-  checkAnswer(answer: any) {
+  checkAnswer(answer: any ) { //--fix 
     return instance.post("answer", answer);
   },
-  createWorkflow(workflow: any) {
+  createWorkflow(workflow: CreateWorkflowDto) {
     return instance.post("workflows", workflow);
   }
 };

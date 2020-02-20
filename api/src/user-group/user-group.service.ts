@@ -4,49 +4,19 @@ import { Injectable, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
 import { UserRole } from './../user/user.entity';
+import { Workflow } from "../workflow/workflow.entity";
 
 @Injectable()
 export class UserGroupService implements OnModuleInit {
-    constructor(@InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>) { }
-    onModuleInit() {
-        //generate default user
-        this.userGroupRepo.save({
+    constructor(
+      @InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>,
+      @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>
+    ) { }
+
+    async onModuleInit() {
+        //generate default user group
+        const group = await this.userGroupRepo.save({
             groupName: "Какая-то группа 123",
-            workflows: [
-                {
-                    name: 'workflow 1',
-                    description: 'описание 111',
-                    steps: [
-                        {
-                            name: 'one',
-                            description: '000',
-                            answer: {
-                                answer: "obama"
-                            }
-                        },
-                        {
-                            name: 'two',
-                            description: 'dawwad',
-                            answer: {
-                                answer: "obama2"
-                            }
-                        }
-                    ],
-                },
-                {
-                    name: 'workflow 2',
-                    description: 'описание 222',
-                    steps: [
-                        {
-                            name: 'step222',
-                            description: '000',
-                            answer: {
-                                answer: "obama"
-                            }
-                        },
-                    ],
-                }
-            ],
             users: [
                 {
                     username: "2",
@@ -60,6 +30,42 @@ export class UserGroupService implements OnModuleInit {
                 }
             ]
         });
+        await this.workflowRepo.save([
+            {
+                name: 'workflow 1',
+                description: 'описание 111',
+                steps: [
+                    {
+                        name: 'one',
+                        description: '000',
+                        answer: {
+                            answer: "obama"
+                        }
+                    },
+                    {
+                        name: 'two',
+                        description: 'dawwad',
+                        answer: {
+                            answer: "obama2"
+                        }
+                    }
+                ],
+                userGroups: [group]
+            },
+            {
+                name: 'workflow 2',
+                description: 'описание 222',
+                steps: [
+                    {
+                        name: 'step222',
+                        description: '000',
+                        answer: {
+                            answer: "obama"
+                        }
+                    },
+                ],
+            }
+        ]);
     }
 
     get(): string {
@@ -93,7 +99,7 @@ export class UserGroupService implements OnModuleInit {
             await this.userGroupRepo.remove(group)
             return `Group with id ${id} has been deleted`
         } catch (e) {
-            throw new NotFoundException(`Group with id ${id} is not found`)
+            throw new NotFoundException(`Group with id ${id} is not found`, e)
         }
     }
 

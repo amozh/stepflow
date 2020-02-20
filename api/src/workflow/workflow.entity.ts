@@ -5,7 +5,7 @@ import {
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
-  ManyToOne,
+  ManyToOne, ManyToMany, JoinTable,
 } from 'typeorm';
 import { WorkflowStep } from '../wf-step/wf-step.entity';
 import { UserGroupEntity } from '../user-group/user-group.entity';
@@ -40,10 +40,10 @@ export class Workflow {
   @JoinColumn()
   steps: WorkflowStep[];
 
-  @ManyToOne(
-    () => UserGroupEntity,
+  @ManyToMany(
+    type => UserGroupEntity,
     userGroup => userGroup.workflows
   )
-  @JoinColumn()
-  userGroup?: UserGroupEntity
+  @JoinTable()
+  userGroups: UserGroupEntity[]
 }

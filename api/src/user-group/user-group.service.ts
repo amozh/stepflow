@@ -51,20 +51,20 @@ export class UserGroupService implements OnModuleInit {
                     }
                 ],
                 userGroups: [group]
-            },
-            {
-                name: 'workflow 2',
-                description: 'описание 222',
-                steps: [
-                    {
-                        name: 'step222',
-                        description: '000',
-                        answer: {
-                            answer: "obama"
-                        }
-                    },
-                ],
-            }
+            },//
+            // {
+            //     name: 'workflow 2',
+            //     description: 'описание 222',
+            //     steps: [
+            //         {
+            //             name: 'step222',
+            //             description: '000',
+            //             answer: {
+            //                 answer: "obama"
+            //             }
+            //         },
+            //     ],
+            // }
         ]);
     }
 

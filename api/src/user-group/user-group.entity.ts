@@ -36,12 +36,12 @@ export class UserGroupEntity {
         { cascade: true }
     )
     @JoinTable()
-    users: UserEntity[]
+    users: UserEntity[] 
 
     @ManyToMany(
         type => Workflow,
         workflow => workflow.userGroups,
-      { eager: true }
+        { eager: true }
     )
     workflows: Workflow[]
 }

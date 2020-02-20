@@ -8,13 +8,13 @@
     </v-tabs>
     <v-tabs-items v-model="tab" background-color="#f5f5f5" class="pa-6">
       <v-tab-item>
-        <h4 class="pa-4" v-if="loggedIn && userGroups.length===0">You have no groups</h4>
-        <v-card v-else v-for="group in userGroups" :key="group.id" outlined class="pa-4">
+        <h4 class="pa-4" v-if="loggedIn && groups.length===0">You have no groups</h4>
+        <v-card v-else v-for="group in groups" :key="group.id" outlined class="pa-4">
           <v-flex>
             <v-flex row class="ma-0">
               <h3>{{group.groupName}}</h3>
               <v-spacer></v-spacer>
-              <v-icon color="red" size="30" @click="deleteGroup(group.id)">mdi-delete-alert-outline</v-icon>
+              <v-icon color="red" size="30" @click="removeGroup(group.id)">mdi-delete-outline</v-icon>
             </v-flex>
             <v-simple-table>
               <thead>
@@ -48,7 +48,14 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
+import {
+  Vue,
+  Component,
+  Provide,
+  Ref,
+  Emit,
+  Watch
+} from "vue-property-decorator";
 import Wokrflow from "../components/Workflow.vue";
 import UserStore from "../store/modules/user";
 import GroupStore from "../store/modules/group";
@@ -70,17 +77,22 @@ const Mappers = Vue.extend({
 @Component
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
+  @Provide() groups: any = [];
+
+  @Watch("userGroups")
+  userGroupsDiff(val: any, oldVal: any) {
+    this.groups = this.userGroups;
+  }
 
   @Emit()
   toWorkflow(id) {
     this.$router.push(`/workflow/${id}`);
   }
-  // @Ref("form") readonly form!: any;
-  // @Emit()
-  // async submit() {
-  //   if (this.$refs.form.validate()) {
-  //     console.log("works!");
-  //   }
-  // }
+
+  @Emit()
+  async removeGroup(id) {
+    this.groups = this.groups.filter(group => group.id !== id);
+    await this.deleteGroup(id);
+  }
 }
 </script>

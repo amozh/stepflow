@@ -25,10 +25,10 @@
         <v-icon class="mr-2">mdi-collapse-all</v-icon>All workflows
       </v-btn>
       <v-btn v-if="loggedIn" class="white--text ma-2" width="120" text @click="dialog = true">
-        <v-icon class="mr-2">mdi-logout-variant</v-icon>Logout
+        <v-icon class="mr-2" color="red">mdi-logout-variant</v-icon>Logout
       </v-btn>
       <v-btn v-else class="white--text ma-2" width="120" text route to="/login">
-        <v-icon class="mr-2">mdi-login-variant</v-icon>Login
+        <v-icon class="mr-2" color="green">mdi-login-variant</v-icon>Login
       </v-btn>
     </v-app-bar>
     <v-navigation-drawer app v-model="drawer" class="primary" temporary column>
@@ -48,8 +48,9 @@
       </v-layout>
       <v-spacer></v-spacer>
       <v-layout v-if="loggedIn" align-center justify-center class="mt-12">
-        <v-avatar color="orange" size="60" class="mr-4">
-          <span class="white--text headline">{{userInfo.username[0]}}</span>
+        <v-avatar color="orange" size="100" class="mr-4">
+          <img v-if="true" src="http://localhost:4000/files/366eb589-2809-4799-85f5-f606a583b273.png" alt="avatar">
+          <span v-else class="white--text headline">{{userInfo.username[0]}}</span>
         </v-avatar>
         <h3 class="white--text">{{userInfo.username}}</h3>
       </v-layout>

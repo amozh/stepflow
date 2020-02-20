@@ -52,8 +52,8 @@ export class UserService implements OnModuleInit {
         newUser.password = password
         newUser.userRole = userRole
         newUser.userGroups = userGroups
-        await this.userRepo.save(newUser)
-        return newUser
+        const createdUser = await this.userRepo.save(newUser)
+        return createdUser
     }
 
     async deleteUser(id: number): Promise<string> {

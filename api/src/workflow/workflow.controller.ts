@@ -1,3 +1,4 @@
+
 import {
   Body,
   Controller,
@@ -10,11 +11,10 @@ import {
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
 import { CreateWorkflowDto } from '@stepflow/shared';
-import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(private readonly workflowService: WorkflowService) { }
 
   @Get()
   getAll(): Promise<Workflow[]> {
@@ -33,10 +33,25 @@ export class WorkflowController {
 
   @Post('answer')
   giveAnswer(
-    @Body() 
-    @Query("workflow", ParseIntPipe) workflow:number,
-    @Query("step", ParseIntPipe) step:number)
-  : void {
-    return console.log("workflowNumber:", workflow, "stepNumber:",step)
-  } 
+    @Body()
+    @Query("workflow", ParseIntPipe) workflow: number,
+    @Query("step", ParseIntPipe) step: number)
+    : void {
+    return console.log("workflowNumber:", workflow, "stepNumber:", step)
+  }
+
+  // @Post("upload")
+  //   @UseInterceptors(
+  //       FileInterceptor('file', {
+  //           storage: multer, //Если не будет работать, смотри вниз
+  //       }),
+  //   )
+  //   uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FilesEntity> {
+  //       console.log(file.filename, "chto tut?")
+  //       return this.service.dbSave(
+  //           file,
+  //           file.filename
+  //           // FilesController.genericService.pcoket.filename
+  //       )
+  //   }
 }

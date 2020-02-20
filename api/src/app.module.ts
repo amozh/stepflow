@@ -10,6 +10,7 @@ import { WorkflowModule } from './workflow/workflow.module';
 import { WfStepModule } from './wf-step/wf-step.module';
 import { UserModule } from './user/user.module';
 import { UserGroupModule } from './user-group/user-group.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import { UserGroupModule } from './user-group/user-group.module';
         WfStepModule,
         AnswerModule,
         UserModule,
-        UserGroupModule
+        UserGroupModule,
+        FilesModule
     ],
     controllers: [AppController],
     providers: [AppService],

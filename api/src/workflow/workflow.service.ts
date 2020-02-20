@@ -36,6 +36,7 @@ export class WorkflowService implements OnModuleInit {
   }
 
   async create(workflowDto: CreateWorkflowDto): Promise<Workflow> {
+    console.log(workflowDto, "workflowDto???")
     try {
       const { name, description, steps } = workflowDto;
 
@@ -59,7 +60,8 @@ export class WorkflowService implements OnModuleInit {
 
       return this.workflowRepository.save(workflow);
     } catch (error) {
-      throw new InternalServerErrorException();
+      // throw new InternalServerErrorException();
+      console.log(error)
     }
   }
 

@@ -42,8 +42,8 @@ export class Workflow {
 
   @ManyToOne(
     () => UserGroupEntity,
-    userGroup => userGroup.workflows
+    userGroup => userGroup.workflows,
   )
   @JoinColumn()
-  userGroup?: UserGroupEntity
+  userGroup: UserGroupEntity
 }

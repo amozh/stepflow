@@ -3,7 +3,7 @@
     <h1 class="subheading text-center">Groups</h1>
     <v-tabs background-color="#f5f5f5" v-model="tab" slider-size="3">
       <v-tab>My groups</v-tab>
-      <!-- Если пользователь является админом, он видит больше вкладок, чем обычный студент -->
+      <!-- Если пользователь является админом, он видит больше вкладок, чем обычный студент (студент не увидит вкладку создания) -->
       <v-tab v-if="true">Create group</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab" background-color="#f5f5f5" class="pa-6">
@@ -14,7 +14,7 @@
             <v-flex row class="ma-0">
               <h3>{{group.groupName}}</h3>
               <v-spacer></v-spacer>
-              <v-icon color="red" size="30" @click="deleteGroup(group.id)">mdi-delete-alert-outline</v-icon>
+              <v-icon color="red" size="30" @click="deleteGroup(group.id)">mdi-delete-outline</v-icon>
             </v-flex>
             <v-simple-table>
               <thead>
@@ -36,14 +36,6 @@
       </v-tab-item>
       <v-tab-item>2</v-tab-item>
     </v-tabs-items>
-    <!-- </v-card> -->
-    <!-- <v-tabs v-else>
-      <v-tab>My groups</v-tab>
-    </v-tabs>-->
-    <!-- <h1 class="subheading text-center">Create group</h1>
-    <v-form class="text-center" width="500" ref="form">
-      <v-btn text class="primary mt-6" width="200" @click="submit">Create group</v-btn>
-    </v-form>-->
   </div>
 </template>
 
@@ -75,12 +67,5 @@ export default class Groups extends Mappers {
   toWorkflow(id) {
     this.$router.push(`/workflow/${id}`);
   }
-  // @Ref("form") readonly form!: any;
-  // @Emit()
-  // async submit() {
-  //   if (this.$refs.form.validate()) {
-  //     console.log("works!");
-  //   }
-  // }
 }
 </script>

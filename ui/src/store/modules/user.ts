@@ -47,6 +47,14 @@ class RootActions extends Actions<
         this.commit("mutateLoggedIn", false)
         this.commit("mutateUser", {})
     }
+
+    async createUser(user: { username: string; password: string }) {
+        try {
+            return await userApi.createUser(user)
+        } catch (e) {
+            return e
+        }
+    }
 }
 // Экспорт модуля
 export default new Module({

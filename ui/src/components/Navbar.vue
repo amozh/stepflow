@@ -49,7 +49,11 @@
       <v-spacer></v-spacer>
       <v-layout v-if="loggedIn" align-center justify-center class="mt-12">
         <v-avatar color="orange" size="100" class="mr-4">
-          <img v-if="true" src="http://localhost:4000/files/366eb589-2809-4799-85f5-f606a583b273.png" alt="avatar">
+          <img
+            v-if="true"
+            src="http://localhost:4000/files/366eb589-2809-4799-85f5-f606a583b273.png"
+            alt="avatar"
+          />
           <span v-else class="white--text headline">{{userInfo.username[0]}}</span>
         </v-avatar>
         <h3 class="white--text">{{userInfo.username}}</h3>

@@ -23,6 +23,9 @@ export const userApi = {
   getUserById(id: string) {
     return instance.get(`user/${id}`)
   },
+  getAllUsers() {
+    return instance.get("user")
+  },
   createUser(user: any) {
     return instance.post("user", user)
   },

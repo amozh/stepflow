@@ -1,6 +1,6 @@
 
 import { Repository } from 'typeorm';
-import { Injectable, HttpException, NotFoundException, OnModuleInit, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, HttpException, NotFoundException, OnModuleInit, InternalServerErrorException, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { UserDto } from '@stepflow/shared';
@@ -35,6 +35,14 @@ export class UserService implements OnModuleInit {
             throw new NotFoundException(`User with id ${id} is not found`)
         }
 
+    }
+
+    async getAllUsers(): Promise<UserDto[]> {
+        try {
+            return await this.userRepo.find()
+        } catch (e) {
+            throw new NotFoundException()
+        }
     }
 
     async createUser(userDto: UserDto): Promise<UserDto> {

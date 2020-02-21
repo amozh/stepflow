@@ -1,3 +1,4 @@
+import { UserEntity } from './../user/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { UserGroupController } from './user-group.controller';
@@ -7,7 +8,11 @@ import { WorkflowModule } from "../workflow/workflow.module";
 import { Workflow } from "../workflow/workflow.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserGroupEntity]), TypeOrmModule.forFeature([Workflow])],
+  imports: [
+    TypeOrmModule.forFeature([UserGroupEntity]),
+    TypeOrmModule.forFeature([Workflow]),
+    TypeOrmModule.forFeature([UserEntity])
+  ],
   controllers: [UserGroupController],
   providers: [UserGroupService]
 })

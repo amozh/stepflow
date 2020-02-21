@@ -42,7 +42,8 @@ export class Workflow {
 
   @ManyToMany(
     type => UserGroupEntity,
-    userGroup => userGroup.workflows
+    userGroup => userGroup.workflows,
+    // { cascade: true }
   )
   @JoinTable()
   userGroups: UserGroupEntity[]

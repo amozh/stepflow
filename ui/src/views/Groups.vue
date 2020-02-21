@@ -3,9 +3,11 @@
     <h1 class="subheading text-center">Groups</h1>
     <v-tabs background-color="#f5f5f5" v-model="tab" slider-size="3">
       <v-tab>My groups</v-tab>
-      <!-- Если пользователь является админом, он видит больше вкладок, чем обычный студент -->
+      <!-- Если пользователь является админом, он будет видеть больше вкладок, чем обычный студент -->
       <v-tab v-if="true">Create group</v-tab>
+      <v-tab v-if="true">Assign workflow</v-tab>
     </v-tabs>
+    <!-- Вынести в отдельный компонент -->
     <v-tabs-items v-model="tab" background-color="#f5f5f5" class="pa-6">
       <v-tab-item>
         <h4 class="pa-4" v-if="loggedIn && groups.length===0">You have no groups</h4>
@@ -34,16 +36,13 @@
         </v-card>
         <Wokrflow />
       </v-tab-item>
-      <v-tab-item>2</v-tab-item>
+      <v-tab-item>
+        <CreateGroup :createGroup="createGroup" :getAllUsers="getAllUsers" :allUsers="allUsers" :isLoading="isLoading"/>
+      </v-tab-item>
+      <v-tab-item>
+        <AssignWorkflow />
+      </v-tab-item>
     </v-tabs-items>
-    <!-- </v-card> -->
-    <!-- <v-tabs v-else>
-      <v-tab>My groups</v-tab>
-    </v-tabs>-->
-    <!-- <h1 class="subheading text-center">Create group</h1>
-    <v-form class="text-center" width="500" ref="form">
-      <v-btn text class="primary mt-6" width="200" @click="submit">Create group</v-btn>
-    </v-form>-->
   </div>
 </template>
 
@@ -57,19 +56,28 @@ import {
   Watch
 } from "vue-property-decorator";
 import Wokrflow from "../components/Workflow.vue";
+import AssignWorkflow from "../components/AssignWorkflow.vue";
+import CreateGroup from "../components/CreateGroup.vue";
 import UserStore from "../store/modules/user";
 import GroupStore from "../store/modules/group";
 
 const Mappers = Vue.extend({
   components: {
-    Wokrflow
+    Wokrflow,
+    CreateGroup,
+    AssignWorkflow
   },
   computed: {
-    ...UserStore.mapGetters(["userGroups", "loggedIn"])
+    ...UserStore.mapGetters(["userGroups", "loggedIn", "allUsers", "isLoading"])
   },
   methods: {
     ...GroupStore.mapActions({
-      deleteGroup: "deleteGroup"
+      deleteGroup: "deleteGroup",
+      createGroup: "createGroup",
+      updateGroup: "updateGroup"
+    }),
+    ...UserStore.mapActions({
+      getAllUsers: "getAllUsers"
     })
   }
 });
@@ -93,6 +101,10 @@ export default class Groups extends Mappers {
   async removeGroup(id) {
     this.groups = this.groups.filter(group => group.id !== id);
     await this.deleteGroup(id);
+  }
+
+  mounted() {
+    this.groups = this.userGroups;
   }
 }
 </script>

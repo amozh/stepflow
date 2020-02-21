@@ -8,10 +8,15 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
-    @Get()
+    @Get("secure")
     @UseGuards(AdminGuard)
     get(): string {
         return this.userService.get()
+    }
+
+    @Get()
+    getAllUsers(): Promise<UserDto[]> {
+        return this.userService.getAllUsers()
     }
 
     @Get("/:id")

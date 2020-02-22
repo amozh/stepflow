@@ -39,10 +39,11 @@ const Mappers = Vue.extend({
 @Component
 export default class AllWorkFlows extends Mappers {
   mounted() {
-    this.getAllWorkflows().then(() => {
-      console.log(this.allWorkflows, "mounted");
-      // console.log(this.userInfo.userGroups[0].workflows, "groupName");
-    });
+    this.getAllWorkflows()
+    // .then(() => {
+    //   console.log(this.allWorkflows, "mounted");
+    //   // console.log(this.userInfo.userGroups[0].workflows, "groupName");
+    // });
   }
 }
 </script>

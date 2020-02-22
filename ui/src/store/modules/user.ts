@@ -5,7 +5,7 @@ class RootState {
     user: any = {};
     allUsers: any = [];
     loggedIn: boolean = false;
-    isLoading: boolean = false;
+    userLoading: boolean = false;
 }
 
 class RootGetters extends Getters<RootState> {
@@ -21,8 +21,8 @@ class RootGetters extends Getters<RootState> {
     get allUsers(): any {
         return this.state.allUsers
     }
-    get isLoading(): boolean {
-        return this.state.isLoading;
+    get userLoading(): boolean {
+        return this.state.userLoading;
     }
 }
 
@@ -37,7 +37,7 @@ class RootMutations extends Mutations<RootState> {
         return this.state.allUsers = allUsers
     }
     mutateLoading(loading: boolean): boolean {
-        return this.state.isLoading = loading;
+        return this.state.userLoading = loading;
     }
 }
 

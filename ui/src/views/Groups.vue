@@ -7,16 +7,21 @@
       <v-tab v-if="true">Create group</v-tab>
       <v-tab v-if="true">Assign workflow</v-tab>
     </v-tabs>
-    <!-- Вынести в отдельный компонент -->
+    <!-- Вынести этот таб в отдельный компонент -->
     <v-tabs-items v-model="tab" background-color="#f5f5f5" class="pa-6">
       <v-tab-item>
         <h4 class="pa-4" v-if="loggedIn && groups.length===0">You have no groups</h4>
-        <v-card v-else v-for="group in groups" :key="group.id" outlined class="pa-4">
+        <v-card v-else v-for="group in groups" :key="group.id" outlined class="pa-4 mb-6">
           <v-flex>
             <v-flex row class="ma-0">
               <h3>{{group.groupName}}</h3>
               <v-spacer></v-spacer>
-              <v-icon color="red" size="30" @click="removeGroup(group.id)">mdi-delete-outline</v-icon>
+              <v-icon
+                color="red"
+                size="30"
+                @click="removeGroup(group.id)"
+                title="Delete group"
+              >mdi-delete-outline</v-icon>
             </v-flex>
             <v-simple-table>
               <thead>
@@ -25,11 +30,14 @@
                   <th class="text-left">Create date</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody v-if="group.workflows.length">
                 <tr v-for="wf in group.workflows" :key="wf.id" @click="toWorkflow(wf.id)">
                   <td>{{ wf.name }}</td>
                   <td>{{wf.created}}</td>
                 </tr>
+              </tbody>
+              <tbody v-else>
+                <h4 class="ma-4">There are no workflows in this group</h4>
               </tbody>
             </v-simple-table>
           </v-flex>
@@ -37,10 +45,21 @@
         <Wokrflow />
       </v-tab-item>
       <v-tab-item>
-        <CreateGroup :createGroup="createGroup" :getAllUsers="getAllUsers" :allUsers="allUsers" :isLoading="isLoading"/>
+        <CreateGroup
+          :createGroup="createGroup"
+          :getAllUsers="getAllUsers"
+          :allUsers="allUsers"
+          :isLoading="userLoading"
+        />
       </v-tab-item>
       <v-tab-item>
-        <AssignWorkflow />
+        <AssignWorkflow
+          :getAllWorkflows="getAllWorkflows"
+          :allWorkflows="allWorkflows"
+          :workflowsLoading="isLoading"
+          :userGroups="userGroups"
+          :updateGroup="updateGroup"
+        />
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -60,6 +79,7 @@ import AssignWorkflow from "../components/AssignWorkflow.vue";
 import CreateGroup from "../components/CreateGroup.vue";
 import UserStore from "../store/modules/user";
 import GroupStore from "../store/modules/group";
+import WorkflowStore from "../store/modules/workflow";
 
 const Mappers = Vue.extend({
   components: {
@@ -68,7 +88,13 @@ const Mappers = Vue.extend({
     AssignWorkflow
   },
   computed: {
-    ...UserStore.mapGetters(["userGroups", "loggedIn", "allUsers", "isLoading"])
+    ...UserStore.mapGetters([
+      "userGroups",
+      "loggedIn",
+      "allUsers",
+      "userLoading"
+    ]),
+    ...WorkflowStore.mapGetters(["allWorkflows", "isLoading"])
   },
   methods: {
     ...GroupStore.mapActions({
@@ -78,7 +104,8 @@ const Mappers = Vue.extend({
     }),
     ...UserStore.mapActions({
       getAllUsers: "getAllUsers"
-    })
+    }),
+    ...WorkflowStore.mapActions({ getAllWorkflows: "getAllWorkflows" })
   }
 });
 

@@ -133,51 +133,53 @@ export class UserGroupService implements OnModuleInit {
     async updateGroup(id: number, userGroupDto: UserGroupDto): Promise<any> {
         const { groupName, workflows, users } = userGroupDto
 
-        const updatedWf = workflows && workflows.map(wf => {
-            const workflow = new Workflow()
-            const wokflowSteps = wf.steps.map(step => {
-                const workflowStep = new WorkflowStep();
-                const stepAnswer = new Answer();
-                stepAnswer.answer = step.answer.answer
-                workflowStep.answer = stepAnswer;
-                workflowStep.name = step.name;
-                workflowStep.description = step.description;
+        // const updatedWf = workflows && workflows.map(wf => {
+        //     const workflow = new Workflow()
+        //     const wokflowSteps = wf.steps.map(step => {
+        //         const workflowStep = new WorkflowStep();
+        //         const stepAnswer = new Answer();
+        //         stepAnswer.answer = step.answer.answer
+        //         workflowStep.answer = stepAnswer;
+        //         workflowStep.name = step.name;
+        //         workflowStep.description = step.description;
 
-                return workflowStep;
-            });
-            workflow.name = wf.name;
-            workflow.description = wf.description;
-            workflow.steps = wokflowSteps;
-            return workflow
-        })
+        //         return workflowStep;
+        //     });
+        //     workflow.name = wf.name;
+        //     workflow.description = wf.description;
+        //     workflow.steps = wokflowSteps;
+        //     return workflow
+        // })
 
-        const updatedUs = users && users.map(us => {
-            const user = new UserEntity()
-            user.username = us.username
-            user.password = us.password
-            return user
-        })
+        // const updatedUs = users && users.map(us => {
+        //     const user = new UserEntity()
+        //     user.username = us.username
+        //     user.password = us.password
+        //     return user
+        // })
 
-        // Сохранить изменения для таблиц Wokrflow и Users только в том случае, если они !== undefined
-        if (updatedWf) {
-            await this.workflowRepo.save(updatedWf)
-        }
-        if (updatedUs) { await this.usersRepo.save(updatedUs) }
-
-
+        // // Сохранить изменения для таблиц Wokrflow и Users только в том случае, если они !== undefined
+        // if (updatedWf) {
+        //     await this.workflowRepo.save(updatedWf)
+        // }
+        // if (updatedUs) { await this.usersRepo.save(updatedUs) }
         try {
             const group = await this.userGroupRepo.findOne({ id })
-            // Таким образом можно достать информацию в связи Many to Many
-            const usersInGroup = await this.usersRepo.find({
-                relations: ["userGroups"] //Достань всех юзеров, которые принадлежат связи с userGroups
-            })
-            const workflowInGroup = await this.workflowRepo.find({
-                relations: ["userGroups"] //Достань все воркфлоу, которые принадлежат связи с userGroups
-            })
+            // // Таким образом можно достать информацию в связи Many to Many
+            // const usersInGroup = await this.usersRepo.find({
+            //     relations: ["userGroups"] //Достань всех юзеров, которые принадлежат связи с userGroups
+            // })
+            // const workflowInGroup = await this.workflowRepo.find({
+            //     relations: ["userGroups"] //Достань все воркфлоу, которые принадлежат связи с userGroups
+            // })
+
+            // group.groupName = groupName
+            // group.workflows = [...workflowInGroup]
+            // group.users = [...usersInGroup]
 
             group.groupName = groupName
-            group.workflows = [...workflowInGroup]
-            group.users = [...usersInGroup]
+            group.workflows = workflows
+            group.users = users
 
             const res = await this.userGroupRepo.save(group)
             return res

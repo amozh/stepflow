@@ -47,8 +47,8 @@ export const groupApi = {
   createUser(group: any) {
     return instance.post("group", group)
   },
-  updateGroup(group: any, id: string) {
-    return instance.put(`group/${id}`, group)
+  updateGroup(newGroupInfo: { group: any, id: any }) {
+    return instance.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
   },
   deleteGroup(id: string) {
     return instance.delete(`group/${id}`)

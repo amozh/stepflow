@@ -1,9 +1,6 @@
 <template>
   <div class="container">
-    <v-snackbar class="mb-5" v-model="snackbar" :timeout="3000">
-      {{snackbarText}}
-      <v-btn color="white" text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
+    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <div v-if="isLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
@@ -43,10 +40,12 @@ import {
   Prop
 } from "vue-property-decorator";
 import UserTr from "./UserTr.vue";
+import Snackbar from "./Snackbar.vue";
 
 const Mappers = Vue.extend({
   components: {
-    UserTr
+    UserTr,
+    Snackbar
   }
 });
 
@@ -75,9 +74,9 @@ export default class CreateGroup extends Mappers {
         groupName: this.groupName,
         users
       };
-      this.snackbar = true
       await this.createGroup(group);
-      this.snackbarText = `Group ${this.groupName} has been created` 
+      this.snackbarText = `Group ${this.groupName} has been created`;
+      this.snackbar = true;
     }
   }
 

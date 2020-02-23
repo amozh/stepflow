@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h1 class="subheading text-center">Groups</h1>
+    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <v-tabs background-color="#f5f5f5" v-model="tab" slider-size="3">
       <v-tab>My groups</v-tab>
       <!-- Если пользователь является админом, он будет видеть больше вкладок, чем обычный студент -->
@@ -80,12 +81,14 @@ import CreateGroup from "../components/CreateGroup.vue";
 import UserStore from "../store/modules/user";
 import GroupStore from "../store/modules/group";
 import WorkflowStore from "../store/modules/workflow";
+import Snackbar from "../components/Snackbar.vue";
 
 const Mappers = Vue.extend({
   components: {
     Wokrflow,
     CreateGroup,
-    AssignWorkflow
+    AssignWorkflow,
+    Snackbar
   },
   computed: {
     ...UserStore.mapGetters([
@@ -113,9 +116,11 @@ const Mappers = Vue.extend({
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
   @Provide() groups: any = [];
+  @Provide() snackbar: boolean = false;
+  @Provide() snackbarText: string = "";
 
   @Watch("userGroups")
-  userGroupsDiff(val: any, oldVal: any) {
+  async userGroupsDiff(val: any, oldVal: any) {
     this.groups = this.userGroups;
   }
 
@@ -126,11 +131,15 @@ export default class Groups extends Mappers {
 
   @Emit()
   async removeGroup(id) {
+    const name = this.groups.find(g => g.id === id).groupName
+    this.snackbar = true;
+    this.snackbarText = `Group ${name} has been deleted`;
+ 
     this.groups = this.groups.filter(group => group.id !== id);
     await this.deleteGroup(id);
   }
 
-  mounted() {
+  async mounted() {
     this.groups = this.userGroups;
   }
 }

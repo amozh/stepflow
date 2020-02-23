@@ -1,10 +1,7 @@
 <template>
   <div class="container">
     <h1 class="subheading text-center">Create user page</h1>
-    <v-snackbar class="mb-5" v-model="snackbar" :timeout="3000">
-      {{snackbarText}}
-      <v-btn color="white" text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
+    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <v-form class="text-center" width="500" ref="form">
       <v-text-field
         class
@@ -28,7 +25,12 @@
 <script lang="ts">
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
 import UserStore from "../store/modules/user";
+import Snackbar from "../components/Snackbar.vue";
+
 const Mappers = Vue.extend({
+  components: {
+    Snackbar
+  },
   methods: {
     ...UserStore.mapActions({
       createUser: "createUser"

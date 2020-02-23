@@ -1,5 +1,4 @@
-
-    <template>
+<template>
   <v-flex>
     <v-card
       v-for="(workflow, index) in workflows"

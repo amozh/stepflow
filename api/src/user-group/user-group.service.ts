@@ -99,6 +99,21 @@ export class UserGroupService implements OnModuleInit {
             throw new NotFoundException(`User group with id ${id} is not found`)
         }
     }
+    async getGroupsByUserId(id: number): Promise<UserGroupDto[]> {
+        try {
+            const usersInGroup = await this.userGroupRepo.find({
+                relations: ["users"], //Достань все группы, которые принадлежат юзеру с этим id
+                where: {
+                    userGroupId: id
+                }
+            })
+            return usersInGroup
+        } catch (e) {
+            throw new NotFoundException(`User group with id ${id} is not found`)
+        }
+    }
+
+
 
     async createGroup(groupDto: UserGroupDto): Promise<UserGroupDto> {
         const { groupName, workflows, users } = groupDto

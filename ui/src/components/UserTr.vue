@@ -1,7 +1,7 @@
 <template>
   <tr>
     <td class="text-left ml-5">{{ user.username }}</td>
-    <td>
+    <td class="pl-12">
       <v-checkbox v-model="checkbox"></v-checkbox>
     </td>
   </tr>

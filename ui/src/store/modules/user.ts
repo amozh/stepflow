@@ -73,7 +73,6 @@ class RootActions extends Actions<
     async getAllUsers(): Promise<any> {
         this.commit("mutateLoading", true);
         try {
-
             const response = await userApi.getAllUsers()
             this.commit("mutateAllUsers", response.data)
             this.commit("mutateLoading", false);

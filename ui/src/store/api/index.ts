@@ -44,6 +44,9 @@ export const groupApi = {
   getGroupById(id: string) {
     return instance.get(`group/${id}`)
   },
+  getGroupsByUserId(id:string){
+    return instance.get(`group/user/${id}`)
+  },
   createUser(group: any) {
     return instance.post("group", group)
   },
@@ -53,4 +56,5 @@ export const groupApi = {
   deleteGroup(id: string) {
     return instance.delete(`group/${id}`)
   },
+  
 }

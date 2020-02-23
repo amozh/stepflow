@@ -1,9 +1,6 @@
 <template>
   <nav>
-    <v-snackbar v-if="loggedIn" class="mb-5" v-model="snackbar" :timeout="2000">
-      Welcome, {{userInfo.username}}!
-      <v-btn color="white" text @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
+    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
         <v-card-title class="headline еуч">Want to logout?</v-card-title>
@@ -14,7 +11,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <v-app-bar app class="primary" outlined>
       <v-app-bar-nav-icon class="white--text" large @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-spacer></v-spacer>
@@ -60,8 +56,12 @@
 <script lang="ts">
 import { Vue, Component, Provide, Watch, Emit } from "vue-property-decorator";
 import UserStore from "../store/modules/user";
+import Snackbar from "./Snackbar.vue";
 
 const Mappers = Vue.extend({
+  components: {
+    Snackbar
+  },
   computed: {
     ...UserStore.mapGetters(["userInfo", "loggedIn"])
   },
@@ -76,11 +76,13 @@ const Mappers = Vue.extend({
 @Component
 export default class Navbar extends Mappers {
   @Provide() drawer: boolean = false;
+  @Provide() snackbarText: string = "";
   @Provide() snackbar: boolean = false;
   @Provide() dialog: boolean = false;
 
   @Watch("loggedIn")
   loginChange(val: string, oldVal: string) {
+    this.snackbarText = `Welcome, ${this.userInfo.username}!`;
     this.snackbar = true;
   }
 

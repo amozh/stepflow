@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <div v-if="workflowsLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
@@ -40,13 +41,22 @@ import {
   Emit,
   Prop
 } from "vue-property-decorator";
+import Snackbar from "./Snackbar.vue";
+
+const Mappers = Vue.extend({
+  components: {
+    Snackbar
+  }
+});
 
 @Component
-export default class AssignWorkflow extends Vue {
+export default class AssignWorkflow extends Mappers {
   @Provide() groups: any = [];
   @Provide() workflows: any = [];
   @Provide() selectedGroup: any = [];
   @Provide() selectedWorkflow: any = [];
+  @Provide() snackbarText: string = "";
+  @Provide() snackbar: boolean = false;
 
   @Prop() getAllWorkflows: any;
   @Prop() allWorkflows: any;
@@ -67,6 +77,10 @@ export default class AssignWorkflow extends Vue {
         workflows: assignedWf
       };
       await this.updateGroup({ group, id: this.selectedGroup });
+      this.snackbarText = `${this.selectedWorkflow.length} workflow${
+        this.selectedWorkflow.length > 1 ? "s" : ""
+      } has been assigned to this group`;
+      this.snackbar = true;
     }
   }
   async mounted() {

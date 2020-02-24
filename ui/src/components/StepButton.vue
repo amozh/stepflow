@@ -11,6 +11,6 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 @Component
 export default class StepButton extends Vue {
   @Prop() answerResult!: string;
-  @Prop() sendAnswer!: any;
+  @Prop() sendAnswer!: Promise<string>; //fix
 }
 </script>

@@ -29,6 +29,7 @@ import {
 } from "vue-property-decorator";
 import WorkflowStore from "../store/modules/workflow";
 import StepButton from "../components/StepButton.vue";
+import { CreateWorkflowStepDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: { StepButton },
@@ -49,7 +50,7 @@ export default class Step extends Mappers {
   ];
 
   //props
-  @Prop() step!: any;
+  @Prop() step!:CreateWorkflowStepDto;
   @Prop() index!: number;
   mounted() {}
 

@@ -55,6 +55,7 @@ import GroupStore from "../store/modules/group";
 import WorkflowStore from "../store/modules/workflow";
 import Snackbar from "../components/Snackbar.vue";
 import MyGroups from "../components/MyGroups.vue";
+import { UserGroupDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -89,7 +90,7 @@ const Mappers = Vue.extend({
 @Component
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
-  @Provide() groups: any = [];
+  @Provide() groups: any = []; //fix UserGroupDto
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
 

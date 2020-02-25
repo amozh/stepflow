@@ -1,19 +1,20 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import { workflowApi } from "../api/index";
+import { CreateWorkflowDto, AnswerDto } from '@stepflow/shared';
 
 type Loading = boolean;
 
 class RootState {
-  workflow: any = {};
-  allWorkflows: any = [];
+  workflow: CreateWorkflowDto = {name:'', description:'', steps:[]};
+  allWorkflows: CreateWorkflowDto[] = [];
   isLoading: Loading = false;
 }
 
 class RootGetters extends Getters<RootState> {
-  get allWorkflows(): any {
+  get allWorkflows(): CreateWorkflowDto[] {
     return this.state.allWorkflows;
   }
-  get currentWorkflow(): any {
+  get currentWorkflow(): CreateWorkflowDto {
     return this.state.workflow;
   }
   get isLoading(): Loading {
@@ -22,13 +23,13 @@ class RootGetters extends Getters<RootState> {
 }
 
 class RootMutations extends Mutations<RootState> {
-  mutateLoading(loading: Loading): any {
+  mutateLoading(loading: Loading): void {
     this.state.isLoading = loading;
   }
-  mutateAllWorkflows(workflows: []): any {
+  mutateAllWorkflows(workflows: CreateWorkflowDto[]): void {
     this.state.allWorkflows = workflows;
   }
-  mutateWorkflowById(workflow: {}): any {
+  mutateWorkflowById(workflow: CreateWorkflowDto): void {
     this.state.workflow = workflow;
   }
 }
@@ -61,7 +62,7 @@ class RootActions extends Actions<
     const response = await workflowApi.checkAnswer(answer);
     return response;
   }
-  async createWorkflow(workflow: any): Promise<any> {
+  async createWorkflow(workflow: CreateWorkflowDto): Promise<any> {
     const response = await workflowApi.createWorkflow(workflow);
     return response;
   }

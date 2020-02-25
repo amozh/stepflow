@@ -1,5 +1,7 @@
+import { CreateWorkflowDto, UserDto } from '../index';
+
 export interface UserGroupDto {
   readonly groupName: string;
-  readonly workflows: any;
-  readonly users: any;
+  readonly workflows: CreateWorkflowDto[];
+  readonly users: UserDto[];
 }

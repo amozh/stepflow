@@ -1,24 +1,25 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import { userApi } from "../api/index";
+import { CreateWorkflowDto, UserDto, UserGroupDto } from '@stepflow/shared';
 
 class RootState {
-    user: any = {};
-    allUsers: any = [];
+    user: any = {}; //fix
+    allUsers: UserDto[] = [];
     loggedIn: boolean = false;
     userLoading: boolean = false;
 }
 
 class RootGetters extends Getters<RootState> {
-    get userInfo(): any {
+    get userInfo(): UserDto {
         return this.state.user
     }
     get loggedIn(): boolean {
         return this.state.loggedIn
     }
-    get userGroups(): any {
+    get userGroups(): UserGroupDto {
         return this.state.user.userGroups
     }
-    get allUsers(): any {
+    get allUsers(): UserDto[] {
         return this.state.allUsers
     }
     get userLoading(): boolean {
@@ -27,13 +28,13 @@ class RootGetters extends Getters<RootState> {
 }
 
 class RootMutations extends Mutations<RootState> {
-    mutateUser(user: any): any {
+    mutateUser(user: any): UserDto { //fix
         return this.state.user = user
     }
     mutateLoggedIn(isLogged: boolean): boolean {
         return this.state.loggedIn = isLogged
     }
-    mutateAllUsers(allUsers: any): any {
+    mutateAllUsers(allUsers: UserDto[]): UserDto[] {
         return this.state.allUsers = allUsers
     }
     mutateLoading(loading: boolean): boolean {

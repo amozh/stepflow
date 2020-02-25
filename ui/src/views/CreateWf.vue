@@ -52,6 +52,7 @@ import {
 import WorkflowStore from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
 import Snackbar from "../components/Snackbar.vue";
+import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -76,7 +77,7 @@ export default class CreateWorkflow extends Mappers {
   ];
   @Provide() steps: any = [];
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   addStep() {
@@ -90,7 +91,7 @@ export default class CreateWorkflow extends Mappers {
     });
   }
   @Emit()
-  saveStep(newStep: any, index: number): void {
+  saveStep(newStep: CreateWorkflowStepDto, index: number) {
     this.steps.splice(index, 1, newStep);
   }
 
@@ -107,7 +108,7 @@ export default class CreateWorkflow extends Mappers {
       }
     );
     if (
-      this.$refs.form.validate() &&
+      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
       validateSteps.every(e => e === true) &&
       this.steps.length
     ) {

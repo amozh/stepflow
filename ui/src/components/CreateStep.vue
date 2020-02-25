@@ -52,14 +52,15 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import { CreateWorkflowStepDto } from '@stepflow/shared';
 
 @Component
 export default class WfStep extends Vue {
   @Prop() saveStep: any;
   @Prop() deleteStep: any;
   @Prop() inputRules!: [];
-  @Prop() step: any;
-  @Prop() index: any;
+  @Prop() step!: CreateWorkflowStepDto; 
+  @Prop() index!: number;
   @Prop() saveAllSteps: boolean;
 
   @Provide() name: string = "";
@@ -68,11 +69,11 @@ export default class WfStep extends Vue {
   @Provide() id: any = "";
   @Provide() isSave: boolean = false;
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
-  addNewStep(): any {
-    if (this.$refs.form.validate()) {
+  addNewStep(): void {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const newStep = {
         id: this.id,
         name: this.name,

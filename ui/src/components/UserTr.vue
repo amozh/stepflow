@@ -17,13 +17,14 @@ import {
   Prop,
   Watch
 } from "vue-property-decorator";
+import { UserGroupDto,UserDto } from '@stepflow/shared';
 
 @Component
 export default class UserTr extends Vue {
   @Provide() checkbox: boolean = false;
 
-  @Prop() addToGroup: any;
-  @Prop() user: any;
+  @Prop() addToGroup!: any; //fix
+  @Prop() user!: UserDto;
 
   // Когда значение в чекбоксе поменяется, выполнится коллбэк, который передаст id юзера и значение чекбокса
   @Watch("checkbox")

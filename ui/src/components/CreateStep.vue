@@ -26,10 +26,10 @@
         :disabled="isSave"
       ></v-text-field>
       <v-flex row class="ma-0">
-        <!-- <v-btn class="my-4" color="error" @click="deleteStep(index)">
+        <v-btn class="my-4" color="error" @click="deleteStep(id)">
           Delete
           <v-icon right>mdi-cancel</v-icon>
-        </v-btn>-->
+        </v-btn>
         <v-spacer></v-spacer>
         <v-btn v-if="isSave" class="my-4" color="primary" @click="isSave=false">
           Edit
@@ -49,22 +49,23 @@ import {
   Prop,
   Emit,
   Inject,
-  Ref
+  Ref,
+  Watch
 } from "vue-property-decorator";
 
-const Mappers = Vue.extend({});
-
 @Component
-export default class WfStep extends Mappers {
+export default class WfStep extends Vue {
   @Prop() saveStep: any;
-  // @Prop() deleteStep: any;
+  @Prop() deleteStep: any;
   @Prop() inputRules!: [];
   @Prop() step: any;
   @Prop() index: any;
+  @Prop() saveAllSteps: boolean;
 
   @Provide() name: string = "";
   @Provide() description: string = "";
   @Provide() answer: string = "";
+  @Provide() id: any = "";
   @Provide() isSave: boolean = false;
 
   @Ref("form") readonly form!: any;
@@ -73,6 +74,7 @@ export default class WfStep extends Mappers {
   addNewStep(): any {
     if (this.$refs.form.validate()) {
       const newStep = {
+        id: this.id,
         name: this.name,
         description: this.description,
         answer: {
@@ -84,11 +86,18 @@ export default class WfStep extends Mappers {
     }
   }
 
+  @Watch("saveAllSteps")
+  autoSave(val: any, oldVal: any){
+    this.addNewStep()
+  }
+
   mounted() {
+    const { id, name, description, answer } = this.step;
     if (this.step) {
-      this.name = this.step.name;
-      this.description = this.step.description;
-      this.answer = this.step.answer.answer;
+      this.id = id;
+      this.name = name;
+      this.description = description;
+      this.answer = answer.answer;
     }
   }
 }

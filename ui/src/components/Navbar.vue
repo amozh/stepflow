@@ -3,7 +3,7 @@
     <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
     <v-dialog v-model="dialog" max-width="290">
       <v-card>
-        <v-card-title class="headline еуч">Want to logout?</v-card-title>
+        <v-card-title class="headline">Want to logout?</v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog = false">Disagree</v-btn>
@@ -21,14 +21,14 @@
         <v-icon class="mr-2">mdi-collapse-all</v-icon>All workflows
       </v-btn>
       <v-btn v-if="loggedIn" class="white--text ma-2" width="120" text @click="dialog = true">
-        <v-icon class="mr-2">mdi-logout-variant</v-icon>Logout
+        <v-icon class="mr-2" color="red">mdi-logout-variant</v-icon>Logout
       </v-btn>
       <v-btn v-else class="white--text ma-2" width="120" text route to="/login">
-        <v-icon class="mr-2">mdi-login-variant</v-icon>Login
+        <v-icon class="mr-2" color="green">mdi-login-variant</v-icon>Login
       </v-btn>
     </v-app-bar>
     <v-navigation-drawer app v-model="drawer" class="primary" temporary column>
-      <v-layout column align-baseline class="ml-2">
+      <v-layout column align-inherit class="mx-2">
         <v-btn class="white--text mt-10" text route to="/">
           <v-icon class="mr-2">mdi-collapse-all</v-icon>All workflows
         </v-btn>

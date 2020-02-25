@@ -17,8 +17,6 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 
-// const Mappers = Vue.extend({});
-
 @Component
 export default class Groups extends Vue {
   @Prop() readonly workflows!: any;

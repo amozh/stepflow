@@ -45,8 +45,8 @@ import {
 } from "vue-property-decorator";
 import WorkflowStore from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
-import { CreateWorkflowDto } from '@stepflow/shared';
-import { CreateWorkflowStepDto } from '@stepflow/shared';
+import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
+
 const Mappers = Vue.extend({
   components: {
     CreateStep
@@ -91,7 +91,7 @@ export default class CreateWorkflow extends Mappers {
 
   @Emit()
   async submit() {
-    if (this.$refs.form.validate()) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const workflow = {
         name: this.title,
         description: this.description,

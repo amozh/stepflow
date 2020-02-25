@@ -38,7 +38,7 @@ export class UserGroupController {
 
     @Put("/:id")
     // @UseGuards(AdminGuard)
-    updateGroup(@Param("id", ParseIntPipe) id: number, @Body() userGroupDto: UserGroupDto): any {
+    updateGroup(@Param("id", ParseIntPipe) id: number, @Body() userGroupDto: UserGroupDto): Promise<UserGroupDto> {
         return this.userGroup.updateGroup(id, userGroupDto)
     }
 }

@@ -41,6 +41,7 @@ import {
 } from "vue-property-decorator";
 import UserTr from "./UserTr.vue";
 import Snackbar from "./Snackbar.vue";
+import { CreateWorkflowDto,UserGroupDto,UserDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -59,17 +60,17 @@ export default class CreateGroup extends Mappers {
     (v: string) => (v && v.length >= 0) || "Field is required"
   ];
 
-  @Prop() createGroup: any;
-  @Prop() allUsers: any;
-  @Prop() getAllUsers: any;
-  @Prop() isLoading: boolean;
+  @Prop() createGroup!: any; //fix Promise<UserGroupDto>
+  @Prop() allUsers!: UserDto[];
+  @Prop() getAllUsers!: any; //fix
+  @Prop() isLoading!: boolean;
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   async submit() {
     const users = Array.from(this.usersInGroup);
-    if (this.$refs.form.validate() && users.length) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate() && users.length) {
       const group = {
         groupName: this.groupName,
         users
@@ -81,7 +82,7 @@ export default class CreateGroup extends Mappers {
   }
 
   @Emit()
-  addToGroup(userId: number, checked: boolean) {
+  addToGroup(userId: number, checked: boolean):any {
     // Найди юзера и, если checked === true, добавь в Set
     const user = this.allUsers.find(user => user.id === userId);
     if (checked) {

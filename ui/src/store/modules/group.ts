@@ -1,13 +1,14 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import { groupApi } from "../api/index";
+import { CreateWorkflowDto, UserDto, UserGroupDto } from '@stepflow/shared';
 
 class RootState {
-    userGroups: any[] = []
+    userGroups: UserGroupDto[] = []
     groupsLoading: boolean = false
 }
 
 class RootGetters extends Getters<RootState> {
-    get userGroups(): any {
+    get userGroups(): UserGroupDto[] {
         return this.state.userGroups
     }
     get groupsLoading(): boolean {
@@ -16,7 +17,7 @@ class RootGetters extends Getters<RootState> {
 }
 
 class RootMutations extends Mutations<RootState> {
-    mutateUserGroups(groups: any): any {
+    mutateUserGroups(groups: UserGroupDto[]): UserGroupDto[] {
         return this.state.userGroups = groups
     }
     mutateLoading(loading: boolean): boolean {
@@ -55,8 +56,8 @@ class RootActions extends Actions<
     async createGroup(
         group: {
             groupName: string,
-            users: Partial<any>,
-            workflows: Partial<any>
+            users: Partial<UserDto>,
+            workflows: Partial<CreateWorkflowDto>
         }
     ): Promise<any> {
         try {
@@ -69,8 +70,8 @@ class RootActions extends Actions<
     async updateGroup(
         group: {
             groupName: string,
-            users: Partial<any>,
-            workflows: Partial<any>
+            users: Partial<UserDto>,
+            workflows: Partial<CreateWorkflowDto>
         },
         id: string
     ): Promise<any> {

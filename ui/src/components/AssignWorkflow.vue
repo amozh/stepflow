@@ -42,6 +42,7 @@ import {
   Prop
 } from "vue-property-decorator";
 import Snackbar from "./Snackbar.vue";
+import { CreateWorkflowDto,UserGroupDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -51,24 +52,24 @@ const Mappers = Vue.extend({
 
 @Component
 export default class AssignWorkflow extends Mappers {
-  @Provide() groups: any = [];
-  @Provide() workflows: any = [];
-  @Provide() selectedGroup: any = [];
-  @Provide() selectedWorkflow: any = [];
+  @Provide() groups: UserGroupDto[] = [];
+  @Provide() workflows: CreateWorkflowDto[] = [];
+  @Provide() selectedGroup: UserGroupDto[] = [];
+  @Provide() selectedWorkflow: CreateWorkflowDto[] = [];
   @Provide() snackbarText: string = "";
   @Provide() snackbar: boolean = false;
 
-  @Prop() getAllWorkflows: any;
-  @Prop() allWorkflows: any;
-  @Prop() workflowsLoading: boolean;
-  @Prop() userGroups: any;
-  @Prop() updateGroup: any;
+  @Prop() getAllWorkflows!: any; //fix
+  @Prop() allWorkflows!: CreateWorkflowDto[];
+  @Prop() workflowsLoading!: boolean;
+  @Prop() userGroups!: UserGroupDto[];
+  @Prop() updateGroup!: any; //fix
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   async submit() {
-    if (this.$refs.form.validate()) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       // Фильтрация workflows по тем id, которые содержит массив selectedWorkflow
       const assignedWf = this.allWorkflows.filter(
         wf => wf.id === wf.id && this.selectedWorkflow.includes(wf.id)

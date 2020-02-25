@@ -1,7 +1,6 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import { workflowApi } from "../api/index";
-import { CreateWorkflowDto } from '@stepflow/shared';
-import { AnswerDto } from '@stepflow/shared';
+import { CreateWorkflowDto, AnswerDto } from '@stepflow/shared';
 
 type Loading = boolean;
 

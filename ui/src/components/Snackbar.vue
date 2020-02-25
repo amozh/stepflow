@@ -13,11 +13,11 @@ export default class Snackbar extends Vue {
   @Provide() isOpen: boolean = false;
 
   @Watch("snackbar")
-  snackbarDiff(val: any, oldVal: any) {
+  snackbarDiff(val: any, oldVal: any) {   //fix
     this.isOpen = this.snackbar;
   }
 
-  @Prop() snackbar: boolean;
-  @Prop() snackbarText: string;
+  @Prop() snackbar!: boolean;
+  @Prop() snackbarText!: string;
 }
 </script>

@@ -145,7 +145,7 @@ export class UserGroupService implements OnModuleInit {
         }
     }
 
-    async updateGroup(id: number, userGroupDto: UserGroupDto): Promise<any> {
+    async updateGroup(id: number, userGroupDto: UserGroupDto): Promise<UserGroupDto> {
         const { groupName, workflows, users } = userGroupDto
 
         // const updatedWf = workflows && workflows.map(wf => {

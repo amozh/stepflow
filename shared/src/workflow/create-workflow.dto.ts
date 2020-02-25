@@ -15,6 +15,4 @@ export interface CreateWorkflowStepDto {
   readonly answer: AnswerDto;
   readonly steps: CreateWorkflowStepDto[];
   readonly parent: CreateWorkflowStepDto;
-
-  // readonly answer: AnswerDto;
 }

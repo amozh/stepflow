@@ -1,6 +1,5 @@
 import axios from "axios";
-import { CreateWorkflowDto } from '@stepflow/shared';
-import { AnswerDto } from '@stepflow/shared';
+import { CreateWorkflowDto, UserDto, UserGroupDto } from '@stepflow/shared';
 
 const instance = axios.create({
   baseURL: "http://localhost:4000/"
@@ -28,16 +27,16 @@ export const userApi = {
   getAllUsers() {
     return instance.get("user")
   },
-  createUser(user: any) {
+  createUser(user: any ) { //fix UserDto
     return instance.post("user", user)
   },
-  updateUser(user: any, id: string) {
+  updateUser(user: UserDto, id: string) {
     return instance.put(`user/${id}`, user)
   },
   deleteUser(id: string) {
     return instance.delete(`user/${id}`)
   },
-  login(user: any) {
+  login(user: any) { //fix UserDto
     return instance.post("user/login", user)
   }
 }
@@ -49,10 +48,10 @@ export const groupApi = {
   getGroupsByUserId(id:string){
     return instance.get(`group/user/${id}`)
   },
-  createUser(group: any) {
+  createUser(group: UserGroupDto) {
     return instance.post("group", group)
   },
-  updateGroup(newGroupInfo: { group: any, id: any }) {
+  updateGroup(newGroupInfo: { group: UserGroupDto, id: string }) {
     return instance.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
   },
   deleteGroup(id: string) {

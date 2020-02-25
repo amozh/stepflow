@@ -49,14 +49,14 @@ export default class LoginLogout extends Mappers {
     (v: string) => (v && v.length >= 0) || "Field is required"
   ];
 
-  @Ref("form") readonly form!: any;
+  @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   async submit() {
     if(!this.loggedIn){
       this.snackbar = true
     }
-    if (this.$refs.form.validate()) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const user = {
         username: this.username,
         password: this.password

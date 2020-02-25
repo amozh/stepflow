@@ -72,7 +72,7 @@ export default class WfStep extends Mappers {
 
   @Emit()
   addNewStep(): void {
-    if (this.$refs.form.validate()) {
+    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const newStep = {
         name: this.name,
         description: this.description,

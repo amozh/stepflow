@@ -1,4 +1,4 @@
-import { UserGroupDto } from '@stepflow/shared';
+import { UserGroupDto } from './user-group.dto';
 
 export interface UserDto {
   readonly username: string;

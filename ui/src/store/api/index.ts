@@ -48,7 +48,7 @@ export const groupApi = {
   getGroupsByUserId(id:string){
     return instance.get(`group/user/${id}`)
   },
-  createUser(group: UserGroupDto) {
+  createUser(group: any) {
     return instance.post("group", group)
   },
   updateGroup(newGroupInfo: { group: UserGroupDto, id: string }) {

@@ -1,4 +1,4 @@
-import { CreateWorkflowDto, UserDto } from '@stepflow/shared';
+import { CreateWorkflowDto, UserDto } from '../index';
 
 export interface UserGroupDto {
   readonly groupName: string;

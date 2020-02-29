@@ -1,3 +1,7 @@
+Use 
+https://github.com/lujakob/nestjs-realworld-example-app
+as an example
+
 ## Installation
 
 ```bash

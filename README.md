@@ -1,3 +1,8 @@
+# About
+See [information about the product](PRODUCT.md)
+
+See [used technologies](TECHNOLOGIES.md)
+
 # Installation
 ### MySql
 Required versions

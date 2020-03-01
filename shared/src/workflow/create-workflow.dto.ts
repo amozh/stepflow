@@ -1,7 +1,11 @@
-export interface CreateWorkflowDto {
+export interface ICreateWorkflowDto {
   readonly name: string;
   readonly description: string;
   readonly steps: CreateWorkflowStepDto[];
+}
+
+export interface IWorkflowEntityDto extends ICreateWorkflowDto {
+  readonly id: number;
 }
 
 export interface AnswerDto{

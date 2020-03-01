@@ -12,12 +12,12 @@ import { Vue, Component, Provide, Prop, Watch } from "vue-property-decorator";
 export default class Snackbar extends Vue {
   @Provide() isOpen: boolean = false;
 
+  @Prop() snackbar!: boolean;
+  @Prop() snackbarText!: string;
+
   @Watch("snackbar")
   snackbarDiff(val: any, oldVal: any) {   //fix
     this.isOpen = this.snackbar;
   }
-
-  @Prop() snackbar!: boolean;
-  @Prop() snackbarText!: string;
 }
 </script>

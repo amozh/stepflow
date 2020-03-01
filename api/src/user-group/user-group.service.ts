@@ -1,6 +1,6 @@
 import { Answer } from './../answer/answer.entity';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
-import { UserGroupDto } from "@stepflow/shared";
+import { IUserGroupDto } from "@stepflow/shared";
 import { Repository } from 'typeorm';
 import { Injectable, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -90,7 +90,7 @@ export class UserGroupService implements OnModuleInit {
         return "Hello, New group!"
     }
 
-    async getGroupById(id: number): Promise<UserGroupDto> {
+    async getGroupById(id: number): Promise<IUserGroupDto> {
         try {
             const group = await this.userGroupRepo.findOne({ id })
             // console.log(group,id, "группа?")
@@ -99,7 +99,7 @@ export class UserGroupService implements OnModuleInit {
             throw new NotFoundException(`User group with id ${id} is not found`)
         }
     }
-    async getGroupsByUserId(id: number): Promise<UserGroupDto[]> {
+    async getGroupsByUserId(id: number): Promise<IUserGroupDto[]> {
         try {
             const usersInGroup = await this.userGroupRepo.find({
                 relations: ["users"], //Достань все группы, которые принадлежат юзеру с этим id
@@ -115,7 +115,7 @@ export class UserGroupService implements OnModuleInit {
 
 
 
-    async createGroup(groupDto: UserGroupDto): Promise<UserGroupDto> {
+    async createGroup(groupDto: IUserGroupDto): Promise<IUserGroupDto> {
         const { groupName, workflows, users } = groupDto
         const newGroup = new UserGroupEntity()
         // newGroup.users = users
@@ -145,7 +145,7 @@ export class UserGroupService implements OnModuleInit {
         }
     }
 
-    async updateGroup(id: number, userGroupDto: UserGroupDto): Promise<UserGroupDto> {
+    async updateGroup(id: number, userGroupDto: IUserGroupDto): Promise<IUserGroupDto> {
         const { groupName, workflows, users } = userGroupDto
 
         // const updatedWf = workflows && workflows.map(wf => {

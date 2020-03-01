@@ -8,7 +8,7 @@ import {
 import { Workflow } from './workflow.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateWorkflowDto } from '@stepflow/shared';
+import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class WorkflowService implements OnModuleInit {
     // });
   }
 
-  async create(workflowDto: CreateWorkflowDto): Promise<Workflow> {
+  async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
       const { name, description, steps } = workflowDto;
 

@@ -17,7 +17,7 @@ import {
   Prop,
   Watch
 } from "vue-property-decorator";
-import { UserGroupDto,UserDto } from '@stepflow/shared';
+import { IUserGroupDto,UserDto } from '@stepflow/shared';
 
 @Component
 export default class UserTr extends Vue {

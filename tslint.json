@@ -21,6 +21,10 @@
     "ordered-imports": false,
     "trailing-comma": false,
     "quotemark": false,
-    "member-access": false
+    "member-access": false,
+    "comment-format": false,
+    "arrow-parens": false,
+    "no-console": false,
+    "max-classes-per-file": false
   }
 }

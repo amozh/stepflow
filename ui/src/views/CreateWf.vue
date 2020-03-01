@@ -18,14 +18,12 @@
         :rules="inputRules"
       ></v-text-field>
       <CreateStep
-        :key="step.id"
-        :step="step"
-        :inputRules="inputRules"
-        :saveStep="saveStep"
         v-for="(step, index) in steps"
+        :key="`${index}`"
+        :step="step"
         :index="index"
-        :deleteStep="deleteStep"
-        :saveAllSteps="saveAllSteps"
+        @save-step="saveStep(step, index)"
+        @delete-step="deleteStep(index)"
       />
       <v-btn @click="addStep" class="mr-10" width="200" color="primary">Add new step</v-btn>
       <v-btn
@@ -52,7 +50,8 @@ import {
 import WorkflowStore from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
 import Snackbar from "../components/Snackbar.vue";
-import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
+import { CreateWorkflowStepDto, ICreateWorkflowDto } from '@stepflow/shared';
+import { ValidationUtils } from "../utils/validation-utils";
 
 const Mappers = Vue.extend({
   components: {
@@ -67,15 +66,17 @@ const Mappers = Vue.extend({
 });
 @Component
 export default class CreateWorkflow extends Mappers {
+  $refs!: {
+    form: HTMLFormElement & { validate: () => boolean }
+  };
+
   @Provide() title: string = "";
   @Provide() description: string = "";
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
   @Provide() saveAllSteps: boolean = false;
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
-  @Provide() steps: any = [];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
+  @Provide() steps: CreateWorkflowStepDto[] = [];
 
   @Ref("form") readonly form!: HTMLInputElement;
 
@@ -90,9 +91,17 @@ export default class CreateWorkflow extends Mappers {
       }
     });
   }
+
   @Emit()
   saveStep(newStep: CreateWorkflowStepDto, index: number) {
     this.steps.splice(index, 1, newStep);
+  }
+
+  @Emit()
+  deleteStep(index: number): void {
+    // this.steps = this.steps.filter((step: any) => step.id !== id);
+    debugger;
+    this.steps.splice(index, 1)
   }
 
   @Emit()
@@ -108,13 +117,13 @@ export default class CreateWorkflow extends Mappers {
       }
     );
     if (
-      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+      this.$refs.form.validate() &&
       validateSteps.every(e => e === true) &&
       this.steps.length
     ) {
       // Переведёт isSave в true в каждом step, что добавит их в массив steps
       this.saveAllSteps = true;
-      const workflow = {
+      const workflow: ICreateWorkflowDto = {
         name: this.title,
         description: this.description,
         steps: this.steps
@@ -124,10 +133,6 @@ export default class CreateWorkflow extends Mappers {
       this.snackbarText = `Workflow "${this.title}" has been created`;
       this.$router.push("/");
     }
-  }
-  @Emit()
-  deleteStep(id: any): void {
-    this.steps = this.steps.filter((step: any) => step.id !== id);
   }
 
   mounted() {

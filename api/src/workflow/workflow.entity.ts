@@ -27,11 +27,6 @@ export class Workflow {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated: Date;
 
-  @BeforeUpdate()
-  updateTimestamp() {
-    this.updated = new Date();
-  }
-
   @OneToMany(
     type => WorkflowStep,
     step => step.workflow,
@@ -42,9 +37,13 @@ export class Workflow {
 
   @ManyToMany(
     type => UserGroupEntity,
-    userGroup => userGroup.workflows,
-    // { cascade: true }
+    userGroup => userGroup.workflows
   )
   @JoinTable()
-  userGroups: UserGroupEntity[]
+  userGroups: UserGroupEntity[];
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updated = new Date();
+  }
 }

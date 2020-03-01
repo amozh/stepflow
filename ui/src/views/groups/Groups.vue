@@ -47,15 +47,15 @@ import {
   Emit,
   Watch
 } from "vue-property-decorator";
-import Wokrflow from "../components/Workflow.vue";
-import AssignWorkflow from "../components/AssignWorkflow.vue";
-import CreateGroup from "../components/CreateGroup.vue";
-import UserStore from "../store/modules/user";
-import GroupStore from "../store/modules/group";
-import WorkflowStore from "../store/modules/workflow";
-import Snackbar from "../components/Snackbar.vue";
-import MyGroups from "../components/MyGroups.vue";
-import { UserGroupDto } from '@stepflow/shared';
+import Wokrflow from "../../components/Workflow.vue";
+import AssignWorkflow from "./AssignWorkflow.vue";
+import CreateGroup from "./CreateGroup.vue";
+import UserStore from "../../store/modules/user";
+import GroupStore from "../../store/modules/group";
+import WorkflowStore from "../../store/modules/workflow";
+import Snackbar from "../../components/Snackbar.vue";
+import MyGroups from "./MyGroups.vue";
+import { IUserGroupDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -90,23 +90,27 @@ const Mappers = Vue.extend({
 @Component
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
-  @Provide() groups: any = []; //fix UserGroupDto
+  @Provide() groups: IUserGroupDto[] = [];
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
 
   @Watch("userGroups")
-  userGroupsDiff(val: any, oldVal: any) {
+  userGroupsDiff(val: IUserGroupDto[], oldVal: IUserGroupDto[]) {
     this.groups = this.userGroups;
   }
 
   @Emit()
-  toWorkflow(id) {
+  toWorkflow(id: string) {
     this.$router.push(`/workflow/${id}`);
   }
 
   @Emit()
-  async removeGroup(id) {
-    const name = this.groups.find(g => g.id === id).groupName;
+  async removeGroup(id: string) {
+    const group = this.groups.find(g => g.id === id);
+    if (!group) {
+      throw new Error(`Group has not been found by id ${id}`);
+    }
+    const name = group.groupName;
     this.snackbar = true;
     this.snackbarText = `Group ${name} has been deleted`;
 

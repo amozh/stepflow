@@ -7,7 +7,7 @@
     <v-form v-else class="text-center" width="500" ref="form">
       <!-- <v-col cols="12" sm="6"> -->
       <v-select
-        v-model="selectedGroup"
+        v-model="selectedGroupId"
         :items="groups"
         item-text="groupName"
         item-value="id"
@@ -41,8 +41,8 @@ import {
   Emit,
   Prop
 } from "vue-property-decorator";
-import Snackbar from "./Snackbar.vue";
-import { CreateWorkflowDto,UserGroupDto } from '@stepflow/shared';
+import Snackbar from "../../components/Snackbar.vue";
+import { IUserGroupDto, IWorkflowEntityDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -52,18 +52,21 @@ const Mappers = Vue.extend({
 
 @Component
 export default class AssignWorkflow extends Mappers {
-  @Provide() groups: UserGroupDto[] = [];
-  @Provide() workflows: CreateWorkflowDto[] = [];
-  @Provide() selectedGroup: UserGroupDto[] = [];
-  @Provide() selectedWorkflow: CreateWorkflowDto[] = [];
+  @Provide() groups: IUserGroupDto[] = [];
+  @Provide() workflows: IWorkflowEntityDto[] = [];
+  @Provide() selectedGroupId!: string;
+  @Provide() selectedWorkflow: IWorkflowEntityDto[] = [];
   @Provide() snackbarText: string = "";
   @Provide() snackbar: boolean = false;
 
   @Prop() getAllWorkflows!: any; //fix
-  @Prop() allWorkflows!: CreateWorkflowDto[];
+  @Prop() allWorkflows!: IWorkflowEntityDto[];
   @Prop() workflowsLoading!: boolean;
-  @Prop() userGroups!: UserGroupDto[];
-  @Prop() updateGroup!: any; //fix
+  @Prop() userGroups!: IUserGroupDto[];
+  @Prop() updateGroup!: (group: {
+    id: string,
+    group: IUserGroupDto
+  }) => void;
 
   @Ref("form") readonly form!: HTMLInputElement;
 
@@ -72,12 +75,13 @@ export default class AssignWorkflow extends Mappers {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       // Фильтрация workflows по тем id, которые содержит массив selectedWorkflow
       const assignedWf = this.allWorkflows.filter(
-        wf => wf.id === wf.id && this.selectedWorkflow.includes(wf.id)
+        wf => wf.id === wf.id && this.selectedWorkflow.find(sw => sw.id === wf.id)
       );
-      const group = {
+      const selectedGroup = this.groups.find(g => g.id === this.selectedGroupId);
+      const groupToSave: IUserGroupDto = Object.assign(selectedGroup, {
         workflows: assignedWf
-      };
-      await this.updateGroup({ group, id: this.selectedGroup });
+      });
+      await this.updateGroup({ group: groupToSave, id: this.selectedGroupId });
       this.snackbarText = `${this.selectedWorkflow.length} workflow${
         this.selectedWorkflow.length > 1 ? "s" : ""
       } has been assigned to this group`;

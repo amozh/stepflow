@@ -1,14 +1,14 @@
 import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import { groupApi } from "../api/index";
-import { CreateWorkflowDto, UserDto, UserGroupDto } from '@stepflow/shared';
+import { ICreateWorkflowDto, UserDto, IUserGroupDto } from '@stepflow/shared';
 
 class RootState {
-    userGroups: UserGroupDto[] = []
+    userGroups: IUserGroupDto[] = []
     groupsLoading: boolean = false
 }
 
 class RootGetters extends Getters<RootState> {
-    get userGroups(): UserGroupDto[] {
+    get userGroups(): IUserGroupDto[] {
         return this.state.userGroups
     }
     get groupsLoading(): boolean {
@@ -17,7 +17,7 @@ class RootGetters extends Getters<RootState> {
 }
 
 class RootMutations extends Mutations<RootState> {
-    mutateUserGroups(groups: UserGroupDto[]): UserGroupDto[] {
+    mutateUserGroups(groups: IUserGroupDto[]): IUserGroupDto[] {
         return this.state.userGroups = groups
     }
     mutateLoading(loading: boolean): boolean {
@@ -57,7 +57,7 @@ class RootActions extends Actions<
         group: {
             groupName: string,
             users: Partial<UserDto>,
-            workflows: Partial<CreateWorkflowDto>
+            workflows: Partial<ICreateWorkflowDto>
         }
     ): Promise<any> {
         try {
@@ -69,14 +69,12 @@ class RootActions extends Actions<
 
     async updateGroup(
         group: {
-            groupName: string,
-            users: Partial<UserDto>,
-            workflows: Partial<CreateWorkflowDto>
-        },
-        id: string
+            id: string,
+            group: IUserGroupDto
+        }
     ): Promise<any> {
         try {
-            return await groupApi.updateGroup(group, id)
+            return await groupApi.updateGroup(group);
         } catch (e) {
             throw new Error(e)
         }

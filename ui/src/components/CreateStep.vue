@@ -4,7 +4,7 @@
     <v-form class="text-right" ref="form">
       <v-text-field
         label="Name"
-        v-model="name"
+        v-model="step.name"
         prepend-icon="mdi-rename-box"
         :rules="inputRules"
         :disabled="isSave"
@@ -13,20 +13,20 @@
         auto-grow
         class="mt-3"
         label="Description"
-        v-model="description"
+        v-model="step.description"
         prepend-icon="mdi-card-text"
         :rules="inputRules"
         :disabled="isSave"
       ></v-textarea>
       <v-text-field
         label="Answer"
-        v-model="answer"
+        v-model="step.answer.answer"
         prepend-icon="mdi-file-question"
         :rules="inputRules"
         :disabled="isSave"
       ></v-text-field>
       <v-flex row class="ma-0">
-        <v-btn class="my-4" color="error" @click="deleteStep(id)">
+        <v-btn class="my-4" color="error" @click="deleteStep(index)">
           Delete
           <v-icon right>mdi-cancel</v-icon>
         </v-btn>
@@ -35,7 +35,7 @@
           Edit
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-        <v-btn v-else class="my-4" color="success" @click="addNewStep">Save step</v-btn>
+        <v-btn v-else class="my-4" color="success" @click="saveStep">Save step</v-btn>
       </v-flex>
     </v-form>
   </v-card>
@@ -53,54 +53,31 @@ import {
   Watch
 } from "vue-property-decorator";
 import { CreateWorkflowStepDto } from '@stepflow/shared';
+import { ValidationUtils } from "../utils/validation-utils";
 
 @Component
 export default class WfStep extends Vue {
-  @Prop() saveStep: any;
-  @Prop() deleteStep: any;
-  @Prop() inputRules!: [];
-  @Prop() step!: CreateWorkflowStepDto; 
+  $refs!: {
+    form: HTMLFormElement & { validate: () => boolean }
+  };
+
+  @Prop() step!: CreateWorkflowStepDto;
   @Prop() index!: number;
-  @Prop() saveAllSteps: boolean;
 
-  @Provide() name: string = "";
-  @Provide() description: string = "";
-  @Provide() answer: string = "";
-  @Provide() id: any = "";
-  @Provide() isSave: boolean = false;
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
+  @Provide() private isSave: boolean = false;
 
-  @Ref("form") readonly form!: HTMLInputElement;
+  @Ref("form") readonly form!: HTMLFormElement & { validate: () => boolean };
 
-  @Emit()
-  addNewStep(): void {
-    if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-      const newStep = {
-        id: this.id,
-        name: this.name,
-        description: this.description,
-        answer: {
-          answer: this.answer
-        }
-      };
-      this.saveStep(newStep, this.index);
+  @Emit("save-step") saveStep(): CreateWorkflowStepDto | undefined {
+    if (this.$refs.form.validate()) {
       this.isSave = true;
+      return this.step;
     }
+    return undefined;
   }
 
-  @Watch("saveAllSteps")
-  autoSave(val: any, oldVal: any){
-    this.addNewStep()
-  }
-
-  mounted() {
-    const { id, name, description, answer } = this.step;
-    if (this.step) {
-      this.id = id;
-      this.name = name;
-      this.description = description;
-      this.answer = answer.answer;
-    }
-  }
+  @Emit("delete-step") deleteStep(): void {}
 }
 </script>
 <style lang="scss" scoped>

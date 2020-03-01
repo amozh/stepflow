@@ -39,9 +39,9 @@ import {
   Emit,
   Prop
 } from "vue-property-decorator";
-import UserTr from "./UserTr.vue";
-import Snackbar from "./Snackbar.vue";
-import { CreateWorkflowDto,UserGroupDto,UserDto } from '@stepflow/shared';
+import UserTr from "../../components/UserTr.vue";
+import Snackbar from "../../components/Snackbar.vue";
+import { ICreateWorkflowDto, IUserGroupDto, UserDto, UserEntityDto } from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -60,8 +60,8 @@ export default class CreateGroup extends Mappers {
     (v: string) => (v && v.length >= 0) || "Field is required"
   ];
 
-  @Prop() createGroup!: any; //fix Promise<UserGroupDto>
-  @Prop() allUsers!: UserDto[];
+  @Prop() createGroup!: any; //fix Promise<IUserGroupDto>
+  @Prop() allUsers!: UserEntityDto[];
   @Prop() getAllUsers!: any; //fix
   @Prop() isLoading!: boolean;
 

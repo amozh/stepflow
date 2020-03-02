@@ -107,7 +107,7 @@ export default class CreateWorkflow extends Mappers {
       }
     );
     if (
-      this.$refs.form.validate() &&
+      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
       validateSteps.every(e => e === true) &&
       this.steps.length
     ) {

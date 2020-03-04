@@ -24,15 +24,16 @@
 
 <script lang="ts">
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
-import UserStore from "../store/modules/user";
+import { userMapper } from "../store/modules/user";
 import Snackbar from "../components/Snackbar.vue";
+import { UserDto } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
   components: {
     Snackbar
   },
   methods: {
-    ...UserStore.mapActions({
+    ...userMapper.mapActions({
       createUser: "createUser"
     })
   }
@@ -50,7 +51,7 @@ export default class CreateUser extends Mappers {
   @Emit()
   async submit() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-      const user = {
+      const user: UserDto = {
         username: this.username,
         password: this.password
       };

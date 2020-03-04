@@ -3,8 +3,12 @@ import { IUserGroupDto } from './user-group.dto';
 export interface UserDto {
   readonly username: string;
   readonly password: string;
-  readonly userRole: Partial<UserRole>;
-  readonly userGroups: Partial <IUserGroupDto[]>;
+  readonly userRole?: Partial<UserRole>;
+  readonly userGroups?: Partial<IUserGroupDto[]>;
+}
+
+export interface IEntityUserDto extends UserDto {
+  readonly id: string
 }
 
 export interface UserEntityDto {
@@ -12,7 +16,7 @@ export interface UserEntityDto {
   readonly username: string;
   readonly password: string;
   readonly userRole: Partial<UserRole>;
-  readonly userGroups: Partial <IUserGroupDto[]>;
+  readonly userGroups: Partial<IUserGroupDto[]>;
 }
 
 export enum UserRole {

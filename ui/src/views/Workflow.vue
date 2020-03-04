@@ -13,32 +13,48 @@
         :index="index"
         v-for="(step, index) in currentWorkflow.steps"
         :key="step.id"
+        @send-answer="sendAnswer"
+        :result="result"
       />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide, Inject } from "vue-property-decorator";
-import WorkflowStore from "../store/modules/workflow";
+import { Vue, Component, Provide } from "vue-property-decorator";
+// import WorkflowStore from "../store/modules/workflow";
+import { workflowMapper } from "../store/modules/workflow";
+import { IWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
 import Step from "../components/Step.vue";
 
 const Mappers = Vue.extend({
   components: { Step },
   computed: {
-    ...WorkflowStore.mapGetters(["currentWorkflow", "isLoading"])
+    ...workflowMapper.mapGetters(["currentWorkflow", "isLoading"])
   },
   methods: {
-    ...WorkflowStore.mapActions({
-      getWorkflowById: "getWorkflowById"
+    ...workflowMapper.mapActions({
+      getWorkflowById: "getWorkflowById",
+      checkAnswer: "checkAnswer"
     })
   }
 });
+
 @Component
 export default class Workflow extends Mappers {
+  @Provide() result: IAnswerResult = {};
+
+  async sendAnswer(answer: any): Promise<void> {
+    if (answer) {
+      const response = await this.checkAnswer(answer);
+      this.result = {
+        result: response.data,
+        stepId: answer.stepId
+      };
+    }
+  }
+
   mounted() {
     this.getWorkflowById(this.$route.params.id);
   }
 }
 </script>
-<style lang="scss" scoped>
-</style>

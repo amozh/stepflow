@@ -1,7 +1,7 @@
 import { Answer } from './../answer/answer.entity';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
-import { IUserGroupDto } from "@stepflow/shared";
-import { Repository } from 'typeorm';
+import { IUserGroupDto, IUserGroupBaseDto, IUserGroupEntityDto } from "@stepflow/shared";
+import { Repository, getRepository } from 'typeorm';
 import { Injectable, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
@@ -90,7 +90,7 @@ export class UserGroupService implements OnModuleInit {
         return "Hello, New group!"
     }
 
-    async getGroupById(id: number): Promise<IUserGroupDto> {
+    async getGroupById(id: number): Promise<UserGroupEntity> {
         try {
             const group = await this.userGroupRepo.findOne({ id })
             // console.log(group,id, "группа?")
@@ -99,39 +99,43 @@ export class UserGroupService implements OnModuleInit {
             throw new NotFoundException(`User group with id ${id} is not found`)
         }
     }
-    async getGroupsByUserId(id: number): Promise<IUserGroupDto[]> {
-        try {
-            const usersInGroup = await this.userGroupRepo.find({
-                relations: ["users"], //Достань все группы, которые принадлежат юзеру с этим id
-                where: {
-                    userGroupId: id
-                }
-            })
-            return usersInGroup
-        } catch (e) {
-            throw new NotFoundException(`User group with id ${id} is not found`)
-        }
+
+    // Promise<IUserGroupDto[]>
+    async getGroupsByUserId(id: number): Promise<any[]> {
+
+        // const usersInGroup = await getRepository(UserGroupEntity).find({ where: { user_id: 3 } })
+        // console.log( usersInGroup, "usersInGroup")
+        // return
+
+        // const usersInGroup = await this.userGroupRepo.find({
+        //     relations: ["users"], //Достань все группы, которые принадлежат юзеру с этим id
+        //     where: { users: { id } }
+        // })
+        // console.log(usersInGroup, "usersInGroup")
+        // })
+
+        // try {
+        //     const usersInGroup = await this.userGroupRepo.find({
+        //         relations: ["userGroups"], //Достань все группы, которые принадлежат юзеру с этим id
+        //         where: {
+        //             userGroupId: +id
+        //         }
+        //     })
+        //     return usersInGroup
+        // } catch (e) {
+        //     throw new NotFoundException(`User group with id ${id} is not found`)
+        // }
     }
 
 
 
-    async createGroup(groupDto: IUserGroupDto): Promise<IUserGroupDto> {
+    async createGroup(groupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {
         const { groupName, workflows, users } = groupDto
         const newGroup = new UserGroupEntity()
-        // newGroup.users = users
 
-        // Найдёт всех юзеров, которые подходят под условия, которые были переданы со стороны клиента (массив users)
-        // const allUsers = await this.usersRepo.find({
-        //     relations: ["userGroups"],
-        //     where: {
-        //         users: users
-        //     }
-        // })
-        // // this.userGroupRepo.findByIds
-        // console.log(allUsers, "allUsers")
-        newGroup.users = users
         newGroup.groupName = groupName
         newGroup.workflows = workflows
+        newGroup.users = users
         return await this.userGroupRepo.save(newGroup)
     }
 
@@ -145,63 +149,18 @@ export class UserGroupService implements OnModuleInit {
         }
     }
 
-    async updateGroup(id: number, userGroupDto: IUserGroupDto): Promise<IUserGroupDto> {
+    async updateGroup(id: number, userGroupDto: IUserGroupDto): Promise<UserGroupEntity> {
         const { groupName, workflows, users } = userGroupDto
-
-        // const updatedWf = workflows && workflows.map(wf => {
-        //     const workflow = new Workflow()
-        //     const wokflowSteps = wf.steps.map(step => {
-        //         const workflowStep = new WorkflowStep();
-        //         const stepAnswer = new Answer();
-        //         stepAnswer.answer = step.answer.answer
-        //         workflowStep.answer = stepAnswer;
-        //         workflowStep.name = step.name;
-        //         workflowStep.description = step.description;
-
-        //         return workflowStep;
-        //     });
-        //     workflow.name = wf.name;
-        //     workflow.description = wf.description;
-        //     workflow.steps = wokflowSteps;
-        //     return workflow
-        // })
-
-        // const updatedUs = users && users.map(us => {
-        //     const user = new UserEntity()
-        //     user.username = us.username
-        //     user.password = us.password
-        //     return user
-        // })
-
-        // // Сохранить изменения для таблиц Wokrflow и Users только в том случае, если они !== undefined
-        // if (updatedWf) {
-        //     await this.workflowRepo.save(updatedWf)
-        // }
-        // if (updatedUs) { await this.usersRepo.save(updatedUs) }
         try {
             const group = await this.userGroupRepo.findOne({ id })
-            // // Таким образом можно достать информацию в связи Many to Many
-            // const usersInGroup = await this.usersRepo.find({
-            //     relations: ["userGroups"] //Достань всех юзеров, которые принадлежат связи с userGroups
-            // })
-            // const workflowInGroup = await this.workflowRepo.find({
-            //     relations: ["userGroups"] //Достань все воркфлоу, которые принадлежат связи с userGroups
-            // })
-
-            // group.groupName = groupName
-            // group.workflows = [...workflowInGroup]
-            // group.users = [...usersInGroup]
 
             group.groupName = groupName
             group.workflows = workflows
             group.users = users
 
-            const res = await this.userGroupRepo.save(group)
-            return res
+            return await this.userGroupRepo.save(group)
         } catch (e) {
-            console.log(e)
             throw new NotFoundException(`Group with id ${id} is not found`)
-            // throw new NotFoundException(e)
         }
     }
 }

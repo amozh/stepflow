@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ICreateWorkflowDto, UserDto, IUserGroupDto } from '@stepflow/shared';
+import { ICreateWorkflowDto, UserDto, IUserGroupDto, IUserGroupBaseDto } from '@stepflow/shared';
 
 const api = axios.create({
   baseURL: "http://localhost:4000/"
@@ -12,7 +12,7 @@ export const workflowApi = {
   getById(id: string) {
     return api.get(`workflows/${id}`);
   },
-  checkAnswer(answer: any ) { //--fix
+  checkAnswer(answer: any) { //--fix
     return api.post("answer", answer);
   },
   createWorkflow(workflow: ICreateWorkflowDto) {
@@ -27,7 +27,7 @@ export const userApi = {
   getAllUsers() {
     return api.get("user")
   },
-  createUser(user: any ) { //fix UserDto
+  createUser(user: UserDto) {
     return api.post("user", user)
   },
   updateUser(user: UserDto, id: string) {
@@ -36,8 +36,11 @@ export const userApi = {
   deleteUser(id: string) {
     return api.delete(`user/${id}`)
   },
-  login(user: any) { //fix UserDto
+  login(user: UserDto) {
     return api.post("user/login", user)
+  },
+  getUserGroups(id: number) {
+    return api.get(`user/group/${id}`)
   }
 }
 
@@ -45,10 +48,10 @@ export const groupApi = {
   getGroupById(id: string) {
     return api.get(`group/${id}`)
   },
-  getGroupsByUserId(id:string){
+  getGroupsByUserId(id: string) {
     return api.get(`group/user/${id}`)
   },
-  createUser(group: any) {
+  createGroup(group: IUserGroupBaseDto) {
     return api.post("group", group)
   },
   updateGroup(newGroupInfo: { group: IUserGroupDto, id: string }) {

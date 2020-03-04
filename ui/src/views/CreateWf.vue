@@ -34,7 +34,6 @@
         :disabled="!steps.length"
       >Create workflow</v-btn>
     </v-form>
-    <!-- <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular> -->
   </div>
 </template>
 
@@ -47,10 +46,15 @@ import {
   Emit,
   Ref
 } from "vue-property-decorator";
-import WorkflowStore from "../store/modules/workflow";
+// import WorkflowStore from "../store/modules/workflow";
+import { workflowMapper } from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
 import Snackbar from "../components/Snackbar.vue";
-import { CreateWorkflowStepDto, ICreateWorkflowDto } from '@stepflow/shared';
+import {
+  CreateWorkflowStepDto,
+  ICreateWorkflowDto,
+  IWorkflowStepDto
+} from "@stepflow/shared";
 import { ValidationUtils } from "../utils/validation-utils";
 
 const Mappers = Vue.extend({
@@ -59,7 +63,7 @@ const Mappers = Vue.extend({
     Snackbar
   },
   methods: {
-    ...WorkflowStore.mapActions({
+    ...workflowMapper.mapActions({
       createWorkflow: "createWorkflow"
     })
   }
@@ -67,7 +71,7 @@ const Mappers = Vue.extend({
 @Component
 export default class CreateWorkflow extends Mappers {
   $refs!: {
-    form: HTMLFormElement & { validate: () => boolean }
+    form: HTMLFormElement & { validate: () => boolean };
   };
 
   @Provide() title: string = "";
@@ -83,7 +87,6 @@ export default class CreateWorkflow extends Mappers {
   @Emit()
   addStep() {
     this.steps.push({
-      id: Math.random(),
       name: "",
       description: "",
       answer: {
@@ -93,22 +96,20 @@ export default class CreateWorkflow extends Mappers {
   }
 
   @Emit()
-  saveStep(newStep: CreateWorkflowStepDto, index: number) {
+  saveStep(newStep: CreateWorkflowStepDto, index: number): void {
     this.steps.splice(index, 1, newStep);
   }
 
   @Emit()
   deleteStep(index: number): void {
-    // this.steps = this.steps.filter((step: any) => step.id !== id);
-    debugger;
-    this.steps.splice(index, 1)
+    this.steps.splice(index, 1);
   }
 
   @Emit()
   async submit(): Promise<void> {
     // Проверит все ли дочерние элементы формы (степы) проходят валидацию
     const validateSteps: boolean[] = this.$refs.form.$children.map(
-      (child, index) => {
+      (child: HTMLFormElement, index: number) => {
         if (![0, 1, 2, 3].some(e => e === index)) {
           return child.form.validate();
         } else {
@@ -136,9 +137,7 @@ export default class CreateWorkflow extends Mappers {
   }
 
   mounted() {
-    //При монтировании добавляется первый пустой степ
     this.steps.push({
-      id: Math.random(),
       name: "",
       description: "",
       answer: {

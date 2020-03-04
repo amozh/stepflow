@@ -12,9 +12,10 @@
       <v-tab-item>
         <MyGroups
           :loggedIn="loggedIn"
-          :groups="groups"
+          :userGroups="userGroups"
           :removeGroup="removeGroup"
           :toWorkflow="toWorkflow"
+          :groupsLoading="groupsLoading"
         />
       </v-tab-item>
       <v-tab-item>
@@ -50,12 +51,12 @@ import {
 import Wokrflow from "../../components/Workflow.vue";
 import AssignWorkflow from "./AssignWorkflow.vue";
 import CreateGroup from "./CreateGroup.vue";
-import UserStore from "../../store/modules/user";
-import GroupStore from "../../store/modules/group";
-import WorkflowStore from "../../store/modules/workflow";
+import { groupMapper } from "../../store/modules/group";
+import { userMapper } from "../../store/modules/user";
+import { workflowMapper } from "../../store/modules/workflow";
 import Snackbar from "../../components/Snackbar.vue";
 import MyGroups from "./MyGroups.vue";
-import { IUserGroupDto } from '@stepflow/shared';
+import { IUserGroupDto } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
   components: {
@@ -66,60 +67,60 @@ const Mappers = Vue.extend({
     MyGroups
   },
   computed: {
-    ...UserStore.mapGetters([
-      "userGroups",
-      "loggedIn",
-      "allUsers",
-      "userLoading"
-    ]),
-    ...WorkflowStore.mapGetters(["allWorkflows", "isLoading"])
+    ...userMapper.mapGetters(["loggedIn", "allUsers", "userLoading", "userId"]),
+    ...workflowMapper.mapGetters(["allWorkflows", "isLoading"]),
+    ...groupMapper.mapGetters(["userGroups", "groupsLoading"])
   },
   methods: {
-    ...GroupStore.mapActions({
+    ...groupMapper.mapActions({
       deleteGroup: "deleteGroup",
       createGroup: "createGroup",
-      updateGroup: "updateGroup"
+      updateGroup: "updateGroup",
+      getMyGroups: "getMyGroups"
     }),
-    ...UserStore.mapActions({
+    ...userMapper.mapActions({
       getAllUsers: "getAllUsers"
     }),
-    ...WorkflowStore.mapActions({ getAllWorkflows: "getAllWorkflows" })
+    ...workflowMapper.mapActions({ getAllWorkflows: "getAllWorkflows" })
   }
 });
 
 @Component
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
-  @Provide() groups: IUserGroupDto[] = [];
+  // @Provide() groups: IUserGroupDto[] = [];
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
-
-  @Watch("userGroups")
-  userGroupsDiff(val: IUserGroupDto[], oldVal: IUserGroupDto[]) {
-    this.groups = this.userGroups;
-  }
-
   @Emit()
   toWorkflow(id: string) {
     this.$router.push(`/workflow/${id}`);
   }
 
+  @Watch("userGroups")
+  s(val: any, oldVal: any) {
+    // if (this.userGroups) {
+    //   this.getMyGroups(this.userId);
+    // }
+    // console.log("WATCH")
+    // console.log(this.userGroups.length, "watch");
+
+    // this.userGroups
+  }
+
   @Emit()
   async removeGroup(id: string) {
-    const group = this.groups.find(g => g.id === id);
+    const group = this.userGroups.find(g => g.id === id);
     if (!group) {
       throw new Error(`Group has not been found by id ${id}`);
     }
+    await this.deleteGroup(id);
     const name = group.groupName;
     this.snackbar = true;
     this.snackbarText = `Group ${name} has been deleted`;
-
-    this.groups = this.groups.filter(group => group.id !== id); //Удаление группы в ui
-    await this.deleteGroup(id); //Удаление группы на сервере
   }
 
-  async mounted() {
-    this.groups = this.userGroups;
+  mounted() {
+    this.getMyGroups(this.userId);
   }
 }
 </script>

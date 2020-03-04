@@ -16,7 +16,7 @@ export default class Snackbar extends Vue {
   @Prop() snackbarText!: string;
 
   @Watch("snackbar")
-  snackbarDiff(val: any, oldVal: any) {   //fix
+  snackbarDiff(val: boolean, oldVal: boolean) {
     this.isOpen = this.snackbar;
   }
 }

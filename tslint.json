@@ -1,30 +1,22 @@
 {
-  "extends": [
-    "tslint:recommended"
-  ],
-  "linterOptions": {
-    "exclude": [
-      "ui/node_modules/**",
-      "api/node_modules/**",
-      "shared/node_modules/**"
-    ]
-  },
-  "rules": {
-    "indent": [
-      true,
-      "spaces",
-      2
-    ],
-    "interface-name": true,
-    "no-consecutive-blank-lines": true,
-    "object-literal-sort-keys": false,
-    "ordered-imports": false,
-    "trailing-comma": false,
-    "quotemark": false,
-    "member-access": false,
-    "comment-format": false,
-    "arrow-parens": false,
-    "no-console": false,
-    "max-classes-per-file": false
-  }
+	"extends": [ "tslint:recommended" ],
+	"linterOptions": {
+		"exclude": [ "ui/node_modules/**", "api/node_modules/**", "shared/node_modules/**" ]
+	},
+	"rules": {
+		"indent": [ true, "spaces", 2 ],
+		"interface-name": true,
+		"no-consecutive-blank-lines": true,
+		"object-literal-sort-keys": false,
+		"ordered-imports": false,
+		"trailing-comma": false,
+		"quotemark": false,
+		"member-access": false,
+		"comment-format": false,
+		"arrow-parens": false,
+		"no-console": false,
+		"max-classes-per-file": false,
+		"eofline": false,
+		"semicolon": false
+	}
 }

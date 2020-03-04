@@ -27,14 +27,14 @@
 
 <script lang="ts">
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
-import UserStore from "../store/modules/user";
+import { userMapper } from "../store/modules/user";
 
 const Mappers = Vue.extend({
   computed: {
-    ...UserStore.mapGetters([ "userInfo", "loggedIn"])
+    ...userMapper.mapGetters(["userInfo", "loggedIn"])
   },
   methods: {
-    ...UserStore.mapActions({
+    ...userMapper.mapActions({
       login: "login"
     })
   }
@@ -53,8 +53,8 @@ export default class LoginLogout extends Mappers {
 
   @Emit()
   async submit() {
-    if(!this.loggedIn){
-      this.snackbar = true
+    if (!this.loggedIn) {
+      this.snackbar = true;
     }
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const user = {
@@ -62,7 +62,7 @@ export default class LoginLogout extends Mappers {
         password: this.password
       };
       await this.login(user);
-      this.loggedIn && this.$router.push("/");
+      this.$router.push("/");
     }
   }
 }

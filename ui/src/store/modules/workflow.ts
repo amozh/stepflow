@@ -1,11 +1,11 @@
-import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
+import { Getters, Mutations, Actions, Module, createMapper } from "vuex-smart-module";
 import { workflowApi } from "../api/index";
-import { ICreateWorkflowDto, AnswerDto } from '@stepflow/shared';
+import { ICreateWorkflowDto } from '@stepflow/shared';
 
 type Loading = boolean;
 
 class RootState {
-  workflow: ICreateWorkflowDto = {name: '', description: "", steps: []};
+  workflow: ICreateWorkflowDto = { name: '', description: "", steps: [] };
   allWorkflows: ICreateWorkflowDto[] = [];
   isLoading: Loading = false;
 }
@@ -39,7 +39,7 @@ class RootActions extends Actions<
   RootGetters,
   RootMutations,
   RootActions
-> {
+  > {
   async getAllWorkflows() {
     this.commit("mutateLoading", true);
     const response = await workflowApi.getAll();
@@ -68,10 +68,13 @@ class RootActions extends Actions<
   }
 }
 
-// Экспорт модуля
-export default new Module({
+const workflowStore = new Module({
   state: RootState,
   getters: RootGetters,
   mutations: RootMutations,
   actions: RootActions
 });
+
+export const workflowMapper = createMapper(workflowStore)
+
+export default workflowStore

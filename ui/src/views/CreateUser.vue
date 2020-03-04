@@ -26,6 +26,7 @@
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
 import { userMapper } from "../store/modules/user";
 import Snackbar from "../components/Snackbar.vue";
+import { ValidationUtils } from "../utils/validation-utils";
 import { UserDto } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
@@ -44,25 +45,23 @@ export default class CreateUser extends Mappers {
   @Provide() password: string = "";
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
   @Ref("form") readonly form!: HTMLInputElement;
   @Emit()
   async submit() {
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+      this.snackbar = true;
       const user: UserDto = {
         username: this.username,
         password: this.password
       };
       const res = await this.createUser(user);
-      this.snackbar = true;
-      if (res.status === 201) {
-        this.snackbarText = `User ${this.username} created`;
+      if (res.data.username) {
+        this.snackbarText = `User ${this.username} has been created`;
         this.username = "";
         this.password = "";
       } else {
-        this.snackbarText = "Such user already exists";
+        this.snackbarText = res.data;
       }
     }
   }

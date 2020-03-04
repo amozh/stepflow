@@ -28,7 +28,7 @@ export class UserController {
 
     @Post()
     // @UseGuards(AdminGuard)
-    createUser(@Body() userDto: UserDto): Promise<UserEntity> {
+    createUser(@Body() userDto: UserDto): Promise<UserEntity | string> {
         return this.userService.createUser(userDto)
     }
 
@@ -40,7 +40,7 @@ export class UserController {
 
     @Put("/:id")
     // @UseGuards(AdminGuard)
-    updateUser(@Param("id", ParseIntPipe) id: number, @Body() userDto: UserDto): Promise<UserDto> {
+    updateUser(@Param("id", ParseIntPipe) id: number, @Body() userDto: UserDto): Promise<UserEntity> {
         return this.userService.updateUser(id, userDto)
     }
 

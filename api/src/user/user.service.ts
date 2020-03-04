@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, createConnection } from 'typeorm';
 import { Injectable, NotFoundException, OnModuleInit, InternalServerErrorException, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -8,7 +8,7 @@ import { UserGroupEntity } from '../user-group/user-group.entity';
 
 @Injectable()
 export class UserService implements OnModuleInit {
-    constructor(@InjectRepository(UserEntity) private readonly userRepo: Repository<z>) { }
+    constructor(@InjectRepository(UserEntity) private readonly userRepo: Repository<UserEntity>) { }
     onModuleInit() {
         //generate default user
         this.userRepo.save({
@@ -44,23 +44,17 @@ export class UserService implements OnModuleInit {
         }
     }
 
-    async createUser(userDto: UserDto): Promise<UserEntity> {
-        const { username, password, userRole, userGroups } = userDto
+    async createUser(userDto: UserDto): Promise<UserEntity | string> {
+        const { username, password, userRole } = userDto
         const user = await this.userRepo.findOne({ username })
         if (user) {
-            throw new InternalServerErrorException("A user with that name already exists")
+            return "A user with that name already exists"
         }
         const newUser = new UserEntity()
-        //Переписать
-        const newUserGroup = new UserGroupEntity()
-        newUserGroup.groupName = "create group"
-
         newUser.username = username
         newUser.password = password
         newUser.userRole = userRole
-        newUser.userGroups = userGroups
-        await this.userRepo.save(newUser)
-        return newUser
+        return await this.userRepo.save(newUser)
     }
 
     async deleteUser(id: number): Promise<string> {
@@ -73,10 +67,16 @@ export class UserService implements OnModuleInit {
         }
     }
 
-    async updateUser(id: number, userDto: UserDto): Promise<UserDto> {
+    async updateUser(id: number, userDto: UserDto): Promise<UserEntity> {
         try {
+            const { username, password, userGroups, userRole } = userDto
             const user = await this.userRepo.findOne({ id })
-            const updatedUser = await this.userRepo.update(user, userDto)
+            user.username = username
+            user.password = password
+            user.userRole = userRole
+            user.userGroups = userGroups
+
+            const updatedUser = await this.userRepo.save(user)
             return updatedUser
         } catch (e) {
             throw new NotFoundException(`User with id ${id} is not found`)

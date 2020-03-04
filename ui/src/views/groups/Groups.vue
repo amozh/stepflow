@@ -88,26 +88,12 @@ const Mappers = Vue.extend({
 @Component
 export default class Groups extends Mappers {
   @Provide() tab: any = null;
-  // @Provide() groups: IUserGroupDto[] = [];
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
   @Emit()
   toWorkflow(id: string) {
     this.$router.push(`/workflow/${id}`);
   }
-
-  @Watch("userGroups")
-  s(val: any, oldVal: any) {
-    // if (this.userGroups) {
-    //   this.getMyGroups(this.userId);
-    // }
-    // console.log("WATCH")
-    // console.log(this.userGroups.length, "watch");
-
-    // this.userGroups
-  }
-
-  @Emit()
   async removeGroup(id: string) {
     const group = this.userGroups.find(g => g.id === id);
     if (!group) {

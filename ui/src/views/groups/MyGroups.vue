@@ -24,7 +24,7 @@
               <th class="text-left">Create date</th>
             </tr>
           </thead>
-          <tbody v-if="group.workflows.length">
+          <tbody v-if="group.workflows">
             <tr v-for="wf in group.workflows" :key="wf.id" @click="toWorkflow(wf.id)">
               <td>{{ wf.name }}</td>
               <td>{{wf.created}}</td>

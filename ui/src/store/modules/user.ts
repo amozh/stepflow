@@ -76,12 +76,9 @@ class RootActions extends Actions<
         }
     }
 
-    async createUser(user: UserDto): Promise<void> {
-        try {
-            await userApi.createUser(user);
-        } catch (e) {
-            throw new Error(e);
-        }
+    async createUser(user: UserDto): Promise<any> {
+        const res = await userApi.createUser(user)
+        return res
     }
 
     async getAllUsers(): Promise<void> {

@@ -22,11 +22,17 @@ class RootMutations extends Mutations<RootState> {
     mutateLoading(loading: boolean): boolean {
         return this.state.groupsLoading = loading;
     }
-    addNewGroup(newGroup: IUserGroupDto): void {
-        this.state.userGroups.concat(newGroup)
+    addNewGroup(newGroup: IUserGroupDto): IUserGroupDto[] {
+        return this.state.userGroups = [...this.state.userGroups, newGroup]
     }
-    deleteGroupInStore(id: string): void {
-        this.state.userGroups = this.state.userGroups.filter(g => g.id !== id)
+    deleteGroupInStore(id: string): IUserGroupDto[] {
+        return this.state.userGroups = this.state.userGroups.filter(g => g.id !== id)
+    }
+    updateGroup(group: IUserGroupDto): IUserGroupDto[] {
+        const currentGroup = this.state.userGroups.find(g => g.id === group.id)
+        const updatedGroup = Object.assign(currentGroup, group)
+        const index = this.state.userGroups.indexOf(group)
+        return this.state.userGroups.splice(index, 1, updatedGroup)
     }
 }
 
@@ -61,10 +67,10 @@ class RootActions extends Actions<
 
     async createGroup(
         group: IUserGroupBaseDto
-    ): Promise<any> {
+    ): Promise<void> {
         try {
             const response = await groupApi.createGroup(group);
-            return this.commit("addNewGroup", response.data)
+            this.commit("addNewGroup", response.data)
         } catch (e) {
             throw new Error(e);
         }
@@ -75,9 +81,10 @@ class RootActions extends Actions<
             id: string,
             group: IUserGroupDto
         }
-    ): Promise<any> {
+    ): Promise<void> {
         try {
-            return await groupApi.updateGroup(group);
+            const response = await groupApi.updateGroup(group);
+            this.commit("updateGroup", response.data)
         } catch (e) {
             throw new Error(e);
         }

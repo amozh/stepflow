@@ -19,12 +19,6 @@ export class UserGroupController {
         return this.userGroup.getGroupById(id)
     }
 
-    @Get("/user/:id")
-    // @UseGuards(AdminGuard)
-    getGroupsByUserId(@Param("id", ParseIntPipe) id: number): Promise<IUserGroupDto[]> {
-        return this.userGroup.getGroupsByUserId(id)
-    }
-
     @Post()
     // @UseGuards(AdminGuard)
     createGroup(@Body() userGroupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {

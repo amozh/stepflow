@@ -100,39 +100,9 @@ export class UserGroupService implements OnModuleInit {
         }
     }
 
-    // Promise<IUserGroupDto[]>
-    async getGroupsByUserId(id: number): Promise<any[]> {
-
-        // const usersInGroup = await getRepository(UserGroupEntity).find({ where: { user_id: 3 } })
-        // console.log( usersInGroup, "usersInGroup")
-        // return
-
-        // const usersInGroup = await this.userGroupRepo.find({
-        //     relations: ["users"], //Достань все группы, которые принадлежат юзеру с этим id
-        //     where: { users: { id } }
-        // })
-        // console.log(usersInGroup, "usersInGroup")
-        // })
-
-        // try {
-        //     const usersInGroup = await this.userGroupRepo.find({
-        //         relations: ["userGroups"], //Достань все группы, которые принадлежат юзеру с этим id
-        //         where: {
-        //             userGroupId: +id
-        //         }
-        //     })
-        //     return usersInGroup
-        // } catch (e) {
-        //     throw new NotFoundException(`User group with id ${id} is not found`)
-        // }
-    }
-
-
-
     async createGroup(groupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {
         const { groupName, workflows, users } = groupDto
         const newGroup = new UserGroupEntity()
-
         newGroup.groupName = groupName
         newGroup.workflows = workflows
         newGroup.users = users
@@ -153,11 +123,9 @@ export class UserGroupService implements OnModuleInit {
         const { groupName, workflows, users } = userGroupDto
         try {
             const group = await this.userGroupRepo.findOne({ id })
-
             group.groupName = groupName
             group.workflows = workflows
             group.users = users
-
             return await this.userGroupRepo.save(group)
         } catch (e) {
             throw new NotFoundException(`Group with id ${id} is not found`)

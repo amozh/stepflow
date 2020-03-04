@@ -41,6 +41,7 @@ import {
 } from "vue-property-decorator";
 import UserTr from "../../components/UserTr.vue";
 import Snackbar from "../../components/Snackbar.vue";
+import { ValidationUtils } from "../../utils/validation-utils";
 import { ICreateWorkflowDto,
 IUserGroupDto,
 UserDto,
@@ -62,9 +63,7 @@ export default class CreateGroup extends Mappers {
   @Provide() usersInGroup: Set<any> = new Set(); //Использую Set, чтобы все значения будущего массива были уникальные
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
   @Prop() createGroup!: (group: IUserGroupBaseDto) => IUserGroupDto;
   @Prop() allUsers!: UserEntityDto[];
@@ -87,7 +86,6 @@ export default class CreateGroup extends Mappers {
     }
   }
 
-  @Emit()
   addToGroup(userId: number, checked: boolean): void {
     // Найди юзера и, если checked === true, добавь в Set
     const user = this.allUsers.find(u => u.id === userId);

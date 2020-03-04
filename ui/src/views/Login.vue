@@ -5,7 +5,7 @@
       Login or password is incorrect
       <v-btn color="white" text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-    <v-form class="text-center" width="500" ref="form">
+    <v-form class="text-center" width="500" ref="form" :lazy-validation="true">
       <v-text-field
         class
         label="Username"
@@ -28,6 +28,7 @@
 <script lang="ts">
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
 import { userMapper } from "../store/modules/user";
+import { ValidationUtils } from "../utils/validation-utils";
 
 const Mappers = Vue.extend({
   computed: {
@@ -45,9 +46,7 @@ export default class LoginLogout extends Mappers {
   @Provide() username: string = "";
   @Provide() password: string = "";
   @Provide() snackbar: boolean = false;
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
   @Ref("form") readonly form!: HTMLInputElement;
 

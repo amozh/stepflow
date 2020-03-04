@@ -7,7 +7,7 @@
     <v-form v-else class="text-center" width="500" ref="form">
       <!-- <v-col cols="12" sm="6"> -->
       <v-select
-        :items="groups"
+        :items="userGroups"
         item-text="groupName"
         item-value="id"
         label="Groups"
@@ -52,7 +52,6 @@ const Mappers = Vue.extend({
 
 @Component
 export default class AssignWorkflow extends Mappers {
-  @Provide() groups: IUserGroupDto[] = [];
   @Provide() workflows: IWorkflowEntityDto[] = [];
   @Provide() selectedGroupId: string = "";
   @Provide() selectedWorkflow: IWorkflowEntityDto[] = [];
@@ -88,7 +87,6 @@ export default class AssignWorkflow extends Mappers {
   }
   async mounted() {
     await this.getAllWorkflows();
-    this.groups = this.userGroups;
     this.workflows = this.allWorkflows;
   }
 }

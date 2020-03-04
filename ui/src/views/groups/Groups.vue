@@ -78,6 +78,7 @@ const Mappers = Vue.extend({
       updateGroup: "updateGroup",
       getMyGroups: "getMyGroups"
     }),
+    ...groupMapper.mapMutations({ destroyGroups: "destroyGroups" }),
     ...userMapper.mapActions({
       getAllUsers: "getAllUsers"
     }),
@@ -106,7 +107,12 @@ export default class Groups extends Mappers {
   }
 
   mounted() {
-    this.getMyGroups(this.userId);
+    if (this.userId) {
+      this.getMyGroups(this.userId);
+    }
+  }
+  beforeDestroy() {
+    this.destroyGroups();
   }
 }
 </script>

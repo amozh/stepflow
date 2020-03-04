@@ -34,6 +34,9 @@ class RootMutations extends Mutations<RootState> {
         const index = this.state.userGroups.indexOf(group)
         return this.state.userGroups.splice(index, 1, updatedGroup)
     }
+    destroyGroups(): void[] {
+        return this.state.userGroups = []
+    }
 }
 
 class RootActions extends Actions<

@@ -4,7 +4,7 @@
     <h4 class="mt-3 font-weight-black" :size="20">Groups loading</h4>
   </div>
   <div v-else>
-    <h4 class="pa-4" v-if="loggedIn && userGroups.length===0">You have no groups</h4>
+    <h4 class="pa-4" v-if="!loggedIn && userGroups.length===0">You have no groups</h4>
     <v-card v-else v-for="group in userGroups" :key="group.id" outlined class="pa-4 mb-6">
       <v-flex>
         <v-flex row class="ma-0">
@@ -24,7 +24,7 @@
               <th class="text-left">Create date</th>
             </tr>
           </thead>
-          <tbody v-if="group.workflows">
+          <tbody v-if="group.workflows.length">
             <tr v-for="wf in group.workflows" :key="wf.id" @click="toWorkflow(wf.id)">
               <td>{{ wf.name }}</td>
               <td>{{wf.created}}</td>

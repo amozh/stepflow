@@ -1,33 +1,39 @@
 <template>
-    <div id="app">
-        <div id="nav">
-            <router-link to="/">Home</router-link>
-            |
-            <router-link to="/about">About</router-link>
-        </div>
-        <router-view/>
-    </div>
+  <v-app class="grey lighten-4">
+    <v-layout class="grey lighten-4">
+      <Navbar />
+      <v-content class="mx-4 my-4">
+        <transition name="fade">
+          <router-view></router-view>
+        </transition>
+      </v-content>
+    </v-layout>
+  </v-app>
 </template>
 
-<style lang="scss">
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-    }
+<script lang="ts">
+import Vue from "vue";
+import Navbar from "@/components/Navbar.vue";
 
-    #nav {
-        padding: 30px;
+export default {
+  name: "app",
+  components: { Navbar }
+};
+</script>
+<style lang="scss" scoped>
+@import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons";
+.fade-enter-active,
+.fade-leave-active {
+  transition-property: opacity;
+  transition-duration: 0.15s;
+}
 
-        a {
-            font-weight: bold;
-            color: #2c3e50;
+.fade-enter-active {
+  transition-delay: 0.15s;
+}
 
-            &.router-link-exact-active {
-                color: #42b983;
-            }
-        }
-    }
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
 </style>

@@ -1,11 +1,24 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { WorkflowService } from "./workflow.service";
-import { Workflow } from "./workflow.entity";
-import { CreateWorkflowDto } from "@stepflow/shared";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { WorkflowService } from './workflow.service';
+import { Workflow } from './workflow.entity';
+import { CreateWorkflowDto } from '@stepflow/shared';
+import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {
+  constructor(private readonly workflowService: WorkflowService) {}
+
+  @Get()
+  getAll(): Promise<Workflow[]> {
+    return this.workflowService.findAll();
   }
 
   @Post()
@@ -13,9 +26,17 @@ export class WorkflowController {
     return this.workflowService.create(workflow);
   }
 
-  @Get()
-  getAll(): Promise<Workflow[]> {
-    return this.workflowService.findAll();
+  @Get('/:id')
+  getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
+    return this.workflowService.findById(id);
   }
 
+  @Post('answer')
+  giveAnswer(
+    @Body() 
+    @Query("workflow", ParseIntPipe) workflow:number,
+    @Query("step", ParseIntPipe) step:number)
+  : void {
+    return console.log("workflowNumber:", workflow, "stepNumber:",step)
+  } 
 }

@@ -1,5 +1,12 @@
-import { BeforeUpdate, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkflowStep } from "../wf-step/wf-step.entity";
+import {
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { WorkflowStep } from '../wf-step/wf-step.entity';
 
 @Entity()
 export class Workflow {
@@ -9,21 +16,25 @@ export class Workflow {
   @Column({ length: 500 })
   name: string;
 
-  @Column('text', { default: '' })
+  @Column({ length: 500 })
   description: string;
 
-  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
 
-  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated: Date;
 
   @BeforeUpdate()
   updateTimestamp() {
-    this.updated = new Date;
+    this.updated = new Date();
   }
 
-  @OneToMany(type => WorkflowStep, step => step.workflow, { eager: true, cascade: true })
+  @OneToMany(
+    type => WorkflowStep,
+    step => step.workflow,
+    { eager: true, cascade: true },
+  )
   @JoinColumn()
   steps: WorkflowStep[];
 }

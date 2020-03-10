@@ -8,8 +8,7 @@ import {
     ManyToMany,
     JoinTable
 } from 'typeorm';
-import { Workflow } from '../workflow/workflow.entity';
-import { Answer } from '../answer/answer.entity';
+
 import { ActionEntity } from "../action/action.entity"
 
 export enum Status {
@@ -54,4 +53,10 @@ export class WfActionExecutionEntity {
     updateTimestamp() {
         this.updated = new Date();
     }
+
+    @ManyToOne(
+        () => ActionEntity,
+        action => action.wfActionExecutions
+    )
+    action: ActionEntity
 }

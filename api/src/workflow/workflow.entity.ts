@@ -50,10 +50,10 @@ export class Workflow {
   @ManyToMany(
     () => ActionEntity,
     action => action.workflows,
-    { cascade: true }
+    { cascade: true, eager: true }
   )
   @JoinTable()
-  action: ActionEntity[]
+  actions: ActionEntity[]
 
   @OneToMany(
     () => WokrflowExecution,

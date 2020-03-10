@@ -8,11 +8,14 @@ import {
     JoinColumn,
     ManyToMany,
     Unique,
-    Index
+    Index,
+    OneToMany
 } from 'typeorm';
 
 import { WorkflowStep } from '../wf-step/wf-step.entity';
 import { Workflow as WorkflowEntity } from "../workflow/workflow.entity"
+import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity";
+import { WfStepActionExecutionEntity } from '../wf-step-action-execution/wf-step-action-execution.entity';
 
 
 @Entity("action")
@@ -42,13 +45,29 @@ export class ActionEntity {
 
     @ManyToMany(
         () => WorkflowEntity,
-        workflow => workflow.action,
+        workflow => workflow.actions,
     )
     workflows: WorkflowEntity[]
 
     @ManyToMany(
         () => WorkflowStep,
-        workFlowStep => workFlowStep.action,
+        workFlowStep => workFlowStep.actions,
     )
-    workFlowStep: WorkflowStep[]
+    workFlowSteps: WorkflowStep[]
+
+    @OneToMany(
+        () => WfActionExecutionEntity,
+        wfActionExecution => wfActionExecution.action,
+        { cascade: true, eager: true }
+    )
+    @JoinColumn()
+    wfActionExecutions: WfActionExecutionEntity[]
+
+    @OneToMany(
+        () => WfStepActionExecutionEntity,
+        wfStepActionExecution => wfStepActionExecution.action,
+        { cascade: true, eager: true }
+    )
+    @JoinColumn()
+    wfStepActionExecutions: WfStepActionExecutionEntity[]
 }

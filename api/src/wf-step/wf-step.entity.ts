@@ -57,11 +57,11 @@ export class WorkflowStep {
 
   @ManyToMany(
     () => ActionEntity,
-    action => action.workFlowStep,
+    action => action.workFlowSteps,
     { cascade: true }
   )
   @JoinTable()
-  action: ActionEntity[]
+  actions: ActionEntity[]
 
   @OneToMany(
     () => WfStepExecutionEntity,

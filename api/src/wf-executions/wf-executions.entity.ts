@@ -48,7 +48,7 @@ export class WokrflowExecution {
   updated: Date;
 
   @ManyToOne(
-    type => Workflow,
+    () => Workflow,
     wf => wf.wfExecutions,
   )
   workflow: Workflow;

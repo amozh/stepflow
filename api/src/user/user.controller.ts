@@ -1,7 +1,9 @@
+import { UserGroupEntity } from './../user-group/user-group.entity';
+import { UserEntity } from './user.entity';
 import { AdminGuard } from './../guards/admin.guard';
 import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
 
-import { UserDto } from '@stepflow/shared';
+import { UserDto, IUserGroupDto } from '@stepflow/shared';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -15,18 +17,18 @@ export class UserController {
     }
 
     @Get()
-    getAllUsers(): Promise<UserDto[]> {
+    getAllUsers(): Promise<UserEntity[]> {
         return this.userService.getAllUsers()
     }
 
     @Get("/:id")
-    getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserDto> {
+    getUserById(@Param("id", ParseIntPipe) id: number): Promise<UserEntity> {
         return this.userService.getUserById(id)
     }
 
     @Post()
     // @UseGuards(AdminGuard)
-    createUser(@Body() userDto: UserDto): Promise<UserDto> {
+    createUser(@Body() userDto: UserDto): Promise<UserEntity | string> {
         return this.userService.createUser(userDto)
     }
 
@@ -38,13 +40,17 @@ export class UserController {
 
     @Put("/:id")
     // @UseGuards(AdminGuard)
-    updateUser(@Param("id", ParseIntPipe) id: number, @Body() userDto: UserDto): Promise<UserDto> {
+    updateUser(@Param("id", ParseIntPipe) id: number, @Body() userDto: UserDto): Promise<UserEntity> {
         return this.userService.updateUser(id, userDto)
     }
 
     @Post("login")
-    login(@Body() userDto: UserDto): Promise<UserDto> {
+    login(@Body() userDto: UserDto): Promise<UserEntity> {
         return this.userService.login(userDto)
     }
 
+    @Get("/group/:id")
+    getUserGroup(@Param("id", ParseIntPipe) id: number): Promise<UserGroupEntity[]> {
+        return this.userService.getUserGroup(id)
+    }
 }

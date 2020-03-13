@@ -39,9 +39,16 @@ import {
   Emit,
   Prop
 } from "vue-property-decorator";
-import UserTr from "./UserTr.vue";
-import Snackbar from "./Snackbar.vue";
-import { CreateWorkflowDto,UserGroupDto,UserDto } from '@stepflow/shared';
+import UserTr from "../../components/UserTr.vue";
+import Snackbar from "../../components/Snackbar.vue";
+import { ValidationUtils } from "../../utils/validation-utils";
+import { ICreateWorkflowDto,
+IUserGroupDto,
+UserDto,
+UserEntityDto,
+IEntityUserDto,
+IUserGroupBaseDto
+} from '@stepflow/shared';
 
 const Mappers = Vue.extend({
   components: {
@@ -56,13 +63,11 @@ export default class CreateGroup extends Mappers {
   @Provide() usersInGroup: Set<any> = new Set(); //Использую Set, чтобы все значения будущего массива были уникальные
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
-  @Prop() createGroup!: any; //fix Promise<UserGroupDto>
-  @Prop() allUsers!: UserDto[];
-  @Prop() getAllUsers!: any; //fix
+  @Prop() createGroup!: (group: IUserGroupBaseDto) => IUserGroupDto;
+  @Prop() allUsers!: UserEntityDto[];
+  @Prop() getAllUsers!: () => IEntityUserDto[];
   @Prop() isLoading!: boolean;
 
   @Ref("form") readonly form!: HTMLInputElement;
@@ -81,10 +86,9 @@ export default class CreateGroup extends Mappers {
     }
   }
 
-  @Emit()
-  addToGroup(userId: number, checked: boolean):any {
+  addToGroup(userId: number, checked: boolean): void {
     // Найди юзера и, если checked === true, добавь в Set
-    const user = this.allUsers.find(user => user.id === userId);
+    const user = this.allUsers.find(u => u.id === userId);
     if (checked) {
       this.usersInGroup.add(user);
     } else {

@@ -55,22 +55,15 @@
 
 <script lang="ts">
 import { Vue, Component, Provide, Watch, Emit } from "vue-property-decorator";
-import UserStore from "../store/modules/user";
+import { userMapper } from "../store/modules/user";
 import Snackbar from "./Snackbar.vue";
 
 const Mappers = Vue.extend({
   components: {
     Snackbar
   },
-  computed: {
-    ...UserStore.mapGetters(["userInfo", "loggedIn"])
-  },
-  methods: {
-    ...UserStore.mapActions({
-      login: "login",
-      logout: "logout"
-    })
-  }
+  computed: { ...userMapper.mapGetters(["userInfo", "loggedIn"]) },
+  methods: { ...userMapper.mapActions({ logout: "logout" }) }
 });
 
 @Component
@@ -92,18 +85,5 @@ export default class Navbar extends Mappers {
     this.logout();
     this.$router.push("/");
   }
-
-  // При монтировании компонента сразу делает логин для юзера с логином "2" и паролем "2"
-  // Монтируется здесь, потому что этот компонент доступен во всём приложении и метод отработает в любом случае
-  mounted() {
-    const user = {
-      username: "2",
-      password: "2"
-    };
-    this.login(user).then(() => console.log(this.userInfo, "userInfo"));
-  }
 }
 </script>
-
-<style>
-</style>

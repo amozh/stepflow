@@ -25,48 +25,42 @@ import {
   Provide,
   Prop,
   Emit,
-  Inject
+  Inject,
+  Watch
 } from "vue-property-decorator";
 import WorkflowStore from "../store/modules/workflow";
 import StepButton from "../components/StepButton.vue";
-import { CreateWorkflowStepDto } from '@stepflow/shared';
+import { ValidationUtils } from "../utils/validation-utils";
+import { IWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
-  components: { StepButton },
-  methods: {
-    ...WorkflowStore.mapActions({
-      checkAnswer: "checkAnswer"
-    })
-  }
+  components: { StepButton }
 });
 
 @Component
 export default class Step extends Mappers {
-  //state
   @Provide() answer: string = "";
   @Provide() answerResult: string = "";
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
-  //props
-  @Prop() step!:CreateWorkflowStepDto;
+  @Prop() step!: IWorkflowStepDto;
   @Prop() index!: number;
-  mounted() {}
+  @Prop() result: any;
 
-  //methods
-  @Emit()
-  async sendAnswer() {
-    if (this.answer) {
-      const step = {
-        stepId: this.step.id,
-        answer: this.answer
-      };
-      const response = await this.checkAnswer(step);
-      this.answerResult = response.data;
+  @Watch("result")
+  changeResult(val: IAnswerResult, oldVal: IAnswerResult) {
+    if (this.result.stepId === this.step.id) {
+      this.answerResult = this.result.result;
     }
+  }
+
+  @Emit("send-answer")
+  sendAnswer(): AnswerDto {
+    const answer = {
+      stepId: this.step.id,
+      answer: this.answer
+    };
+    return answer;
   }
 }
 </script>
-<style lang="scss" scoped>
-</style>

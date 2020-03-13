@@ -1,6 +1,9 @@
 <template>
   <v-app class="grey lighten-4">
-    <v-layout class="grey lighten-4">
+    <div v-if="isLogged" class="text-center mt-10">
+      <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
+    </div>
+    <v-layout v-else class="grey lighten-4">
       <Navbar />
       <v-content class="mx-4 my-4">
         <transition name="fade">
@@ -12,13 +15,28 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Vue, Component, Provide, Watch, Emit } from "vue-property-decorator";
 import Navbar from "@/components/Navbar.vue";
+import { userMapper } from "./store/modules/user";
+import { UserDto } from "@stepflow/shared";
 
-export default {
-  name: "app",
-  components: { Navbar }
-};
+const Mappers = Vue.extend({
+  components: {
+    Navbar
+  },
+  computed: { ...userMapper.mapGetters(["isLogged"]) },
+  methods: { ...userMapper.mapActions({ login: "login" }) }
+});
+@Component
+export default class App extends Mappers {
+  created() {
+    const user: UserDto = {
+      username: "2",
+      password: "2"
+    };
+    this.login(user);
+  }
+}
 </script>
 <style lang="scss" scoped>
 @import "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons";

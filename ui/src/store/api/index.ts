@@ -1,61 +1,65 @@
 import axios from "axios";
-import { CreateWorkflowDto, UserDto, UserGroupDto } from '@stepflow/shared';
+import { ICreateWorkflowDto, UserDto, IUserGroupDto, IUserGroupBaseDto } from '@stepflow/shared';
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: "http://localhost:4000/"
 });
 
 export const workflowApi = {
   getAll() {
-    return instance.get("workflows");
+    return api.get("workflows");
   },
   getById(id: string) {
-    return instance.get(`workflows/${id}`);
+    return api.get(`workflows/${id}`);
   },
-  checkAnswer(answer: any ) { //--fix 
-    return instance.post("answer", answer);
+  checkAnswer(answer: any) { //--fix
+    return api.post("answer", answer);
   },
-  createWorkflow(workflow: CreateWorkflowDto) {
-    return instance.post("workflows", workflow);
+  createWorkflow(workflow: ICreateWorkflowDto) {
+    return api.post("workflows", workflow);
   }
 };
 
 export const userApi = {
   getUserById(id: string) {
-    return instance.get(`user/${id}`)
+    return api.get(`user/${id}`)
   },
   getAllUsers() {
-    return instance.get("user")
+    return api.get("user")
   },
-  createUser(user: any ) { //fix UserDto
-    return instance.post("user", user)
+  createUser(user: UserDto) {
+    return api.post("user", user)
   },
   updateUser(user: UserDto, id: string) {
-    return instance.put(`user/${id}`, user)
+    return api.put(`user/${id}`, user)
   },
   deleteUser(id: string) {
-    return instance.delete(`user/${id}`)
+    return api.delete(`user/${id}`)
   },
-  login(user: any) { //fix UserDto
-    return instance.post("user/login", user)
+  login(user: UserDto) {
+    return api.post("user/login", user)
+  },
+  getUserGroups(id: number) {
+    return api.get(`user/group/${id}`)
   }
 }
 
 export const groupApi = {
   getGroupById(id: string) {
-    return instance.get(`group/${id}`)
+    return api.get(`group/${id}`)
   },
-  getGroupsByUserId(id:string){
-    return instance.get(`group/user/${id}`)
+  getGroupsByUserId(id: string) {
+    return api.get(`group/user/${id}`)
   },
-  createUser(group: any) {
-    return instance.post("group", group)
+  createGroup(group: IUserGroupBaseDto) {
+    return api.post("group", group)
   },
-  updateGroup(newGroupInfo: { group: UserGroupDto, id: string }) {
-    return instance.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
+  updateGroup(newGroupInfo: { group: IUserGroupDto, id: string }) {
+    console.log(newGroupInfo);
+    return api.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
   },
   deleteGroup(id: string) {
-    return instance.delete(`group/${id}`)
+    return api.delete(`group/${id}`)
   },
-  
+
 }

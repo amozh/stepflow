@@ -21,16 +21,16 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import WorkflowStore from "../store/modules/workflow";
+import { workflowMapper } from "../store/modules/workflow";
 import UserStore from "../store/modules/user";
 
 const Mappers = Vue.extend({
   computed: {
-    ...WorkflowStore.mapGetters(["allWorkflows", "isLoading"]),
+    ...workflowMapper.mapGetters(["allWorkflows", "isLoading"])
     // ...UserStore.mapGetters(["userInfo"])
   },
   methods: {
-    ...WorkflowStore.mapActions({
+    ...workflowMapper.mapActions({
       getAllWorkflows: "getAllWorkflows"
     })
   }
@@ -39,11 +39,7 @@ const Mappers = Vue.extend({
 @Component
 export default class AllWorkFlows extends Mappers {
   mounted() {
-    this.getAllWorkflows()
-    // .then(() => {
-    //   console.log(this.allWorkflows, "mounted");
-    //   // console.log(this.userInfo.userGroups[0].workflows, "groupName");
-    // });
+    this.getAllWorkflows();
   }
 }
 </script>

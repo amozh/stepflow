@@ -5,7 +5,7 @@
       Login or password is incorrect
       <v-btn color="white" text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-    <v-form class="text-center" width="500" ref="form">
+    <v-form class="text-center" width="500" ref="form" :lazy-validation="true">
       <v-text-field
         class
         label="Username"
@@ -27,14 +27,15 @@
 
 <script lang="ts">
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
-import UserStore from "../store/modules/user";
+import { userMapper } from "../store/modules/user";
+import { ValidationUtils } from "../utils/validation-utils";
 
 const Mappers = Vue.extend({
   computed: {
-    ...UserStore.mapGetters([ "userInfo", "loggedIn"])
+    ...userMapper.mapGetters(["userInfo", "loggedIn"])
   },
   methods: {
-    ...UserStore.mapActions({
+    ...userMapper.mapActions({
       login: "login"
     })
   }
@@ -45,16 +46,14 @@ export default class LoginLogout extends Mappers {
   @Provide() username: string = "";
   @Provide() password: string = "";
   @Provide() snackbar: boolean = false;
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
   @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   async submit() {
-    if(!this.loggedIn){
-      this.snackbar = true
+    if (!this.loggedIn) {
+      this.snackbar = true;
     }
     if ((this.$refs.form as Vue & { validate: () => boolean }).validate()) {
       const user = {
@@ -62,7 +61,7 @@ export default class LoginLogout extends Mappers {
         password: this.password
       };
       await this.login(user);
-      this.loggedIn && this.$router.push("/");
+      this.$router.push("/");
     }
   }
 }

@@ -1,10 +1,22 @@
-import { UserGroupDto } from './user-group.dto';
+import { IUserGroupDto } from './user-group.dto';
 
 export interface UserDto {
   readonly username: string;
   readonly password: string;
+  readonly userRole?: Partial<UserRole>;
+  readonly userGroups?: Partial<IUserGroupDto[]>;
+}
+
+export interface IEntityUserDto extends UserDto {
+  readonly id: string
+}
+
+export interface UserEntityDto {
+  readonly id: number;
+  readonly username: string;
+  readonly password: string;
   readonly userRole: Partial<UserRole>;
-  readonly userGroups: Partial <UserGroupDto[]>;
+  readonly userGroups: Partial<IUserGroupDto[]>;
 }
 
 export enum UserRole {

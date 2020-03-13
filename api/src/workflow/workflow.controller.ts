@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
-import { CreateWorkflowDto } from '@stepflow/shared';
+import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
@@ -22,7 +22,7 @@ export class WorkflowController {
   }
 
   @Post()
-  create(@Body() workflow: CreateWorkflowDto): Promise<Workflow> {
+  create(@Body() workflow: ICreateWorkflowDto): Promise<Workflow> {
     return this.workflowService.create(workflow);
   }
 
@@ -33,10 +33,10 @@ export class WorkflowController {
 
   @Post('answer')
   giveAnswer(
-    @Body() 
+    @Body()
     @Query("workflow", ParseIntPipe) workflow:number,
     @Query("step", ParseIntPipe) step:number)
   : void {
     return console.log("workflowNumber:", workflow, "stepNumber:",step)
-  } 
+  }
 }

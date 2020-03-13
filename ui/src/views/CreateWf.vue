@@ -18,14 +18,12 @@
         :rules="inputRules"
       ></v-text-field>
       <CreateStep
-        :key="step.id"
-        :step="step"
-        :inputRules="inputRules"
-        :saveStep="saveStep"
         v-for="(step, index) in steps"
+        :key="`${index}`"
+        :step="step"
         :index="index"
-        :deleteStep="deleteStep"
-        :saveAllSteps="saveAllSteps"
+        @save-step="saveStep(step, index)"
+        @delete-step="deleteStep(index)"
       />
       <v-btn @click="addStep" class="mr-10" width="200" color="primary">Add new step</v-btn>
       <v-btn
@@ -36,7 +34,6 @@
         :disabled="!steps.length"
       >Create workflow</v-btn>
     </v-form>
-    <!-- <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular> -->
   </div>
 </template>
 
@@ -49,10 +46,16 @@ import {
   Emit,
   Ref
 } from "vue-property-decorator";
-import WorkflowStore from "../store/modules/workflow";
+// import WorkflowStore from "../store/modules/workflow";
+import { workflowMapper } from "../store/modules/workflow";
 import CreateStep from "../components/CreateStep.vue";
 import Snackbar from "../components/Snackbar.vue";
-import { CreateWorkflowDto, CreateWorkflowStepDto } from '@stepflow/shared';
+import {
+  CreateWorkflowStepDto,
+  ICreateWorkflowDto,
+  IWorkflowStepDto
+} from "@stepflow/shared";
+import { ValidationUtils } from "../utils/validation-utils";
 
 const Mappers = Vue.extend({
   components: {
@@ -60,29 +63,30 @@ const Mappers = Vue.extend({
     Snackbar
   },
   methods: {
-    ...WorkflowStore.mapActions({
+    ...workflowMapper.mapActions({
       createWorkflow: "createWorkflow"
     })
   }
 });
 @Component
 export default class CreateWorkflow extends Mappers {
+  $refs!: {
+    form: HTMLFormElement & { validate: () => boolean };
+  };
+
   @Provide() title: string = "";
   @Provide() description: string = "";
   @Provide() snackbar: boolean = false;
   @Provide() snackbarText: string = "";
   @Provide() saveAllSteps: boolean = false;
-  @Provide() inputRules = [
-    (v: string) => (v && v.length >= 0) || "Field is required"
-  ];
-  @Provide() steps: any = [];
+  @Provide() inputRules = [ValidationUtils.nonEmptyString];
+  @Provide() steps: CreateWorkflowStepDto[] = [];
 
   @Ref("form") readonly form!: HTMLInputElement;
 
   @Emit()
   addStep() {
     this.steps.push({
-      id: Math.random(),
       name: "",
       description: "",
       answer: {
@@ -90,16 +94,22 @@ export default class CreateWorkflow extends Mappers {
       }
     });
   }
+
   @Emit()
-  saveStep(newStep: CreateWorkflowStepDto, index: number) {
+  saveStep(newStep: CreateWorkflowStepDto, index: number): void {
     this.steps.splice(index, 1, newStep);
+  }
+
+  @Emit()
+  deleteStep(index: number): void {
+    this.steps.splice(index, 1);
   }
 
   @Emit()
   async submit(): Promise<void> {
     // Проверит все ли дочерние элементы формы (степы) проходят валидацию
     const validateSteps: boolean[] = this.$refs.form.$children.map(
-      (child, index) => {
+      (child: HTMLFormElement, index: number) => {
         if (![0, 1, 2, 3].some(e => e === index)) {
           return child.form.validate();
         } else {
@@ -108,13 +118,13 @@ export default class CreateWorkflow extends Mappers {
       }
     );
     if (
-      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+      this.$refs.form.validate() &&
       validateSteps.every(e => e === true) &&
       this.steps.length
     ) {
       // Переведёт isSave в true в каждом step, что добавит их в массив steps
       this.saveAllSteps = true;
-      const workflow = {
+      const workflow: ICreateWorkflowDto = {
         name: this.title,
         description: this.description,
         steps: this.steps
@@ -125,15 +135,9 @@ export default class CreateWorkflow extends Mappers {
       this.$router.push("/");
     }
   }
-  @Emit()
-  deleteStep(id: any): void {
-    this.steps = this.steps.filter((step: any) => step.id !== id);
-  }
 
   mounted() {
-    //При монтировании добавляется первый пустой степ
     this.steps.push({
-      id: Math.random(),
       name: "",
       description: "",
       answer: {

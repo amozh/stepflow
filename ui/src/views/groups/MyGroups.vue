@@ -1,7 +1,11 @@
 <template>
-  <div>
-    <h4 class="pa-4" v-if="loggedIn && groups.length===0">You have no groups</h4>
-    <v-card v-else v-for="group in groups" :key="group.id" outlined class="pa-4 mb-6">
+  <div v-if="groupsLoading" class="text-center mt-10">
+    <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
+    <h4 class="mt-3 font-weight-black" :size="20">Groups loading</h4>
+  </div>
+  <div v-else>
+    <h4 class="pa-4" v-if="!loggedIn && userGroups.length===0">You have no groups</h4>
+    <v-card v-else v-for="group in userGroups" :key="group.id" outlined class="pa-4 mb-6">
       <v-flex>
         <v-flex row class="ma-0">
           <h3>{{group.groupName}}</h3>
@@ -44,13 +48,15 @@ import {
   Emit,
   Prop
 } from "vue-property-decorator";
+import { ICreateWorkflowDto, IUserGroupDto } from "@stepflow/shared";
 
 @Component
 export default class MyGroups extends Vue {
-  @Prop() getAllWorkflows: any;
-  @Prop() loggedIn: any;
-  @Prop() groups: any;
-  @Prop() removeGroup: any;
-  @Prop() toWorkflow: any;
+  @Prop() getAllWorkflows!: () => ICreateWorkflowDto[];
+  @Prop() loggedIn!: boolean;
+  @Prop() userGroups!: IUserGroupDto[];
+  @Prop() removeGroup!: (id: string) => void;
+  @Prop() toWorkflow!: (id: string) => string;
+  @Prop() groupsLoading!: boolean;
 }
 </script>

@@ -16,9 +16,10 @@
     
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
+import { IWorkflowEntityDto } from "@stepflow/shared";
 
 @Component
 export default class Groups extends Vue {
-  @Prop() readonly workflows!: any;
+  @Prop() readonly workflows!: IWorkflowEntityDto[];
 }
 </script>

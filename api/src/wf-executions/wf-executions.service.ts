@@ -27,11 +27,12 @@ export class WfExecutionsService {
 
     async createWfExecution(workflowId: number): Promise<IWorkflowExecutionDto> {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
+        // TODO: Try to use const where variable is not changed
         let workflowExecution = new WokrflowExecution()
 
         // СОХРАНЕНИЕ ЭКШЕНОВ СЮДА (В ВОРКФЛОУ) И В КАЖДЫЙ СТЕП
         let executedSteps: Promise<WfStepExecutionEntity>[] = workflow.steps.map(async step => {
-            let executedStepActions: Promise<WfStepActionExecution>[] = step.actions.map(async action => {
+            const stepActionExecutions: WfStepActionExecution[] = step.actions.map(action => {
                 const wfStepActionExecution = new WfStepActionExecution()
                 wfStepActionExecution.actionId = action.id
                 wfStepActionExecution.workflow_step_execution_id = step.id
@@ -39,10 +40,10 @@ export class WfExecutionsService {
                 wfStepActionExecution.name = action.name
                 wfStepActionExecution.description = action.description
                 wfStepActionExecution.body = action.body
-
-                const savedAction = await this.wfStepActionExecutionRepository.save(wfStepActionExecution)
-                return savedAction
+                return wfStepActionExecution
             })
+            //TODO: Best Practice - dont do too many calls into the Database
+            const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository.save(stepActionExecutions)
             const wfStepExecution = new WfStepExecutionEntity()
             wfStepExecution.workflow_execution_id = workflow.id
             wfStepExecution.workflow_step_id = step.id
@@ -50,15 +51,14 @@ export class WfExecutionsService {
             wfStepExecution.description = step.description
             wfStepExecution.input = step.input
 
-            wfStepExecution.wfStepActionExecutions = await Promise.all(executedStepActions)
+            wfStepExecution.wfStepActionExecutions = createdStepActions
             const savedStep = await this.wfStepExecutionRepository.save(wfStepExecution)
 
             return savedStep
         })
 
         const wfInput = await (await Promise.all(executedSteps)).map(step => {
-            let stepInfo = { stepId: step.id, stepStatus: step.status, state: step.state }
-            return stepInfo
+            return { stepId: step.id, stepStatus: step.status, state: step.state }
         })
         workflowExecution.name = workflow.name
         workflowExecution.description = workflow.description

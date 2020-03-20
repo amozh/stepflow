@@ -31,6 +31,8 @@ export class WfStepActionExecutionEntity {
 
     @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
     alias: string;
+    
+    actionType: "onStart" | "onSubmit" | "onComplete" | "custom";
 
     @Column()
     name: string;

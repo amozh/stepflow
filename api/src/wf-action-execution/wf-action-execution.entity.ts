@@ -11,7 +11,7 @@ import {
 
 import { ActionEntity } from "../action/action.entity"
 
-export enum Status {
+export enum WokrflowActionExecutionStatus {
     EXECUTED = "EXECUTED",
     NOT_EXECUTED = "NOT_EXECUTED"
 }
@@ -23,7 +23,7 @@ export class WfActionExecutionEntity {
     id: number;
 
     @Column()
-    handler_id: string;
+    actionId: number;
 
     @Column()
     workflow_execution_id: string;
@@ -37,11 +37,11 @@ export class WfActionExecutionEntity {
     @Column()
     description: string;
 
-    @Column()
+    @Column({ type: "text" })
     body: string;
 
-    @Column({ default: Status.NOT_EXECUTED })
-    status: Status;
+    @Column({ default: WokrflowActionExecutionStatus.NOT_EXECUTED })
+    status: WokrflowActionExecutionStatus;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created: Date;

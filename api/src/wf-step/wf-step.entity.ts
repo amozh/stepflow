@@ -47,7 +47,6 @@ export class WorkflowStep {
   )
   workflow: Workflow;
 
-
   @OneToOne(
     () => Answer,
     answ => answ.workFlowStep,
@@ -58,7 +57,7 @@ export class WorkflowStep {
   @ManyToMany(
     () => ActionEntity,
     action => action.workFlowSteps,
-    { cascade: true }
+    { eager: true, cascade: true }
   )
   @JoinTable()
   actions: ActionEntity[]

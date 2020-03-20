@@ -1,7 +1,7 @@
+
 import { Answer } from '../answer/answer.entity';
 import {
   Injectable,
-  OnModuleInit,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,34 +10,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
+import { ActionEntity } from "../action/action.entity"
 
 @Injectable()
-export class WorkflowService implements OnModuleInit {
+export class WorkflowService {
   constructor(
-    @InjectRepository(Workflow)
-    private readonly workflowRepository: Repository<Workflow>,
+    @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>,
+    @InjectRepository(ActionEntity) private readonly actionRepository: Repository<ActionEntity>
   ) { }
-
-  onModuleInit() {
-    //generate default data
-    // this.workflowRepository.save({
-    //   name: 'Basic Workflow 1',
-    //   description: '',
-    //   steps: [
-    //     {
-    //       name: 'Basic Step 1',
-    //       description: '',
-    //       answer: {
-    //         answer: "putin"
-    //       }
-    //     },
-    //   ],
-    // });
-  }
 
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
-      const { name, description, steps } = workflowDto;
+      const { name, description, steps, actions, wfExecutions, input } = workflowDto;
 
       let wokflowSteps = steps.map(step => {
         const workflowStep = new WorkflowStep();
@@ -47,6 +31,8 @@ export class WorkflowService implements OnModuleInit {
 
         workflowStep.answer = stepAnswer;
         workflowStep.name = step.name;
+        workflowStep.input = step.input;
+        workflowStep.actions = step.actions;
         workflowStep.description = step.description;
 
         return workflowStep;
@@ -55,10 +41,14 @@ export class WorkflowService implements OnModuleInit {
       const workflow = new Workflow();
       workflow.name = name;
       workflow.description = description;
+      workflow.input = input;
       workflow.steps = wokflowSteps;
+      workflow.actions = actions;
+      workflow.wfExecutions = wfExecutions;
 
-      return this.workflowRepository.save(workflow); //
+      return this.workflowRepository.save(workflow);
     } catch (error) {
+      console.log(error, "error")
       throw new InternalServerErrorException();
     }
   }

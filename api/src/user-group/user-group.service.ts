@@ -37,21 +37,52 @@ export class UserGroupService implements OnModuleInit {
             {
                 name: 'workflow 1',
                 description: 'описание 111',
+                input: {
+                    "someInput": "someInput data"
+                },
                 steps: [
                     {
                         name: 'one',
                         description: '000',
+                        actions: [{
+                            "name": "firstAction",
+                            "description": "action to find the area",
+                            "body": "function fn(a,b,h){return (a+b)*h/2}; res = fn(a,b,h)",
+                        }],
+                        input: {
+                            "questions": [
+                                {
+                                    "id": 1,
+                                    "description": "Найдите площадь трапеции с основаниями a,b и высотой h",
+                                    "inputData": {
+                                        "a": 45,
+                                        "b": 25,
+                                        "h": 11
+                                    }
+                                }, {
+                                    "id": 2,
+                                    "description": "Ещё трапеция с основаниями a,b и высотой h",
+                                    "inputData": {
+                                        "a": 10,
+                                        "b": 13,
+                                        "h": 12
+                                    }],
+                            "answers": [
+                                { "id": 1, "answer": "385" },
+                                { "id": 2, "answer": "138" }
+                            ]
+                        },
                         answer: {
                             answer: "obama"
                         }
-                    },
-                    {
-                        name: 'two',
-                        description: 'dawwad',
-                        answer: {
-                            answer: "obama2"
-                        }
                     }
+                    // {
+                    //     name: 'two',
+                    //     description: 'dawwad',
+                    //     answer: {
+                    //         answer: "obama2"
+                    //     }
+                    // }
                 ],
                 userGroups: [group]
             },
@@ -71,7 +102,7 @@ export class UserGroupService implements OnModuleInit {
                         description: 'description2',
                         answer: {
                             answer: "ку"
-                        }
+                        },
                     },
                     {
                         name: 'три',

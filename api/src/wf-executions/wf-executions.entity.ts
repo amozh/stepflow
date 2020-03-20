@@ -6,11 +6,13 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
+  OneToMany
 } from 'typeorm';
 import { Workflow } from "../workflow/workflow.entity";
+import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 
-export enum Status {
+export enum WorkflowExecutionStatus {
   NOT_STARTED = "NOT_STARTED",
   STARTED = "STARTED",
   COMPLETE = "COMPLETE"
@@ -24,7 +26,7 @@ export class WokrflowExecution {
   id: number;
 
   @Column()
-  workflow_id: string;
+  workflow_id: number;
 
   @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
   name: string;
@@ -38,8 +40,8 @@ export class WokrflowExecution {
   @Column({ type: "json", default: null })
   state: JSON
 
-  @Column({ default: Status.NOT_STARTED })
-  status: Status;
+  @Column({ default: WorkflowExecutionStatus.NOT_STARTED })
+  status: WorkflowExecutionStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
@@ -52,6 +54,14 @@ export class WokrflowExecution {
     wf => wf.wfExecutions,
   )
   workflow: Workflow;
+
+  @OneToMany(
+    () => WfStepExecutionEntity,
+    wfStepExecution => wfStepExecution.wfExecution,
+    { cascade: true, eager: true }
+  )
+  @JoinColumn()
+  wfStepsExecution: WfStepExecutionEntity[]
 
   @BeforeUpdate()
   updateTimestamp() {

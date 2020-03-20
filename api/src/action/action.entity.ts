@@ -9,7 +9,9 @@ import {
     ManyToMany,
     Unique,
     Index,
-    OneToMany
+    OneToMany,
+    PrimaryColumn,
+    Generated
 } from 'typeorm';
 
 import { WorkflowStep } from '../wf-step/wf-step.entity';
@@ -19,9 +21,10 @@ import { WfStepActionExecutionEntity } from '../wf-step-action-execution/wf-step
 
 
 @Entity("action")
+// @Unique(['alias'])
 export class ActionEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
     @Column({ length: 500 })
     name: string;
@@ -29,7 +32,7 @@ export class ActionEntity {
     @Column({ length: 500 })
     description: string;
 
-    @Column({ length: 500 })
+    @Column({ type: "text" })
     body: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

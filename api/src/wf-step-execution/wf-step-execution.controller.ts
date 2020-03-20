@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Param, ParseIntPipe, Put, Body } from '@nestjs/common';
 import { WfStepExecutionService } from './wf-step-execution.service';
 
 
@@ -9,5 +9,15 @@ export class WfStepExecutionController {
     @Get()
     getWfStep(): string {
         return this.wfStepExecutionService.getWfStepExecution()
+    }
+
+    // @Post('step/:id')
+    // createWfStepExecution(@Param('id', ParseIntPipe) stepId: number): Promise<any> {
+    //     return this.wfStepExecutionService.createWfStepExecution(stepId)
+    // }
+
+    @Put(":id")
+    updateWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+        return this.wfStepExecutionService.updateWfStepExecution(id, body)
     }
 }

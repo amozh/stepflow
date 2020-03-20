@@ -6,25 +6,28 @@ import {
     OneToOne,
     PrimaryGeneratedColumn,
     ManyToMany,
-    JoinTable
+    JoinTable,
+    Unique
 } from 'typeorm';
 import { ActionEntity } from "../action/action.entity"
+import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 
-export enum Status {
+export enum WorkflowStepActionExecutionStatus {
     EXECUTED = "EXECUTED",
     NOT_EXECUTED = "NOT_EXECUTED"
 }
 
 @Entity("wf-step-action-execution")
+@Unique(['alias'])
 export class WfStepActionExecutionEntity {
     @PrimaryGeneratedColumn({ type: "int" })
     id: number;
 
     @Column()
-    handler_id: string;
+    actionId: string;
 
     @Column()
-    workflow_step_execution_id: string;
+    workflow_step_execution_id: number;
 
     @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
     alias: string;
@@ -38,8 +41,8 @@ export class WfStepActionExecutionEntity {
     @Column()
     body: string;
 
-    @Column({ default: Status.NOT_EXECUTED })
-    status: Status;
+    @Column({ default: WorkflowStepActionExecutionStatus.NOT_EXECUTED })
+    status: WorkflowStepActionExecutionStatus;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created: Date;
@@ -57,4 +60,10 @@ export class WfStepActionExecutionEntity {
         action => action.wfStepActionExecutions
     )
     action: ActionEntity
+
+    @ManyToOne(
+        () => WfStepExecutionEntity,
+        wfStepExecution => wfStepExecution.wfStepActionExecutions
+    )
+    wfStepExecution: WfStepExecutionEntity
 }

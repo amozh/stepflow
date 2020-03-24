@@ -7,7 +7,6 @@ import { ActionType } from "../wf-step-action-execution/wf-step-action-execution
 const vm = require("vm")
 
 export interface IStepActionExecutionInput {
-    // submittedAnswer: any
     input: any
     state?: any
     status?: WorkflowStepExecutionStatus
@@ -36,34 +35,20 @@ export class WfStepExecutionService {
     // 4. Confugure TSLint and fix errors
 
     async startWfStepExecution(id: number, body: any): Promise<any> {
-        return
-    }//
-
-    async submitWfStepExecution(id: number, body: any): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
-        // console.log(stepExecution.workflow_execution_id, "stepExecution")
-        // Достанет инпут, стейт
-        // const submittedAnswer = body.submittedAnswer;
         const input = stepExecution.input;
         const state = stepExecution.state;
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
         input["submittedAnswer"] = body.submittedAnswer
 
-        // console.log(input, submittedAnswer, )
-
-        // ПОМЕНЯТЬ СТАТУС НА ОН_САБМИТ, ПРИДУМАТЬ КАКИМ ОБРАЗОМ БУДЕТ СОХРАНЯТЬСЯ СТАТУС СТЕПОВ (ПРОСТО ПОЛУЧАТЬ С БД?)
         const onSubmitActions = actions.filter(a => a.actionType === ActionType.ON_START);
-
-        // Выполнит отфильтрованные функции
         const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
-            // console.log(actionOutputs, "action outputs", await actionOutputs, "await", a, "aaa", "123123")
             const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
 
             let actionInput: IStepActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    // submittedAnswer,
                     input,
                     state,
                     status
@@ -72,7 +57,6 @@ export class WfStepExecutionService {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
                 const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    // submittedAnswer,
                     input,
                     state: prevState,
                     status: prevStatus
@@ -82,19 +66,15 @@ export class WfStepExecutionService {
             const output = await this.executeAction(actionInput, a.body);
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
-        // console.log(outputs, "outputs")
+
 
         let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
-        // failedActions.length === 0 ? failedActions = "No failed actions" : failedActions
 
-        // Возьмёт status & state у последнего элемента в массиве outputs
         const finalState = outputs[outputs.length - 1].state;
         const finalStatus = outputs[outputs.length - 1].status;
-        // console.log(finalStatus, "finalStatus")
-        // console.log(outputs, "outputs")
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
         await this.WfExecutionsService.updateWfExecution(
@@ -102,18 +82,115 @@ export class WfStepExecutionService {
             finalState,
             id
         )
-        // console.log(finalState, "finalState")
+        return { finalState, finalStatus, failedActions }
+    }
+
+    async submitWfStepExecution(id: number, body: any): Promise<any> {
+        const stepExecution = await this.wfStepExecutionRepository.findOne(id)
+        const input = stepExecution.input;
+        const state = stepExecution.state;
+        const actions = stepExecution.wfStepActionExecutions;
+        const status = stepExecution.status;
+        input["submittedAnswer"] = body.submittedAnswer
+
+        // ПОМЕНЯТЬ СТАТУС НА ОН_САБМИТ, ПРИДУМАТЬ КАКИМ ОБРАЗОМ БУДЕТ СОХРАНЯТЬСЯ СТАТУС СТЕПОВ (ПРОСТО ПОЛУЧАТЬ С БД?)
+        const onSubmitActions = actions.filter(a => a.actionType === ActionType.ON_SUBMIT);
+
+        // Выполнит отфильтрованные функции
+        const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
+            const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
+
+            let actionInput: IStepActionExecutionInput;
+            if (existingOutputs.length === 0) {
+                actionInput = {
+                    input,
+                    state,
+                    status
+                }
+            } else {
+                const prevState = existingOutputs[existingOutputs.length - 1].state;
+                const prevStatus = existingOutputs[existingOutputs.length - 1].status;
+                actionInput = {
+                    input,
+                    state: prevState,
+                    status: prevStatus
+                }
+            }
+
+            const output = await this.executeAction(actionInput, a.body);
+            return [...existingOutputs, output];
+        }, Promise.resolve([] as IStepActionExecutionOutput[]));
+
+        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        failedActions.forEach(a => {
+            //do something with failed action
+        })
+
+        const finalState = outputs[outputs.length - 1].state;
+        const finalStatus = outputs[outputs.length - 1].status;
+
+        await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
+        await this.WfExecutionsService.updateWfExecution(
+            stepExecution.workflow_execution_id,
+            finalState,
+            id
+        )
         return { finalState, finalStatus, failedActions }
     }
 
     async completeWfStepExecution(id: number, body: any): Promise<any> {
-        return
+        const stepExecution = await this.wfStepExecutionRepository.findOne(id)
+        const input = stepExecution.input;
+        const state = stepExecution.state;
+        const actions = stepExecution.wfStepActionExecutions;
+        const status = stepExecution.status;
+        input["submittedAnswer"] = body.submittedAnswer
+
+        const onSubmitActions = actions.filter(a => a.actionType === ActionType.ON_COMPLETE);
+        const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
+            const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
+
+            let actionInput: IStepActionExecutionInput;
+            if (existingOutputs.length === 0) {
+                actionInput = {
+                    input,
+                    state,
+                    status
+                }
+            } else {
+                const prevState = existingOutputs[existingOutputs.length - 1].state;
+                const prevStatus = existingOutputs[existingOutputs.length - 1].status;
+                actionInput = {
+                    input,
+                    state: prevState,
+                    status: prevStatus
+                }
+            }
+
+            const output = await this.executeAction(actionInput, a.body);
+            return [...existingOutputs, output];
+        }, Promise.resolve([] as IStepActionExecutionOutput[]));
+
+
+        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        failedActions.forEach(a => {
+            //do something with failed action
+        })
+
+        const finalState = outputs[outputs.length - 1].state;
+        const finalStatus = outputs[outputs.length - 1].status;
+
+        await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
+        await this.WfExecutionsService.updateWfExecution(
+            stepExecution.workflow_execution_id,
+            finalState,
+            id
+        )
+        return { finalState, finalStatus, failedActions }
     }
 
     async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
-        // console.log(stepExecution, "stepExecution")
-        // const submittedAnswer = actionsInput.submittedAnswer;
         const input = stepExecution.input;
         const state = stepExecution.state;
         const actions = stepExecution.wfStepActionExecutions;
@@ -127,7 +204,6 @@ export class WfStepExecutionService {
             let actionInput: IStepActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    // submittedAnswer,
                     input,
                     state,
                     status
@@ -136,7 +212,6 @@ export class WfStepExecutionService {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
                 const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    // submittedAnswer,
                     input,
                     state: prevState,
                     status: prevStatus
@@ -170,8 +245,7 @@ export class WfStepExecutionService {
         let output: IStepActionExecutionOutput;
         try {
             const script = new vm.Script(`${action}`);
-            const context = vm.createContext(input.input); //нужен ли тут submittedAnswer?
-            // const scriptResult = await script.runInContext(context);
+            const context = vm.createContext(input.input);
             await script.runInContext(context);
             output = {
                 state: context,

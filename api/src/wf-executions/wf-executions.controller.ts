@@ -1,8 +1,23 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes } from '@nestjs/common';
 import { WfExecutionsService } from "./wf-executions.service"
-import { IWorkflowExecutionDto } from '@stepflow/shared';
+import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
+import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
+import { Length, IsNotEmpty, IsNumber, IsBoolean, IsString } from "class-validator"
+
+// Не работает валидация, если импортировать из папки shared
+export class ITestDto {
+    @IsString()
+    @Length(1, 4, { message: "Wrong length!" })
+    readonly someString: string;
+    @IsBoolean()
+    @IsNotEmpty()
+    readonly someBoolean: boolean;
+    @IsNotEmpty()
+    @IsNumber()
+    readonly count: number;
+}
 @Controller('wf-executions')
 export class WfExecutionsController {
     constructor(
@@ -15,6 +30,13 @@ export class WfExecutionsController {
     // 2. Validate request
     // 3. Execute business logic
     // 4. Return response
+
+    @Post("test")
+    @UsePipes(new ValidationPipe())
+    getSmt(@Body() body: ITestDto): ITestDto {
+        return body
+    }
+
     @Post()
     createWfExecution(@Body() body: { workflowId: number }/*1*/): Promise<IWorkflowExecutionDto> {
         console.log(body.workflowId, "workflowId")
@@ -39,7 +61,6 @@ export class WfExecutionsController {
         return this.wfStepExecutionService.completeWfStepExecution(id, body)
     }
 
-    // ----------
     @Put('submit/:id')
     submitWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfStepExecutionService.submitWfStepExecution(id, body)
@@ -52,15 +73,4 @@ export class WfExecutionsController {
     ): Promise<any> {
         return this.wfStepExecutionService.executeCustomWorkflowStepAction(id, body.actionAlias, body.input)
     }
-
-
-    // @Post('step/:id')
-    // createWfStepExecution(@Param('id', ParseIntPipe) stepId: number): Promise<any> {
-    //     return this.wfStepExecutionService.createWfStepExecution(stepId)
-    // }
-
-    // @Put('wf-step-execution/:id')
-    // updateWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
-    //     return this.wfStepExecutionService.updateWfStepExecution(id, body)
-    // }
 }

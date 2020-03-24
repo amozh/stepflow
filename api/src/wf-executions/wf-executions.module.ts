@@ -8,6 +8,7 @@ import { Workflow } from "../workflow/workflow.entity"
 import { WokrflowExecution } from './wf-executions.entity';
 import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 import { WfStepActionExecutionEntity } from "../wf-step-action-execution/wf-step-action-execution.entity"
+import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([
@@ -17,7 +18,7 @@ import { WfStepActionExecutionEntity } from "../wf-step-action-execution/wf-step
     WfStepActionExecutionEntity
   ])],
   controllers: [WfExecutionsController],
-  providers: [WfExecutionsService],
+  providers: [WfExecutionsService, WfStepExecutionService],
   exports: [WfExecutionsService]
 })
 export class WfExecutionsModule { }

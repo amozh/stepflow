@@ -47,30 +47,35 @@ export class UserGroupService implements OnModuleInit {
                         actions: [{
                             "name": "firstAction",
                             "description": "action to find the area",
-                            "body": "function fn(a,b,h){return (a+b)*h/2}; res = fn(a,b,h)",
+                            "body":
+                                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+                            "version": "1.0",
+                            "alias": "action alias 123"
                         }],
                         input: {
-                            "questions": [
-                                {
-                                    "id": 1,
-                                    "description": "Найдите площадь трапеции с основаниями a,b и высотой h",
-                                    "inputData": {
-                                        "a": 45,
-                                        "b": 25,
-                                        "h": 11
-                                    }
-                                }, {
-                                    "id": 2,
-                                    "description": "Ещё трапеция с основаниями a,b и высотой h",
-                                    "inputData": {
-                                        "a": 10,
-                                        "b": 13,
-                                        "h": 12
-                                    }],
-                            "answers": [
-                                { "id": 1, "answer": "385" },
-                                { "id": 2, "answer": "138" }
-                            ]
+                            "a": 45,
+                            "b": 25,
+                            "h": 12
+                        },
+                        answer: {
+                            answer: "obama"
+                        }
+                    },
+                    {
+                        name: 'two',
+                        description: 'second action',
+                        actions: [{
+                            "name": "firstAction",
+                            "description": "action to find the area",
+                            "body":
+                                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+                            "version": "1.0",
+                            "alias": "action alias 531"
+                        }],
+                        input: {
+                            "a": 5,
+                            "b": 5,
+                            "h": 7
                         },
                         answer: {
                             answer: "obama"

@@ -17,6 +17,13 @@ export enum WorkflowStepActionExecutionStatus {
     NOT_EXECUTED = "NOT_EXECUTED"
 }
 
+export enum ActionType {
+    ON_START = "ON_START",
+    ON_SUBMIT = "ON_SUBMIT",
+    ON_COMPLETE = "ON_COMPLETE",
+    CUSTOM = "CUSTOM"
+}
+
 @Entity("wf-step-action-execution")
 @Unique(['alias'])
 export class WfStepActionExecutionEntity {
@@ -27,12 +34,13 @@ export class WfStepActionExecutionEntity {
     actionId: string;
 
     @Column()
-    workflow_step_execution_id: number;
+    workflow_step_execution_id: number; //
 
     @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
     alias: string;
-    
-    actionType: "onStart" | "onSubmit" | "onComplete" | "custom";
+
+    @Column({ default: ActionType.ON_START }) // actionType: "onStart" | "onSubmit" | "onComplete" | "custom";
+    actionType: ActionType
 
     @Column()
     name: string;

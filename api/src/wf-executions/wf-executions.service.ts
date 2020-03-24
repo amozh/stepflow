@@ -27,11 +27,12 @@ export class WfExecutionsService {
 
     async createWfExecution(workflowId: number): Promise<IWorkflowExecutionDto> {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
+
         // TODO: Try to use const where variable is not changed
         let workflowExecution = new WokrflowExecution()
 
         // СОХРАНЕНИЕ ЭКШЕНОВ СЮДА (В ВОРКФЛОУ) И В КАЖДЫЙ СТЕП
-        let executedSteps: Promise<WfStepExecutionEntity>[] = workflow.steps.map(async step => {
+        let executionSteps: Promise<WfStepExecutionEntity>[] = workflow.steps.map(async step => {
             const stepActionExecutions: WfStepActionExecution[] = step.actions.map(action => {
                 const wfStepActionExecution = new WfStepActionExecution()
                 wfStepActionExecution.actionId = action.id
@@ -42,7 +43,6 @@ export class WfExecutionsService {
                 wfStepActionExecution.body = action.body
                 return wfStepActionExecution
             })
-            //TODO: Best Practice - dont do too many calls into the Database
             const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository.save(stepActionExecutions)
             const wfStepExecution = new WfStepExecutionEntity()
             wfStepExecution.workflow_execution_id = workflow.id
@@ -50,49 +50,71 @@ export class WfExecutionsService {
             wfStepExecution.name = step.name
             wfStepExecution.description = step.description
             wfStepExecution.input = step.input
-
             wfStepExecution.wfStepActionExecutions = createdStepActions
-            const savedStep = await this.wfStepExecutionRepository.save(wfStepExecution)
-
-            return savedStep
+            return wfStepExecution
         })
 
-        const wfInput = await (await Promise.all(executedSteps)).map(step => {
-            return { stepId: step.id, stepStatus: step.status, state: step.state }
+        const savedSteps: WfStepExecutionEntity[] = await this.wfStepExecutionRepository.save(await Promise.all(executionSteps))
+        // Запишет в Workflow input данные про все его steps
+        const wfInput = await savedSteps.map(step => {
+            return { stepId: step.id, stepStatus: step.status, state: step.state, input: step.input }
         })
         workflowExecution.name = workflow.name
         workflowExecution.description = workflow.description
-        workflowExecution.input = JSON.parse(JSON.stringify([...wfInput, WorkflowExecutionStatus.NOT_STARTED]))
+        workflowExecution.input = JSON.parse(JSON.stringify(wfInput))
         workflowExecution.workflow_id = workflowId
-        workflowExecution.wfStepsExecution = await Promise.all(executedSteps)
+        workflowExecution.wfStepsExecution = savedSteps
 
         return await this.wfExecutionRepository.save(workflowExecution)
     }
 
-    async updateWfExecution(id: number, body: any): Promise<any> {
-        const executedWf = await this.wfExecutionRepository.findOne(id)
-
-        // let stateResult: JSON = { ...executedWf.state }
-        // const questionIndex = Object.values(body)[0].questionId + ""
-        // if (body) {
-        //     stateResult[questionIndex] = body
-        // }
+    async updateWfExecution(wfExecutionId: number, body?: any, wfStepExecutionId?: number): Promise<void> {
+        const executedWf = await this.wfExecutionRepository.findOne(wfExecutionId)
+        // console.log(wfStepExecutionId, "wfStepExecutionId????????")
+        // console.log(body, "body")
 
         let stateResult: JSON
-        if (body) {
-            stateResult = body
+        if (body && wfStepExecutionId) {
+            stateResult = {
+                ...executedWf.state,
+                ["stepId_" + wfStepExecutionId]: body
+            }
         }
+        // console.log(stateResult, "stateResult???")
+        // relations: ["wfStepsExecution"],
+        // // join: { alias: "wfExecutions", innerJoin: { wfStepsExecution: "wfExecutions.wfStepsExecution" } },
+        // where: qb => {
+        //     qb.where({
+        //         id: 2
+        //     })
+        // }
+        // where:{
+        //     wfStepsExecution
+        // }
+        // where: {
+
+        //     // wfStepsExecution: { id: 4 },
+        //     // relations: ["wfStepsExecution"]
+        // }
+
+
+        // console.log(executedWf, "executedWf")
+        // const executedWf = await this.wfExecutionRepository.findOne(id)
+        //
+        // let stateResult: JSON
+        // if (body) {
+        //     stateResult = body
+        // }
 
         let updatedStatus: WorkflowExecutionStatus
         switch (executedWf.status) {
-            // Переведёт статус в STARTED сразу как выполнится любой шаг в текущем воркфлоу или придёт запрос для старта воркфлоу
             case WorkflowExecutionStatus.NOT_STARTED:
                 updatedStatus = WorkflowExecutionStatus.STARTED
                 break
-            // Переведёт в COMPLETE, когда длина массива степов === длине массива степов, которые имеют статус COMPLETE
             case WorkflowExecutionStatus.STARTED:
-                if (Object.values(executedWf.input).filter(e => (typeof e) === "object").length
-                    === executedWf.wfStepsExecution.filter(e => e.status === WorkflowStepExecutionStatus.COMPLETE).length) {
+                if (Object.values(executedWf.input)
+                    .length === executedWf.wfStepsExecution
+                        .filter(e => e.status === WorkflowStepExecutionStatus.COMPLETE).length) {
                     updatedStatus = WorkflowExecutionStatus.COMPLETE
                     break;
                 }
@@ -100,38 +122,6 @@ export class WfExecutionsService {
                 updatedStatus = executedWf.status
                 break;
         }
-
-        await this.wfExecutionRepository.update(id, { status: updatedStatus, state: stateResult })
-        // console.log(id, body, "??")
-        // const executedWf = await this.wfExecutionRepository.findOne(id)
-        // // console.log(executedWf, "executedWf")
-        // // let wfStepsState = executedWf.wfStepsExecution.map(wfStep => {
-        // //     const stepInfo = {
-        // //         stepId: wfStep.id,
-        // //         status: wfStep.status,
-        // //         stepState: wfStep.state
-        // //     } 
-        // //     return stepInfo
-        // // })
-        // ВЫЗЫВАТЬ ЭТОТ МЕТОД В ТЕЛЕ МЕТОДА ВЫПОЛНЕНИЯ СТЕПА. ТАКИМ ОБРАЗОМ, ВЫПОЛНИВ СТЕП, БУДЕТ АПДЕЙТИТСЯ ВОРКФЛОУ
-
-        // Переписать эту логику аналогично тому как она прописала в => wf-step-execution.service.ts
-        // let STATUS: WorkflowExecutionStatus
-        // switch (body.STATUS) {
-        //     case "STARTED":
-        //         STATUS = WorkflowExecutionStatus.STARTED
-        //         break
-        //     case "COMPLETE":
-        //         STATUS = WorkflowExecutionStatus.COMPLETE // Передавать COMPLETE на выполнении последнего степа на фронте (временно)
-        //         break
-        //     default:
-        //         STATUS = WorkflowExecutionStatus.NOT_STARTED
-        // }
-        // console.log("updated???")
-        // const updatedExecutedWf = 
-
-        // console.log(updatedExecutedWf, "updatedExecutedWf")
-        // return updatedExecutedWf
-        // return "hello, " + id
+        await this.wfExecutionRepository.update(wfExecutionId, { status: updatedStatus, state: stateResult })
     }
 }

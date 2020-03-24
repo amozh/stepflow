@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "./wf-step-execution.entity"
 import { WfExecutionsService } from "../wf-executions/wf-executions.service"
+import { ActionType } from "../wf-step-action-execution/wf-step-action-execution.entity"
 const vm = require("vm")
 
 export interface IStepActionExecutionInput {
-    submittedAnswer: any
+    // submittedAnswer: any
     input: any
     state?: any
     status?: WorkflowStepExecutionStatus
@@ -28,85 +29,96 @@ export class WfStepExecutionService {
         private readonly WfExecutionsService: WfExecutionsService
     ) { }
 
-    getWfStepExecution(): string {
-        return "Workflow step execution"
-    }
-    // async createWfStepExecution(stepId: number): Promise<any> {
-    //     const step = await this.wfStepRepository.findOne({ id: stepId })
-    //     console.log(step.actions)
-    //     const stepExecution = new WfStepExecutionEntity()
-
-    //     stepExecution.workflow_step_id = stepId
-    //     stepExecution.workflow_execution_id = 0 // Переписать
-    //     stepExecution.name = step.name
-    //     stepExecution.description = step.description
-    //     stepExecution.input = step.input
-    //     stepExecution.state = null
-    //     // Связать как-то это с экшенами, сделать так, чтобы всё работало
-
-    //     return await this.wfStepExecutionRepository.save(stepExecution)
-    // }
-
-    async updateWfStepExecution(id: number, body: any): Promise<any> {
-        // Разобраться с экшенами (тут до сих пор используется только 1-й экшен). Привязать их как-то к id вопроса или что-то такое
-        // Также здесь вызывать запрос, который апдейтит сам воркфлоу и обновлять его стейт
-        // а также добавить туда логику обновления статуса как и здесь
-        const updatedExecutedWfStep = await this.wfStepExecutionRepository.findOne(id)
-        const action = updatedExecutedWfStep.wfStepActionExecutions[0].body
-
-        const context = updatedExecutedWfStep.input.questions.find(e => e.id === body.questionId).inputData
-        const script = new vm.Script(`${action}`);
-        vm.createContext(context)
-        const result = await script.runInContext(context);
-
-        const stateResult: JSON = { ...updatedExecutedWfStep.state }
-        if (body.answer == result) {
-            stateResult[body.questionId] = {
-                answerResult: "Answer is correct",
-                questionId: body.questionId
-            }
-        } else {
-            stateResult[body.questionId] = {
-                answerResult: "Answer is wrong",
-                questionId: body.questionId,
-                wrongAnswer: body.answer
-            }
-        }
-
-        let updatedStatus: WorkflowStepExecutionStatus
-        switch (updatedExecutedWfStep.status) {
-            case WorkflowStepExecutionStatus.NOT_STARTED:
-                updatedStatus = WorkflowStepExecutionStatus.STARTED
-                break
-            case WorkflowStepExecutionStatus.STARTED:
-                if (Object.keys(stateResult).length === updatedExecutedWfStep.input.questions.length) {
-                    updatedStatus = WorkflowStepExecutionStatus.COMPLETE
-                    break
-                }
-            default:
-                updatedStatus = updatedExecutedWfStep.status
-        }
-
-        await this.wfStepExecutionRepository.update(id, { status: updatedStatus, state: stateResult })
-        await this.WfExecutionsService.updateWfExecution(body.executedWf, stateResult)
-        return { stateResult, updatedStatus }
-
-    }
-    
     // TODO
     // 1. Make sure that all business logic is generic and is not dependent of user input
     // 2. Put everything related to workflow execution into 1 Module and 1 Controller
     // 3. Finish adding actionType into WfStepActionExecutionEntity
     // 4. Confugure TSLint and fix errors
 
-    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput): Promise<any> {
+    async startWfStepExecution(id: number, body: any): Promise<any> {
+        return
+    }//
+
+    async submitWfStepExecution(id: number, body: any): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
-        
-        const submittedAnswer = actionsInput.submittedAnswer;
+        // console.log(stepExecution.workflow_execution_id, "stepExecution")
+        // Достанет инпут, стейт
+        // const submittedAnswer = body.submittedAnswer;
         const input = stepExecution.input;
         const state = stepExecution.state;
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
+        input["submittedAnswer"] = body.submittedAnswer
+
+        // console.log(input, submittedAnswer, )
+
+        // ПОМЕНЯТЬ СТАТУС НА ОН_САБМИТ, ПРИДУМАТЬ КАКИМ ОБРАЗОМ БУДЕТ СОХРАНЯТЬСЯ СТАТУС СТЕПОВ (ПРОСТО ПОЛУЧАТЬ С БД?)
+        const onSubmitActions = actions.filter(a => a.actionType === ActionType.ON_START);
+
+        // Выполнит отфильтрованные функции
+        const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
+            // console.log(actionOutputs, "action outputs", await actionOutputs, "await", a, "aaa", "123123")
+            const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
+
+            let actionInput: IStepActionExecutionInput;
+            if (existingOutputs.length === 0) {
+                actionInput = {
+                    // submittedAnswer,
+                    input,
+                    state,
+                    status
+                }
+            } else {
+                const prevState = existingOutputs[existingOutputs.length - 1].state;
+                const prevStatus = existingOutputs[existingOutputs.length - 1].status;
+                actionInput = {
+                    // submittedAnswer,
+                    input,
+                    state: prevState,
+                    status: prevStatus
+                }
+            }
+
+            const output = await this.executeAction(actionInput, a.body);
+            return [...existingOutputs, output];
+        }, Promise.resolve([] as IStepActionExecutionOutput[]));
+        // console.log(outputs, "outputs")
+
+        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        failedActions.forEach(a => {
+            //do something with failed action
+        })
+        // failedActions.length === 0 ? failedActions = "No failed actions" : failedActions
+
+        // Возьмёт status & state у последнего элемента в массиве outputs
+        const finalState = outputs[outputs.length - 1].state;
+        const finalStatus = outputs[outputs.length - 1].status;
+        // console.log(finalStatus, "finalStatus")
+        // console.log(outputs, "outputs")
+
+        await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
+        await this.WfExecutionsService.updateWfExecution(
+            stepExecution.workflow_execution_id,
+            finalState,
+            id
+        )
+        // console.log(finalState, "finalState")
+        return { finalState, finalStatus, failedActions }
+    }
+
+    async completeWfStepExecution(id: number, body: any): Promise<any> {
+        return
+    }
+
+    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput): Promise<any> {
+        const stepExecution = await this.wfStepExecutionRepository.findOne(id)
+        // console.log(stepExecution, "stepExecution")
+        // const submittedAnswer = actionsInput.submittedAnswer;
+        const input = stepExecution.input;
+        const state = stepExecution.state;
+        const actions = stepExecution.wfStepActionExecutions;
+        const status = stepExecution.status;
+        input["submittedAnswer"] = actionsInput.input.submittedAnswer
 
         const onSubmitActions = actions.filter(a => a.alias === actionAlias);
 
@@ -115,7 +127,7 @@ export class WfStepExecutionService {
             let actionInput: IStepActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    submittedAnswer,
+                    // submittedAnswer,
                     input,
                     state,
                     status
@@ -124,19 +136,19 @@ export class WfStepExecutionService {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
                 const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    submittedAnswer,
+                    // submittedAnswer,
                     input,
-                    state = prevState,
-                    status = prevStatus
+                    state: prevState,
+                    status: prevStatus
                 }
             }
-            
-            const actionBody = (actionInput: IStepActionExecutionInput) => {
-                actionInput.state["rocketLaunchTime"] = new Date();
-                INTEGRATIONS.email.send("andrii.mozharovskyi@gmail.com", "Launch this fucking rocket!")
-                actionInput.status = "launched";
-            }
-            
+
+            // const actionBody = (actionInput: IStepActionExecutionInput) => {
+            //     actionInput.state["rocketLaunchTime"] = new Date();
+            //     INTEGRATIONS.email.send("andrii.mozharovskyi@gmail.com", "Launch this fucking rocket!")
+            //     actionInput.status = "launched";
+            // }
+
             const output = await this.executeAction(actionInput, a.body);
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
@@ -149,97 +161,26 @@ export class WfStepExecutionService {
         const finalState = outputs[outputs.length - 1].state;
         const finalStatus = outputs[outputs.length - 1].status;
 
-        // let updatedStatus: WorkflowStepExecutionStatus
-        // switch (stepExecution.status) {
-        //     case WorkflowStepExecutionStatus.NOT_STARTED:
-        //         updatedStatus = WorkflowStepExecutionStatus.STARTED
-        //         break
-        //     case WorkflowStepExecutionStatus.STARTED:
-        //         if (Object.keys(finalState).length === stepExecution.input.questions.length) {
-        //             updatedStatus = WorkflowStepExecutionStatus.COMPLETE
-        //             break
-        //         }
-        //     default:
-        //         updatedStatus = stepExecution.status
-        // }
-
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(body.executedWf, finalState)
+        await this.WfExecutionsService.updateWfExecution(stepExecution.workflow_execution_id, finalState, id)
         return { finalState, finalStatus, failedActions }
-    }
-
-    async submitWfStepExecution(id: number, body: any): Promise<any> {
-        // Разобраться с экшенами (тут до сих пор используется только 1-й экшен). Привязать их как-то к id вопроса или что-то такое
-        // Также здесь вызывать запрос, который апдейтит сам воркфлоу и обновлять его стейт
-        // а также добавить туда логику обновления статуса как и здесь
-        const stepExecution = await this.wfStepExecutionRepository.findOne(id)
-
-        const submittedAnswer = body;
-        const input = stepExecution.input;
-        const state = stepExecution.state;
-        const actions = stepExecution.wfStepActionExecutions;
-        const status = stepExecution.status;
-
-        const onSubmitActions = actions.filter(a => a.actionType === "onSubmit");
-
-        const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
-            const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
-            let actionInput: IStepActionExecutionInput;
-            if (existingOutputs.length === 0) {
-                actionInput = {
-                    submittedAnswer,
-                    input,
-                    state,
-                    status
-                }
-            } else {
-                const prevState = existingOutputs[existingOutputs.length - 1].state;
-                const prevStatus = existingOutputs[existingOutputs.length - 1].status;
-                actionInput = {
-                    submittedAnswer,
-                    input,
-                    state = prevState,
-                    status = prevStatus
-                }
-            }
-            const output = await this.executeAction(actionInput, a.body);
-            return [...existingOutputs, output];
-        }, Promise.resolve([] as IStepActionExecutionOutput[]));
-
-        const failedActions = outputs.filter(o => !o.result.isSuccess);
-        failedActions.forEach(a => {
-            //do something with failed action
-        })
-
-        const finalState = outputs[outputs.length - 1].state;
-        const finalStatus = outputs[outputs.length - 1].status;
-
-        // let updatedStatus: WorkflowStepExecutionStatus
-        // switch (stepExecution.status) {
-        //     case WorkflowStepExecutionStatus.NOT_STARTED:
-        //         updatedStatus = WorkflowStepExecutionStatus.STARTED
-        //         break
-        //     case WorkflowStepExecutionStatus.STARTED:
-        //         if (Object.keys(finalState).length === stepExecution.input.questions.length) {
-        //             updatedStatus = WorkflowStepExecutionStatus.COMPLETE
-        //             break
-        //         }
-        //     default:
-        //         updatedStatus = stepExecution.status
-        // }
-
-        await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(body.executedWf, finalState)
-        return { finalState, finalStatus, failedActions }
-
     }
 
     private async executeAction(input: IStepActionExecutionInput, action: string): Promise<IStepActionExecutionOutput> {
         let output: IStepActionExecutionOutput;
         try {
             const script = new vm.Script(`${action}`);
-            const context = vm.createContext(input);
-            output = await script.runInContext(context);
+            const context = vm.createContext(input.input); //нужен ли тут submittedAnswer?
+            // const scriptResult = await script.runInContext(context);
+            await script.runInContext(context);
+            output = {
+                state: context,
+                status: WorkflowStepExecutionStatus.COMPLETE,
+                result: {
+                    isSuccess: true,
+                    message: "You gave an answer"
+                }
+            }
         } catch (e) {
             console.error(`Failed to execute action ${action} with input ${JSON.stringify(input)}`, e);
             output = {
@@ -247,7 +188,7 @@ export class WfStepExecutionService {
                 status: input.status,
                 result: {
                     isSuccess: false,
-                    message: e.message || e + "";
+                    message: e.message || e + ""
                 }
             }
         }

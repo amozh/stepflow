@@ -21,7 +21,6 @@ import { WfStepActionExecutionEntity } from '../wf-step-action-execution/wf-step
 
 
 @Entity("action")
-// @Unique(['alias'])
 export class ActionEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
@@ -34,6 +33,14 @@ export class ActionEntity {
 
     @Column({ type: "text" })
     body: string;
+
+    @Unique(["alias"])
+    @Column({ type: "varchar", length: 512 })
+    alias: string;
+
+    // @Unique(["version"])
+    // @Column({ type: "varchar", length: 512 })
+    // version?: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created: Date;

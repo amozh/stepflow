@@ -1,6 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { WfStepExecutionController } from './wf-step-execution.controller';
 import { WfStepExecutionService } from './wf-step-execution.service';
 import { WfStepExecutionEntity } from "./wf-step-execution.entity"
 import { WorkflowStep } from "../wf-step/wf-step.entity";
@@ -15,7 +14,6 @@ import { WfExecutionsModule } from "../wf-executions/wf-executions.module"
   ]),
     WfExecutionsModule
   ],
-  controllers: [WfStepExecutionController],
   providers: [WfStepExecutionService]
 })
 export class WfStepExecutionModule { }

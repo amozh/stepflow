@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes } from '@nestjs/common';
-import { WfExecutionsService } from "./wf-executions.service"
+import { WfExecutionsService, IWorkflowActionExecutionInput } from "./wf-executions.service"
 import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
 import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
@@ -18,6 +18,8 @@ export class ITestDto {
     @IsNumber()
     readonly count: number;
 }
+
+
 @Controller('wf-executions')
 export class WfExecutionsController {
     constructor(
@@ -39,10 +41,9 @@ export class WfExecutionsController {
 
     @Post()
     createWfExecution(@Body() body: { workflowId: number }/*1*/): Promise<IWorkflowExecutionDto> {
-        console.log(body.workflowId, "workflowId")
-        if (!body || !body.workflowId) { /*2*/
-            throw new Error("workflowId should be a positive number");
-        }
+        // if (!body || !body.workflowId) { /*2*/
+        //     throw new Error("workflowId should be a positive number");
+        // }
         return this.wfExecutionsService.createWfExecution(body.workflowId); /*3, 4*/
     }
 
@@ -51,22 +52,47 @@ export class WfExecutionsController {
         return this.wfExecutionsService.updateWfExecution(id, body)
     }
 
+    // WORKFLOWS EXECUTIONS
     @Put('start/:id')
+    startWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+        return this.wfExecutionsService.startWfExecution(id, body)
+    }
+
+    @Put('complete/:id')
+    completeWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+        return this.wfExecutionsService.completeWfExecution(id, body)
+    }
+
+    @Put('submit/:id')
+    submitWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+        return this.wfExecutionsService.submitWfExecution(id, body)
+    }
+
+    @Put('custom/:id')
+    executeCustomWfAction(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: { actionAlias: string, input: IWorkflowActionExecutionInput }
+    ): Promise<any> {
+        return this.wfExecutionsService.executeCustomWfAction(id, body.actionAlias, body.input)
+    }
+
+    // STEPS EXECUTIONS
+    @Put('step/start/:id')
     startWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfStepExecutionService.startWfStepExecution(id, body)
     }
 
-    @Put('complete/:id')
+    @Put('step/complete/:id')
     completeWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfStepExecutionService.completeWfStepExecution(id, body)
     }
 
-    @Put('submit/:id')
+    @Put('step/submit/:id')
     submitWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfStepExecutionService.submitWfStepExecution(id, body)
     }
 
-    @Put('custom/:id')
+    @Put('step/custom/:id')
     executeCustomWorkflowStepAction(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: { actionAlias: string, input: IStepActionExecutionInput }

@@ -1,6 +1,6 @@
 // import { IActionDto } from "../action";
 
- enum WorkflowExecutionStatus {
+enum WorkflowExecutionStatus {
   NOT_STARTED = "NOT_STARTED",
   STARTED = "STARTED",
   COMPLETE = "COMPLETE"

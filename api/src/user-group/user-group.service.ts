@@ -40,6 +40,14 @@ export class UserGroupService implements OnModuleInit {
                 input: {
                     "someInput": "someInput data"
                 },
+                actions:[{
+                        "name": "workflowAction",
+                        "description": "action to find the SUMM",
+                        "body":
+                            "function fn(a,b,h){return (a+b+h)}; res = fn(a,b,h)",
+                        "version": "1.0",
+                        "alias": "action alias 735" 
+                }],
                 steps: [
                     {
                         name: 'one',

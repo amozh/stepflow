@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Workflow } from "../workflow/workflow.entity";
 import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
+import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity"
 
 export enum WorkflowExecutionStatus {
   NOT_STARTED = "NOT_STARTED",
@@ -62,6 +63,14 @@ export class WokrflowExecution {
   )
   @JoinColumn()
   wfStepsExecution: WfStepExecutionEntity[]
+
+  @OneToMany(
+    () => WfActionExecutionEntity,
+    wfActionExecution => wfActionExecution.wfExecution,
+    { cascade: true, eager: true }
+  )
+  @JoinColumn()
+  wfActionsExecution: WfActionExecutionEntity[]
 
   @BeforeUpdate()
   updateTimestamp() {

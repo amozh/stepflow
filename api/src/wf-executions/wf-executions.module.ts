@@ -9,13 +9,15 @@ import { WokrflowExecution } from './wf-executions.entity';
 import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 import { WfStepActionExecutionEntity } from "../wf-step-action-execution/wf-step-action-execution.entity"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
+import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity"
 
 @Module({
   imports: [TypeOrmModule.forFeature([
     WokrflowExecution,
     Workflow,
     WfStepExecutionEntity,
-    WfStepActionExecutionEntity
+    WfStepActionExecutionEntity,
+    WfActionExecutionEntity
   ])],
   controllers: [WfExecutionsController],
   providers: [WfExecutionsService, WfStepExecutionService],

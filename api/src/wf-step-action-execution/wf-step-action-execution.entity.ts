@@ -39,7 +39,7 @@ export class WfStepActionExecutionEntity {
     @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
     alias: string;
 
-    @Column({ default: ActionType.ON_START }) // actionType: "onStart" | "onSubmit" | "onComplete" | "custom";
+    @Column({ default: ActionType.ON_START })
     actionType: ActionType
 
     @Column()

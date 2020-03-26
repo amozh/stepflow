@@ -8,12 +8,12 @@ const vm = require("vm")
 
 export interface IStepActionExecutionInput {
     input: any
-    state?: any
+    state?: JSON
     status?: WorkflowStepExecutionStatus
 }
 
 export interface IStepActionExecutionOutput {
-    state: any
+    state: JSON
     status: WorkflowStepExecutionStatus
     result: {
         isSuccess: boolean
@@ -24,8 +24,9 @@ export interface IStepActionExecutionOutput {
 @Injectable()
 export class WfStepExecutionService {
     constructor(
-        @InjectRepository(WfStepExecutionEntity) private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
-        private readonly WfExecutionsService: WfExecutionsService
+        @InjectRepository(WfStepExecutionEntity)
+        private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
+        private readonly wfExecutionsService: WfExecutionsService
     ) { }
 
     // TODO
@@ -67,8 +68,7 @@ export class WfStepExecutionService {
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
-
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -77,7 +77,7 @@ export class WfStepExecutionService {
         const finalStatus = outputs[outputs.length - 1].status;
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(
+        await this.wfExecutionsService.updateWfExecution(
             stepExecution.workflow_execution_id,
             finalState,
             id
@@ -121,7 +121,7 @@ export class WfStepExecutionService {
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -130,7 +130,7 @@ export class WfStepExecutionService {
         const finalStatus = outputs[outputs.length - 1].status;
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(
+        await this.wfExecutionsService.updateWfExecution(
             stepExecution.workflow_execution_id,
             finalState,
             id
@@ -172,7 +172,7 @@ export class WfStepExecutionService {
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
 
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -181,7 +181,7 @@ export class WfStepExecutionService {
         const finalStatus = outputs[outputs.length - 1].status;
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(
+        await this.wfExecutionsService.updateWfExecution(
             stepExecution.workflow_execution_id,
             finalState,
             id
@@ -189,7 +189,8 @@ export class WfStepExecutionService {
         return { finalState, finalStatus, failedActions }
     }
 
-    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput): Promise<any> {
+    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput):
+        Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const input = stepExecution.input;
         const state = stepExecution.state;
@@ -237,7 +238,7 @@ export class WfStepExecutionService {
         const finalStatus = outputs[outputs.length - 1].status;
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
-        await this.WfExecutionsService.updateWfExecution(stepExecution.workflow_execution_id, finalState, id)
+        await this.wfExecutionsService.updateWfExecution(stepExecution.workflow_execution_id, finalState, id)
         return { finalState, finalStatus, failedActions }
     }
 

@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActionEntity } from './action.entity';
 import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
-const vm = require("vm")
-
+const vm = require("vm");
 
 @Injectable()
 export class ActionService {

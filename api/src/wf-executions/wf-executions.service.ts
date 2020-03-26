@@ -13,8 +13,10 @@ export class WfExecutionsService {
     constructor(
         @InjectRepository(WokrflowExecution) private readonly wfExecutionRepository: Repository<WokrflowExecution>,
         @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>,
-        @InjectRepository(WfStepExecutionEntity) private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
-        @InjectRepository(WfStepActionExecution) private readonly wfStepActionExecutionRepository: Repository<WfStepActionExecution>
+        @InjectRepository(WfStepExecutionEntity)
+        private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
+        @InjectRepository(WfStepActionExecution)
+        private readonly wfStepActionExecutionRepository: Repository<WfStepActionExecution>
     ) { }
 
     async getWfExecution(id: number): Promise<IWorkflowExecutionDto> {
@@ -29,10 +31,10 @@ export class WfExecutionsService {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
 
         // TODO: Try to use const where variable is not changed
-        let workflowExecution = new WokrflowExecution()
+        const workflowExecution = new WokrflowExecution()
 
         // СОХРАНЕНИЕ ЭКШЕНОВ СЮДА (В ВОРКФЛОУ) И В КАЖДЫЙ СТЕП
-        let executionSteps: Promise<WfStepExecutionEntity>[] = workflow.steps.map(async step => {
+        const executionSteps: Promise<WfStepExecutionEntity>[] = workflow.steps.map(async step => {
             const stepActionExecutions: WfStepActionExecution[] = step.actions.map(action => {
                 const wfStepActionExecution = new WfStepActionExecution()
                 wfStepActionExecution.actionId = action.id
@@ -43,7 +45,8 @@ export class WfExecutionsService {
                 wfStepActionExecution.body = action.body
                 return wfStepActionExecution
             })
-            const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository.save(stepActionExecutions)
+            const createdStepActions:
+            WfStepActionExecution[] = await this.wfStepActionExecutionRepository.save(stepActionExecutions)
             const wfStepExecution = new WfStepExecutionEntity()
             wfStepExecution.workflow_execution_id = workflow.id
             wfStepExecution.workflow_step_id = step.id
@@ -54,7 +57,8 @@ export class WfExecutionsService {
             return wfStepExecution
         })
 
-        const savedSteps: WfStepExecutionEntity[] = await this.wfStepExecutionRepository.save(await Promise.all(executionSteps))
+        const savedSteps:
+        WfStepExecutionEntity[] = await this.wfStepExecutionRepository.save(await Promise.all(executionSteps))
         // Запишет в Workflow input данные про все его steps
         const wfInput = await savedSteps.map(step => {
             return { stepId: step.id, stepStatus: step.status, state: step.state, input: step.input }
@@ -96,8 +100,6 @@ export class WfExecutionsService {
         //     // wfStepsExecution: { id: 4 },
         //     // relations: ["wfStepsExecution"]
         // }
-
-
         // console.log(executedWf, "executedWf")
         // const executedWf = await this.wfExecutionRepository.findOne(id)
         //

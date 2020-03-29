@@ -1,39 +1,65 @@
 <template>
   <div class="container">
-    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
-    <h1 class="subheading text-center">Create a new workflow</h1>
-    <v-form class="text-center" ref="form">
-      <v-text-field
-        class
-        label="Title"
-        v-model="title"
-        prepend-icon="mdi-subtitles-outline"
-        :rules="inputRules"
-      ></v-text-field>
-      <v-text-field
-        class
-        label="Description"
-        v-model="description"
-        prepend-icon="mdi-format-text"
-        :rules="inputRules"
-      ></v-text-field>
-      <CreateStep
-        v-for="(step, index) in steps"
-        :key="`${index}`"
-        :step="step"
-        :index="index"
-        @save-step="saveStep(step, index)"
-        @delete-step="deleteStep(index)"
-      />
-      <v-btn @click="addStep" class="mr-10" width="200" color="primary">Add new step</v-btn>
-      <v-btn
-        text
-        class="success mx-0"
-        width="200"
-        @click="submit"
-        :disabled="!steps.length"
-      >Create workflow</v-btn>
-    </v-form>
+    <!-- ------------------------------------------------------------ -->
+    <v-breadcrumbs :items="breadCrumbsWorkflow">
+      <template v-slot:divider>
+        <v-icon>mdi-chevron-right</v-icon>
+      </template>
+    </v-breadcrumbs>
+
+    <!-- ------------------------------------------------------------ -->
+    <v-flex>
+      <v-sheet outlined class="mt-5" elevation="2" max-width="100%">
+        <v-slide-group outlined v-model="activeStep" class="pa-5" show-arrows>
+          <v-slide-item
+            v-for="(step, index) in workflow.steps"
+            :key="`${index}`"
+            v-slot:default="{ active, toggle }"
+          >
+            <v-card
+              :color="active ? 'primary' : 'grey lighten-2'"
+              class="ma-4"
+              height="50"
+              width="150"
+              @click="openStep(toggle, active, index, step.name)"
+            >
+              <v-row outlined class="fill-height" align="center" justify="center">
+                <v-scale-transition>
+                  <h4>
+                    {{step.name}}
+                    <br />
+                    Index: {{index}}!
+                  </h4>
+                </v-scale-transition>
+              </v-row>
+            </v-card>
+          </v-slide-item>
+          <v-icon x-large class="pointer-x" @click="addStep">mdi-plus</v-icon>
+        </v-slide-group>
+        <v-expand-transition>
+          <v-sheet v-if="activeStep != null" color="grey lighten-4" height="auto" tile>
+            <v-row class="fill-height" align="center" justify="center">
+              <h3 class="title">Selected step: {{ activeStep }}</h3>
+              <!-- <h1>Index:{{index}}</h1> -->
+              <p></p>
+            </v-row>
+            <v-btn color="error" @click="deleteStep(activeStep)">Delete</v-btn>
+          </v-sheet>
+          <v-sheet v-else class="pa-10">
+            <h3>{{workflow.name}}</h3>
+            <p>{{workflow.description}}</p>
+            <v-text-field class label="Title" v-model="wfName" prepend-icon="mdi-subtitles-outline"></v-text-field>
+            <v-text-field
+              class
+              label="Title"
+              v-model="wfDescription"
+              prepend-icon="mdi-subtitles-outline"
+            ></v-text-field>
+            <VJsoneditor v-model="json"></VJsoneditor>
+          </v-sheet>
+        </v-expand-transition>
+      </v-sheet>
+    </v-flex>
   </div>
 </template>
 
@@ -46,104 +72,92 @@ import {
   Emit,
   Ref
 } from "vue-property-decorator";
-// import WorkflowStore from "../store/modules/workflow";
-import { workflowMapper } from "../store/modules/workflow";
-import CreateStep from "../components/CreateStep.vue";
-import Snackbar from "../components/Snackbar.vue";
-import {
-  CreateWorkflowStepDto,
-  ICreateWorkflowDto,
-  IWorkflowStepDto
-} from "@stepflow/shared";
-import { ValidationUtils } from "../utils/validation-utils";
+import VJsoneditor from "v-jsoneditor";
+
+//  <VJsoneditor v-activeStep="json"></VJsoneditor>
+//   {{json}}
 
 const Mappers = Vue.extend({
   components: {
-    CreateStep,
-    Snackbar
-  },
-  methods: {
-    ...workflowMapper.mapActions({
-      createWorkflow: "createWorkflow"
-    })
+    VJsoneditor
   }
 });
 @Component
 export default class CreateWorkflow extends Mappers {
-  $refs!: {
-    form: HTMLFormElement & { validate: () => boolean };
+  @Provide() workflow: any = {
+    name: "Workflow_1",
+    description: "Some description",
+    steps: [{ name: "first_1" }, { name: "second_2" }, { name: "third_3" }]
   };
+  @Provide() json: any = { hello: "any" };
+  @Provide() activeStep: null = null;
+  @Provide() breadCrumbsWorkflow = [];
+  @Provide() wfName: string = "";
+  @Provide() wfDescription: string = "";
 
-  @Provide() title: string = "";
-  @Provide() description: string = "";
-  @Provide() snackbar: boolean = false;
-  @Provide() snackbarText: string = "";
-  @Provide() saveAllSteps: boolean = false;
-  @Provide() inputRules = [ValidationUtils.nonEmptyString];
-  @Provide() steps: CreateWorkflowStepDto[] = [];
+  @Ref("breadcrumbs") breadcrumbs!: HTMLInputElement;
 
-  @Ref("form") readonly form!: HTMLInputElement;
-
-  @Emit()
   addStep() {
-    this.steps.push({
-      name: "",
-      description: "",
-      answer: {
-        answer: ""
-      }
-    });
+    this.workflow.steps.push({ name: "random step" });
   }
-
-  @Emit()
-  saveStep(newStep: CreateWorkflowStepDto, index: number): void {
-    this.steps.splice(index, 1, newStep);
-  }
-
-  @Emit()
   deleteStep(index: number): void {
-    this.steps.splice(index, 1);
+    const breadCrumbIndex: number = this.breadCrumbsWorkflow.findIndex(
+      br => br.wfStepIndex === index
+    );
+    if (breadCrumbIndex !== -1) {
+      this.breadCrumbsWorkflow.splice(breadCrumbIndex, 1);
+    }
+    this.workflow.steps.splice(index, 1);
   }
 
-  @Emit()
-  async submit(): Promise<void> {
-    // Проверит все ли дочерние элементы формы (степы) проходят валидацию
-    const validateSteps: boolean[] = this.$refs.form.$children.map(
-      (child: HTMLFormElement, index: number) => {
-        if (![0, 1, 2, 3].some(e => e === index)) {
-          return child.form.validate();
-        } else {
-          return true;
-        }
+  openStep(toggle, active, index, stepName) {
+    // Переписать всю логику добавления/удаления
+    // Попробовать при каждом выборе передовать сюда заново степ и все его подстепы
+
+    this.breadCrumbsWorkflow = [
+      {
+        text: this.workflow.name,
+        disabled: false,
+        wfStepIndex: null,
+        link: true,
+        // to:"javascript:console.log('wdjavascript:')"
+        // href: "()=>console.log('wdjavascript:')"
+        // href: "javascript:console.log('wdjavascript:')"
       }
+    ];
+
+    const breadCrumbIndex: number = this.breadCrumbsWorkflow.findIndex(
+      br => br.wfStepIndex === index
     );
-    if (
-      this.$refs.form.validate() &&
-      validateSteps.every(e => e === true) &&
-      this.steps.length
-    ) {
-      // Переведёт isSave в true в каждом step, что добавит их в массив steps
-      this.saveAllSteps = true;
-      const workflow: ICreateWorkflowDto = {
-        name: this.title,
-        description: this.description,
-        steps: this.steps
-      };
-      await this.createWorkflow(workflow);
-      this.snackbar = true;
-      this.snackbarText = `Workflow "${this.title}" has been created`;
-      this.$router.push("/");
+
+    if (!active) {
+      this.breadCrumbsWorkflow.push({
+        text: stepName,
+        disabled: true,
+        wfStepIndex: index
+      });
+    } else {
+      if (breadCrumbIndex !== -1) {
+        this.breadCrumbsWorkflow.splice(breadCrumbIndex, 1);
+      }
     }
+    toggle();
   }
 
   mounted() {
-    this.steps.push({
-      name: "",
-      description: "",
-      answer: {
-        answer: ""
-      }
+    console.log(this, "this?")
+    this.breadCrumbsWorkflow.push({
+      text: this.workflow.name,
+      disabled: false,
+      wfStepIndex: null,
+      href: "javascript:console.log(this)"
+      // href:`# ${() => console.log("wdjavascript:")}`
     });
   }
 }
 </script>
+<style scoped>
+.pointer-x {
+  cursor: pointer;
+}
+</style>

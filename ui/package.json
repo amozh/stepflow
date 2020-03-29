@@ -17,6 +17,7 @@
   "dependencies": {
     "@vue/eslint-config-typescript": "^5.0.1",
     "typescript": "3.7.5",
+    "v-jsoneditor": "^1.2.3",
     "vue": "^2.6.11",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.3.0",

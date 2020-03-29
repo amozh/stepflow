@@ -23,7 +23,7 @@ export class WorkflowService {
     try {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
 
-      let wokflowSteps = steps.map(step => {
+      const wokflowSteps = steps.map(step => {
         const workflowStep = new WorkflowStep();
 
         const stepAnswer = new Answer();

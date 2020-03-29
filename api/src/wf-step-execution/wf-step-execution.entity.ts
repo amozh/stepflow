@@ -38,7 +38,9 @@ export class WfStepExecutionEntity {
     description: string;
 
     @Column({ type: "json", default: null })
-    input: JSON //вся информация про тест и его правильные варианты (отдавать только те поля, которые содержат инфу, без ответов)
+    input: JSON /*вся информация про тест и его правильные варианты
+                (отдавать только те поля, которые содержат инфу, без ответов)
+                */
 
     @Column({ type: "json", default: null })
     state: JSON //если есть какие-то подшаги (информация про ошибки или про выполнение теста)
@@ -51,11 +53,6 @@ export class WfStepExecutionEntity {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
-
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
 
     @ManyToOne(
         () => WokrflowExecution,
@@ -76,4 +73,9 @@ export class WfStepExecutionEntity {
     )
     @JoinColumn()
     wfStepActionExecutions: WfStepActionExecutionEntity[]
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

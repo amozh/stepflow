@@ -60,11 +60,6 @@ export class WfStepActionExecutionEntity {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
 
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
-
     @ManyToOne(
         () => ActionEntity,
         action => action.wfStepActionExecutions
@@ -76,4 +71,9 @@ export class WfStepActionExecutionEntity {
         wfStepExecution => wfStepExecution.wfStepActionExecutions
     )
     wfStepExecution: WfStepExecutionEntity
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

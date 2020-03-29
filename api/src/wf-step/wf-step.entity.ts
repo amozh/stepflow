@@ -36,11 +36,6 @@ export class WorkflowStep {
   @Column({ type: "json", default: null })
   input: JSON
 
-  @BeforeUpdate()
-  updateTimestamp() {
-    this.updated = new Date();
-  }
-
   @ManyToOne(
     () => Workflow,
     wf => wf.steps,
@@ -70,4 +65,8 @@ export class WorkflowStep {
   @JoinColumn()
   stepExecutions: WfStepExecutionEntity[]
 
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updated = new Date();
+  }
 }

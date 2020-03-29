@@ -15,13 +15,10 @@ import { AnswerDto } from '@stepflow/shared';
 
 @Controller('answer')
 export class AnswerController {
-    constructor(private readonly answerService:AnswerService){}
+    constructor(private readonly answerService: AnswerService) {}
 
      @Post()
-     checkAnswer(@Body() answer: AnswerDto): Promise<String>{
+     checkAnswer(@Body() answer: AnswerDto): Promise<string> {
          return this.answerService.checkAnswer(answer)
-     } 
-     
-   
-    
+     }
 }

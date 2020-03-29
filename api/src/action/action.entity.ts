@@ -48,11 +48,6 @@ export class ActionEntity {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
 
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
-
     @ManyToMany(
         () => WorkflowEntity,
         workflow => workflow.actions,
@@ -80,4 +75,9 @@ export class ActionEntity {
     )
     @JoinColumn()
     wfStepActionExecutions: WfStepActionExecutionEntity[]
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

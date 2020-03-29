@@ -24,7 +24,8 @@ export interface IStepActionExecutionOutput {
 @Injectable()
 export class WfStepExecutionService {
     constructor(
-        @InjectRepository(WfStepExecutionEntity) private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
+        @InjectRepository(WfStepExecutionEntity)
+        private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
         private readonly WfExecutionsService: WfExecutionsService
     ) { }
 
@@ -67,8 +68,7 @@ export class WfStepExecutionService {
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
-
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -121,7 +121,7 @@ export class WfStepExecutionService {
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -171,8 +171,7 @@ export class WfStepExecutionService {
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
 
-
-        let failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
+        const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
             //do something with failed action
         })
@@ -189,7 +188,8 @@ export class WfStepExecutionService {
         return { finalState, finalStatus, failedActions }
     }
 
-    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput): Promise<any> {
+    async executeCustomWorkflowStepAction(id: number, actionAlias: string, actionsInput: IStepActionExecutionInput)
+    : Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const input = stepExecution.input;
         const state = stepExecution.state;

@@ -49,14 +49,14 @@ export class WfActionExecutionEntity {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
 
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
-
     @ManyToOne(
         () => ActionEntity,
         action => action.wfActionExecutions
     )
     action: ActionEntity
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

@@ -34,9 +34,9 @@ export class WorkflowController {
   @Post('answer')
   giveAnswer(
     @Body()
-    @Query("workflow", ParseIntPipe) workflow:number,
-    @Query("step", ParseIntPipe) step:number)
+    @Query("workflow", ParseIntPipe) workflow: number,
+    @Query("step", ParseIntPipe) step: number)
   : void {
-    return console.log("workflowNumber:", workflow, "stepNumber:",step)
+    return console.log("workflowNumber:", workflow, "stepNumber:", step)
   }
 }

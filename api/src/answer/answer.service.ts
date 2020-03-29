@@ -19,8 +19,7 @@ export class AnswerService {
       const foundAnswer = await this.answerRepository.findOne({ id: +parent })
       if (foundAnswer.answer == answer) {
         return "Correct answer"
-      }
-      else {
+      } else {
         return "Wrong answer"
       }
     } catch (e) {

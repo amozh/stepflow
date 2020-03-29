@@ -11,7 +11,7 @@ import {
     JoinTable,
 } from 'typeorm';
 
-@Entity('user_group')
+@Entity('user-group')
 export class UserGroupEntity {
     @PrimaryGeneratedColumn()
     id: number;

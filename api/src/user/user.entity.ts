@@ -6,7 +6,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
     ManyToMany,
-    JoinTable,
+    JoinTable
 } from 'typeorm';
 import { UserGroupEntity } from '../user-group/user-group.entity';
 

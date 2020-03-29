@@ -1,11 +1,17 @@
 <template>
   <div class="container">
     <!-- ------------------------------------------------------------ -->
-    <v-breadcrumbs :items="breadCrumbsWorkflow">
+    <!-- <v-breadcrumbs :items="breadCrumbsWorkflow" ref="breadCrumb">
       <template v-slot:divider>
         <v-icon>mdi-chevron-right</v-icon>
       </template>
-    </v-breadcrumbs>
+    </v-breadcrumbs>-->
+    <div v-for="(bread, index) in breadCrumbsWorkflow" :key="bread.wfStepIndex">
+      <div class="d-flex ma-0" @click="breadFunc(index)">
+        <p class="ma-0">{{bread.text}}</p>
+        <v-icon>mdi-chevron-right</v-icon>
+      </div>
+    </div>
 
     <!-- ------------------------------------------------------------ -->
     <v-flex>
@@ -74,9 +80,6 @@ import {
 } from "vue-property-decorator";
 import VJsoneditor from "v-jsoneditor";
 
-//  <VJsoneditor v-activeStep="json"></VJsoneditor>
-//   {{json}}
-
 const Mappers = Vue.extend({
   components: {
     VJsoneditor
@@ -95,11 +98,19 @@ export default class CreateWorkflow extends Mappers {
   @Provide() wfName: string = "";
   @Provide() wfDescription: string = "";
 
-  @Ref("breadcrumbs") breadcrumbs!: HTMLInputElement;
+  @Ref("breadCrumb") breadCrumb!: HTMLInputElement;
 
   addStep() {
     this.workflow.steps.push({ name: "random step" });
   }
+
+  breadFunc(index: number): void {
+    if (index === 0) {
+      this.breadCrumbsWorkflow.splice(1);
+      this.activeStep = null;
+    }
+  }
+
   deleteStep(index: number): void {
     const breadCrumbIndex: number = this.breadCrumbsWorkflow.findIndex(
       br => br.wfStepIndex === index
@@ -111,18 +122,18 @@ export default class CreateWorkflow extends Mappers {
   }
 
   openStep(toggle, active, index, stepName) {
+    //  console.log(this.breadCrumbsWorkflow.length, "dlinna")
     // Переписать всю логику добавления/удаления
     // Попробовать при каждом выборе передовать сюда заново степ и все его подстепы
+    // to:"javascript:console.log('wdjavascript:')"
+    // href: "()=>console.log('wdjavascript:')"
+    // href: "javascript:console.log('wdjavascript:')"
 
     this.breadCrumbsWorkflow = [
       {
         text: this.workflow.name,
         disabled: false,
-        wfStepIndex: null,
-        link: true,
-        // to:"javascript:console.log('wdjavascript:')"
-        // href: "()=>console.log('wdjavascript:')"
-        // href: "javascript:console.log('wdjavascript:')"
+        wfStepIndex: null
       }
     ];
 
@@ -145,13 +156,10 @@ export default class CreateWorkflow extends Mappers {
   }
 
   mounted() {
-    console.log(this, "this?")
     this.breadCrumbsWorkflow.push({
       text: this.workflow.name,
       disabled: false,
-      wfStepIndex: null,
-      href: "javascript:console.log(this)"
-      // href:`# ${() => console.log("wdjavascript:")}`
+      wfStepIndex: null
     });
   }
 }

@@ -1,19 +1,21 @@
 <template>
   <div class="container">
     <BreadCrumbs :breadcrumbs="breadcrumbs" @to-crumb="toCrumb" />
+    <v-switch v-model="autoSave" class="mx-2" label="Autosave"></v-switch>
     <StepsSlider
       :steps="workflow.steps"
       @add-step="addStep"
       @open-step="openStep"
       :breadcrumbs="breadcrumbs"
       @to-crumb="toCrumb"
+      :currentStepIndex="currentStep&&currentStep.stepIndex"
     />
     <Step
       v-if="(currentStep)"
-      :currentStep="currentStep.step"
-      :stepIndex="currentStep.stepIndex"
+      :currentStep="currentStep"
       @delete-step="deleteStep"
       @save-step="saveStep"
+      :autoSave="autoSave"
     />
     <WorkflowInfo v-else :workflow="workflow" />
   </div>
@@ -77,6 +79,7 @@ export default class CreateWorkflow extends Mappers {
   };
   @Provide() breadcrumbs: any = [];
   @Provide() currentStep: any = null;
+  @Provide() autoSave: boolean = false;
 
   addStep(stepDepth: number = 1): any[] {
     return this.workflow.steps.push({
@@ -86,12 +89,7 @@ export default class CreateWorkflow extends Mappers {
   }
 
   saveStep({ step, stepIndex }): void {
-    console.log(step, "step");
-    // console.log(this.workflow.steps, "this.workflow.steps")
-    // console.log(this.workflow.steps, "before");
     this.workflow.steps.splice(stepIndex, 1, step);
-    console.log(this.workflow.steps, "after");
-    // console.log(stepIndex, "stepIndex");
   }
 
   deleteStep(stepIndex: number, stepDepth: number): void {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4>{{currentStep.step.name}}</h4>
+    <h4>{{currentStep.name}}</h4>
     <div class="container">
       <v-form class="text-center" width="500" ref="form">
         <v-text-field
@@ -19,7 +19,7 @@
         ></v-text-field>
         <VJsoneditor :rules="inputRules" class="mt-5" v-model="stepJson"></VJsoneditor>
 
-        <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
+        <v-btn color="error" @click="deleteStep(stepIndex, currentStep.depth)">
           Delete
           <v-icon class="ml-2">delete_forever</v-icon>
         </v-btn>
@@ -27,7 +27,7 @@
           text
           class="success"
           width="200"
-          @click="saveStep({name:stepName, description:stepDescription, input:stepJson, depth: currentStep.step.depth}, currentStep.stepIndex)"
+          @click="saveStep({name:stepName, description:stepDescription, input:stepJson, depth: currentStep.depth},stepIndex)"
         >
           Save
           <v-icon class="ml-2">save</v-icon>
@@ -61,12 +61,9 @@ export default class Step extends Mappers {
   @Provide() stepJson: any = {};
   @Provide() stepName: string = "";
   @Provide() stepDescription: string = "";
-  // @Provide() objTest: {} = {
-  //   string: Math.random()
-  // };
 
   @Prop() currentStep: any;
-  @Prop() autoSave: boolean;
+  @Prop() stepIndex: number;
 
   @Emit("delete-step")
   deleteStep(): void {
@@ -79,30 +76,20 @@ export default class Step extends Mappers {
   }
 
   @Watch("currentStep")
-  watchCurrentStep(val: any, oldVal: any) {
-    this.stepName = this.currentStep.step.name;
-    this.stepDescription = this.currentStep.step.description;
-    this.stepJson = this.currentStep.step.input;
-  }
-
-  beforeUpdate() {
-    if (this.autoSave) {
-      this.saveStep(
-        {
-          name: this.stepName,
-          description: this.stepDescription,
-          input: this.stepJson,
-          depth: this.currentStep.step.depth
-        },
-        this.currentStep.stepIndex
-      );
-    }
+  watchCurrentStep(val: boolean, oldVal: boolean) {
+    this.stepName = this.currentStep.name;
+    this.stepDescription = this.currentStep.description;
+    this.stepJson = this.currentStep.input;
+    // this.saveStep(val, this.stepIndex);
+    // this.saveStep();
+    // Добавить тоггл, который будет отвечать за автосохранение степов
+    // здесь вызывать метод сейвСтеп и сохранять предыдущие значение (oldVal), то бишь - предыдущий закрытый степ
   }
 
   mounted() {
-    this.stepName = this.currentStep.step.name;
-    this.stepDescription = this.currentStep.step.description;
-    this.stepJson = this.currentStep.step.input;
+    this.stepName = this.currentStep.name;
+    this.stepDescription = this.currentStep.description;
+    this.stepJson = this.currentStep.input;
   }
 }
 </script>

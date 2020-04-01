@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="d-flex flex-row">
+    <div :class="orientation==='horizontal'? 'd-flex flex-row':'d-flex flex-column'">
       <v-card
-        class="py-4 px-10 ma-3 pointer"
+        class="py-4 ma-3 pointer"
         v-for="(step, stepIndex) in steps"
         :key="stepIndex"
-        @click="openStep(stepIndex,  step)"
-        :class="currentStepIndex===stepIndex?'current_step':''+'py-4 px-10 ma-3 pointer'"
+        @click="openStep(stepIndex, step)"
+        :class="currentStepIndex===stepIndex?'current_step':''+'py-4 ma-3 pointer'"
       >
         <h4>{{step.name}}</h4>
       </v-card>
@@ -40,6 +40,7 @@ const Mappers = Vue.extend({
 export default class StepsSlider extends Mappers {
   @Prop() steps!: any[];
   @Prop() currentStepIndex!: number;
+  @Prop() orientation!: string;
 
   @Emit("add-step")
   addStep(): void {
@@ -49,6 +50,9 @@ export default class StepsSlider extends Mappers {
   openStep(): void {
     return;
   }
+  // mounted() {
+  //   console.log(this.orientation, this.orientation === "horizontal");
+  // }
 }
 </script>
 <style scoped>

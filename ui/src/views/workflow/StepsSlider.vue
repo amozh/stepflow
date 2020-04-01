@@ -1,22 +1,28 @@
 <template>
-  <div>
+<v-container class="d-flex flex-row">
+  <v-slide-group outlined class="pa-5" show-arrows>
     <div class="d-flex flex-row">
-      <v-card
+      <v-slide-item
         class="py-4 px-10 ma-3 pointer"
         v-for="(step, stepIndex) in steps"
         :key="stepIndex"
-        @click="openStep(stepIndex,  step)"
-        :class="currentStepIndex===stepIndex?'current_step':''+'py-4 px-10 ma-3 pointer'"
       >
-        <h4>{{step.name}}</h4>
-      </v-card>
-      <v-icon
-        x-large
-        class="pointer"
-        @click="addStep(steps[0] !== undefined?steps[0].depth:1)"
-      >mdi-plus</v-icon>
+        <v-card
+          @click="openStep(stepIndex,  step)"
+          :class="currentStepIndex===stepIndex?'current_step':''+'py-4 px-10 ma-3 pointer'"
+        >
+          <h4>{{step.name}}</h4>
+        </v-card>
+      </v-slide-item>
     </div>
-  </div>
+  </v-slide-group>
+  <v-icon
+        x-large
+        class="pointer add-icon"
+        @click="addStep(steps[0] !== undefined?steps[0].depth:1)"
+      >mdi-plus
+  </v-icon>
+</v-container>
 </template>
 
 <script lang="ts">
@@ -54,6 +60,11 @@ export default class StepsSlider extends Mappers {
 <style scoped>
 .pointer {
   cursor: pointer;
+
+}
+.add-icon{
+  align-items: center;
+  justify-content: center;
 }
 .current_step {
   background-color: #1976d2;

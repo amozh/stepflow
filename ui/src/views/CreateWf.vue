@@ -1,7 +1,9 @@
 <template>
   <div class="container">
-    <BreadCrumbs :breadcrumbs="breadcrumbs" @to-crumb="toCrumb" />
-    <v-switch v-model="autoSave" class="mx-2" label="Autosave"></v-switch>
+    <v-container class="d-flex flex-row">
+      <BreadCrumbs :breadcrumbs="breadcrumbs" @to-crumb="toCrumb" />
+      <v-switch v-model="autoSave" class="mx-2 v-switch" label="Autosave"></v-switch>
+    </v-container>
     <StepsSlider
       :steps="workflow.steps"
       @add-step="addStep"

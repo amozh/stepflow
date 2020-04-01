@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h4>{{currentStep.step.name}}</h4>
     <div class="container">
       <v-form class="text-center" width="500" ref="form">
         <v-text-field

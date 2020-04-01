@@ -19,7 +19,6 @@ import { Workflow as WorkflowEntity } from "../workflow/workflow.entity"
 import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity";
 import { WfStepActionExecutionEntity } from '../wf-step-action-execution/wf-step-action-execution.entity';
 
-
 @Entity("action")
 export class ActionEntity {
     @PrimaryGeneratedColumn("uuid")
@@ -37,6 +36,7 @@ export class ActionEntity {
     @Unique(["alias"])
     @Column({ type: "varchar", length: 512 })
     alias: string;
+    // Нужно переделать логику ActionType. Он должен добавляться здесь, а не в Action Executed
 
     // @Unique(["version"])
     // @Column({ type: "varchar", length: 512 })
@@ -47,11 +47,6 @@ export class ActionEntity {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
-
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
 
     @ManyToMany(
         () => WorkflowEntity,
@@ -80,4 +75,9 @@ export class ActionEntity {
     )
     @JoinColumn()
     wfStepActionExecutions: WfStepActionExecutionEntity[]
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

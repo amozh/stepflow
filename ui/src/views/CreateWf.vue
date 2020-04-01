@@ -11,6 +11,7 @@
       :breadcrumbs="breadcrumbs"
       @to-crumb="toCrumb"
       :currentStepIndex="currentStep&&currentStep.stepIndex"
+      :orientation="'horizontal'"
     />
     <Step
       v-if="(currentStep)"
@@ -39,6 +40,13 @@ import StepsSlider from "./workflow/StepsSlider.vue";
 import WorkflowInfo from "./workflow/WorkflowInfo.vue";
 import Step from "./workflow/Step.vue";
 
+export enum ActionType {
+  ON_START = "ON_START",
+  ON_SUBMIT = "ON_SUBMIT",
+  ON_COMPLETE = "ON_COMPLETE",
+  CUSTOM = "CUSTOM"
+}
+
 const Mappers = Vue.extend({
   components: {
     VJsoneditor,
@@ -61,6 +69,7 @@ export default class CreateWorkflow extends Mappers {
         name: "first_1",
         description: "first step description",
         input: {},
+        actions:[],
         depth: 1
       },
       // { name: "second_2", depth: 1 },
@@ -69,12 +78,29 @@ export default class CreateWorkflow extends Mappers {
         name: "depth_2",
         description: "step with depth 2 some description",
         input: { second: "depth" },
+        actions:[],
         depth: 2
       },
       {
         name: "depth_3",
         description: "some description of step with  with the greatest depth",
         input: {},
+        actions: [
+          {
+            name: "first_ACTION",
+            actionType: ActionType.ON_START,
+            description: "first ACTION description",
+            alias: "action alias 999",
+            body: ""
+          },
+          {
+            name: "second_ACTION",
+            actionType: ActionType.ON_SUBMIT,
+            description: "second ACTION description 123123",
+            alias: "action alias 888",
+            body: ""
+          }
+        ],
         depth: 3
       }
     ]

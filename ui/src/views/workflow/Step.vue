@@ -15,9 +15,9 @@
           :rules="inputRules"
         ></v-text-field>
         <VJsoneditor :rules="inputRules" class="mt-5" v-model="stepJson"></VJsoneditor>
-        <v-flex class="d-flex flex-row mt-5">
+        <v-flex class="d-flex flex-row">
           <StepsSlider
-            class="mr-6"
+            class="l-10"
             :steps="actions"
             @add-step="addAction"
             @open-step="openAction"
@@ -33,19 +33,21 @@
           />
           <v-card class="center pt-8" width="100%" height="100" outlined v-else>ADD ACTIONS</v-card>
         </v-flex>
-        <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
-          Delete
-          <v-icon class="ml-2">delete_forever</v-icon>
-        </v-btn>
-        <v-btn
-          text
-          class="success"
-          width="200"
-          @click="saveStep({name:stepName, description:stepDescription, input:stepJson, depth: currentStep.step.depth}, currentStep.stepIndex)"
-        >
-          Save step
-          <v-icon class="ml-2">save</v-icon>
-        </v-btn>
+        <v-container class="d-flex flex-row btns">
+          <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
+            Delete
+            <v-icon class="ml-2">delete_forever</v-icon>
+          </v-btn>
+          <v-btn
+            text
+            class="success"
+            width="200"
+            @click="saveStep({name:stepName, description:stepDescription, input:stepJson, depth: currentStep.step.depth}, currentStep.stepIndex)"
+          >
+            Save step
+            <v-icon class="ml-2">save</v-icon>
+          </v-btn>
+        </v-container>
       </v-form>
     </div>
   </div>
@@ -174,3 +176,9 @@ export default class Step extends Mappers {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.btns {
+  justify-content: space-around;
+}
+</style>

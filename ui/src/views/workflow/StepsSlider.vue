@@ -46,6 +46,7 @@ export default class StepsSlider extends Vue {
     return;
   }
   beforeUpdate() {
+    console.log(this.steps, "steps");
     if (this.breadcrumbs) {
       this.maxDepth = this.breadcrumbs[this.breadcrumbs.length - 1].depth + 1;
     } else {

@@ -112,7 +112,6 @@ export default class Step extends Mappers {
     step: object,
     stepIndex: number
   ): { step: object; stepIndex: number } {
-    console.log(step, stepIndex, "SAVE-STEP");
     return { step, stepIndex };
   }
 
@@ -157,7 +156,6 @@ export default class Step extends Mappers {
   }
 
   saveAction({ action, actionIndex }): void {
-    // console.log(action, actionIndex, "action, actionIndex");
     this.actions.splice(actionIndex, 1, action);
   }
 

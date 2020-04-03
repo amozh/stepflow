@@ -42,7 +42,14 @@
           text
           class="success"
           width="200"
-          @click="saveStep({name:stepName, description:stepDescription, input:stepJson, depth: currentStep.step.depth}, currentStep.stepIndex)"
+          @click="saveStep({
+            name:stepName, 
+            description:stepDescription, 
+            input:stepJson, 
+            depth: currentStep.step.depth,
+            actions:actions,
+            steps: subSteps
+            }, currentStep.stepIndex)"
         >
           Save step
           <v-icon class="ml-2">save</v-icon>
@@ -90,6 +97,7 @@ export default class Step extends Mappers {
   @Provide() stepDescription: string = "";
   @Provide() currentAction: any = null;
   @Provide() actions: any[] = [];
+  @Provide() subSteps: any[] = [];
 
   @Prop() currentStep: any;
   @Prop() autoSave: boolean;
@@ -104,12 +112,16 @@ export default class Step extends Mappers {
     step: object,
     stepIndex: number
   ): { step: object; stepIndex: number } {
+    console.log(step, stepIndex, "SAVE-STEP");
     return { step, stepIndex };
   }
 
   @Watch("currentStep")
   watchCurrentStep(val: any, oldVal: any) {
-    if (this.currentStep.step.actions[0] !== undefined) {
+    if (
+      this.currentStep.step.actions &&
+      this.currentStep.step.actions[0] !== undefined
+    ) {
       this.currentAction = {
         action: this.currentStep.step.actions[0],
         actionIndex: 0
@@ -120,13 +132,18 @@ export default class Step extends Mappers {
     this.stepName = this.currentStep.step.name;
     this.stepDescription = this.currentStep.step.description;
     this.stepJson = this.currentStep.step.input;
+    this.subSteps = this.currentStep.step.steps;
     this.actions = this.currentStep.step.actions;
   }
 
   addAction(): any {
     return this.actions.push({
       name: `Random action :${Math.floor(Math.random() * 100)}`,
-      alias: `alias:${Math.floor(Math.random() * 100)}`
+      description: "Some descr",
+      alias: `alias:${Math.floor(Math.random() * 100)}`,
+      depth: 1,
+      body: "let summ = (a,b) => { return a+b }",
+      actionType: ActionType.ON_START
     });
   }
 
@@ -140,7 +157,7 @@ export default class Step extends Mappers {
   }
 
   saveAction({ action, actionIndex }): void {
-    console.log(action, actionIndex, "action, actionIndex");
+    // console.log(action, actionIndex, "action, actionIndex");
     this.actions.splice(actionIndex, 1, action);
   }
 
@@ -152,6 +169,7 @@ export default class Step extends Mappers {
           description: this.stepDescription,
           input: this.stepJson,
           actions: this.actions,
+          steps: this.subSteps,
           depth: this.currentStep.step.depth
         },
         this.currentStep.stepIndex
@@ -171,6 +189,7 @@ export default class Step extends Mappers {
     this.stepName = this.currentStep.step.name;
     this.stepDescription = this.currentStep.step.description;
     this.stepJson = this.currentStep.step.input;
+    this.subSteps = this.currentStep.step.steps;
     this.actions = this.currentStep.step.actions;
   }
 }

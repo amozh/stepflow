@@ -34,26 +34,28 @@
           />
           <v-card class="center pt-8" width="100%" height="100" outlined v-else>ADD ACTIONS</v-card>
         </v-flex>
-        <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
-          Delete
-          <v-icon class="ml-2">delete_forever</v-icon>
-        </v-btn>
-        <v-btn
-          text
-          class="success"
-          width="200"
-          @click="saveStep({
-            name:stepName, 
-            description:stepDescription, 
-            input:stepJson, 
-            depth: currentStep.step.depth,
-            actions:actions,
-            steps: subSteps
-            }, currentStep.stepIndex)"
-        >
-          Save step
-          <v-icon class="ml-2">save</v-icon>
-        </v-btn>
+        <v-container class="d-flex flex-row btns">
+          <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
+            Delete
+            <v-icon class="ml-2">delete_forever</v-icon>
+          </v-btn>
+          <v-btn
+            text
+            class="success"
+            width="200"
+            @click="saveStep({
+              name:stepName, 
+              description:stepDescription, 
+              input:stepJson, 
+              depth: currentStep.step.depth,
+              actions:actions,
+              steps: subSteps
+              }, currentStep.stepIndex)"
+          >
+            Save step
+            <v-icon class="ml-2">save</v-icon>
+          </v-btn>
+        </v-container>
       </v-form>
     </div>
   </div>
@@ -112,7 +114,6 @@ export default class Step extends Mappers {
     step: object,
     stepIndex: number
   ): { step: object; stepIndex: number } {
-    console.log(step, stepIndex, "SAVE-STEP");
     return { step, stepIndex };
   }
 
@@ -157,7 +158,6 @@ export default class Step extends Mappers {
   }
 
   saveAction({ action, actionIndex }): void {
-    // console.log(action, actionIndex, "action, actionIndex");
     this.actions.splice(actionIndex, 1, action);
   }
 
@@ -194,3 +194,9 @@ export default class Step extends Mappers {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.btns {
+  justify-content: space-around;
+}
+</style>

@@ -1,25 +1,27 @@
 <template>
   <v-form class="full_width" ref="form">
-    <v-btn color="error" @click="deleteAction(currentAction.actionIndex)">
-      Delete action
-      <v-icon class="ml-2">delete_forever</v-icon>
-    </v-btn>
-    <v-btn
-      class="success"
-      width="200"
-      @click="saveAction({
-        name: actionName, 
-        description:actionDescription, 
-        body: actionJson, 
-        alias: actionAlias,
-        actionType: actionType
-        },
-        currentAction.actionIndex
-        )"
-    >
-      Save action
-      <v-icon class="ml-2">save</v-icon>
-    </v-btn>
+    <v-container class="d-flex flex-row btns">
+      <v-btn color="error" @click="deleteAction(currentAction.actionIndex)">
+        Delete action
+        <v-icon class="ml-2">delete_forever</v-icon>
+      </v-btn>
+      <v-btn
+        class="success"
+        width="200"
+        @click="saveAction({
+          name: actionName, 
+          description:actionDescription, 
+          body: actionJson, 
+          alias: actionAlias,
+          actionType: actionType
+          },
+          currentAction.actionIndex
+          )"
+      >
+        Save action
+        <v-icon class="ml-2">save</v-icon>
+      </v-btn>
+    </v-container>
     <v-text-field
       label="Action name"
       v-model="actionName"
@@ -149,5 +151,8 @@ export default class Form extends Mappers {
 form {
   text-align: left;
   width: 100%;
+}
+.btns {
+  justify-content: space-around;
 }
 </style>

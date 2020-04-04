@@ -2,6 +2,7 @@
   <div class="container">
     <BreadCrumbs :breadcrumbs="breadcrumbs" @to-crumb="toCrumb" />
     <v-switch v-model="autoSave" class="mx-2" label="Autosave"></v-switch>
+    <!-- {{currentSteps}} -->
     <StepsSlider
       :steps="currentSteps"
       @add-step="addStep"
@@ -164,8 +165,18 @@ export default class CreateWorkflow extends Mappers {
 
   deleteStep(stepIndex: number, stepDepth: number): void {
     this.breadcrumbs = this.breadcrumbs.filter(br => br.depth < 1);
-    this.currentSteps.splice(stepIndex, 1);
+    // const parentStep = this.breadcrumbs.find(br => br.depth === stepDepth - 1);
+    // if (parentStep.depth === 0) {
+    //   this.workflow.steps.splice(stepIndex, 1);
+    // } else {
+    //   parentStep.stepInfo.step.steps.splice(stepIndex, 1);
+    // }
+
+    // console.log(stepIndex, stepDepth);
+    // console.log(this.currentSteps, "this.currentSteps");
+    this.workflow.steps.splice(stepIndex, 1);
     this.currentStep = null;
+    this.currentSteps = this.workflow.steps;
   }
 
   openStep(stepIndex: number, step: any): void {

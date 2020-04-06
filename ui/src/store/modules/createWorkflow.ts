@@ -2,14 +2,43 @@ import { Getters, Mutations, Actions, Module, createMapper } from "vuex-smart-mo
 import { v4 as uuidv4 } from "uuid";
 // import { workflowApi } from "../api/index";
 
+interface ICreateWorkflowDto {
+  id: null,
+  name: string,
+  depth: number,
+  description: string,
+  input: JSON | any,
+  steps: ICreateStepDto[]
+}
 interface ICreateStepDto {
   id: string,
   name: string,
   description: string,
   input: JSON | any,
   depth: number,
-  actions: any[],
+  actions: ICreateActionDto[],
   steps: ICreateStepDto[]
+}
+
+interface IWorkflowInfoDto {
+  name: string,
+  description: string,
+  input: any
+}
+
+interface ICrumbDto {
+  step: any | null,
+  depth: number,
+  text: string
+}
+
+interface ICreateActionDto {
+  id: string,
+  name: string,
+  actionType: ActionType,
+  description: string,
+  alias: string,
+  body: string
 }
 
 export enum ActionType {
@@ -20,7 +49,7 @@ export enum ActionType {
 }
 
 class RootState {
-  workflow: any = {
+  workflow: ICreateWorkflowDto = {
     id: null,
     name: "Workflow_1",
     depth: 0,
@@ -97,9 +126,8 @@ class RootState {
   }
   currentStep: ICreateStepDto | null = null
   currentSteps: ICreateStepDto[] = []
-  currentAction: any | null = null
-  // currentActions:
-  workflowInfo: any = {}
+  currentAction: ICreateActionDto | null = null
+  workflowInfo: IWorkflowInfoDto | {} = {}
   breadCrumbs: any[] = [{
     step: null,
     depth: 0,
@@ -133,39 +161,39 @@ class RootGetters extends Getters<RootState> {
   get maxDepth(): number {
     return this.state.breadCrumbs[this.state.breadCrumbs.length - 1].depth + 1;
   }
-  get currentAction(): any {
+  get currentAction(): ICreateActionDto | null {
     return this.state.currentAction
   }
 }
 
 class RootMutations extends Mutations<RootState> {
-  mutateWorkflowInfo(workflowInfo: { name: string, description: string, input: any }): any {
+  mutateWorkflowInfo(workflowInfo: IWorkflowInfoDto): void {
     this.state.workflow.name = workflowInfo.name
     this.state.workflow.description = workflowInfo.description
     this.state.workflow.input = workflowInfo.input
-    const crumb = {
+    const crumb: ICrumbDto = {
       step: null,
       depth: 0,
       text: workflowInfo.name
     }
-    return this.addBreadCrumbs(crumb)
+    this.addBreadCrumbs(crumb)
   }
 
-  mutateCurrentStep(step: any): any {
+  mutateCurrentStep(step: any): ICreateStepDto {
     this.mutateCurrentAction(null) // ОПЯТЬ ЖЕ, ВЫЗВАТЬ ОБЕ МУТАЦИИ В ОДНОМ ЭКШЕНЕ
     return this.state.currentStep = step
   }
 
-  mutateCurrentAction(action: any): any {
+  mutateCurrentAction(action: any): ICreateActionDto {
     return this.state.currentAction = action
   }
 
-  mutateCurrentSteps(steps: any): any {
+  mutateCurrentSteps(steps: ICreateStepDto[]): ICreateStepDto[] {
     return this.state.currentSteps = steps
   }
 
-  addAction(): any {
-    const action: any = {
+  addAction(): void {
+    const action: ICreateActionDto = {
       id: uuidv4(),
       name: "New action",
       actionType: ActionType.ON_START,
@@ -173,10 +201,10 @@ class RootMutations extends Mutations<RootState> {
       alias: `Alias ${uuidv4()}`,
       body: ""
     }
-    return this.state.currentStep?.actions.push(action)
+    this.state.currentStep?.actions.push(action)
   }
 
-  saveAction(updatedAction: any): any {
+  saveAction(updatedAction: ICreateActionDto): void {
     const actionIndexById: number | undefined = this.state.currentStep?.actions
       .findIndex(action => action.id === updatedAction.id)
     if (actionIndexById !== -1) {
@@ -185,18 +213,16 @@ class RootMutations extends Mutations<RootState> {
   }
 
   deleteAction(actionId: string): null {
-    console.log(actionId, "actionId")
     const actionIndexById: number | undefined = this.state.currentStep?.actions
       .findIndex(action => action.id === actionId)
-    console.log(actionIndexById, "actionIndexById")
     if (actionIndexById !== -1) {
       this.state.currentStep?.actions.splice(actionIndexById!, 1)
     }
     return this.state.currentAction = null
   }
 
-  addStep(depth: number): any {
-    const step = {
+  addStep(depth: number): void {
+    const step: ICreateStepDto = {
       id: uuidv4(),
       depth,
       name: "New step",
@@ -205,29 +231,29 @@ class RootMutations extends Mutations<RootState> {
       actions: [],
       steps: []
     }
-    return this.state.currentSteps.push(step)
+    this.state.currentSteps.push(step)
   }
 
-  saveStep(updatedStep: any): any {
-    const parentStep = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
+  saveStep(updatedStep: ICreateStepDto): void {
+    const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
     if (parentStep.step) {
-      const stepIndexById = parentStep.step.steps.findIndex((step: any) => step.id === updatedStep.id)
+      const stepIndexById: number = parentStep.step.steps.findIndex((step: any) => step.id === updatedStep.id)
       parentStep.step.steps.splice(stepIndexById, 1, updatedStep)
     } else {
-      const stepIndexById = this.state.workflow.steps.findIndex((step: any) => step.id === updatedStep.id)
+      const stepIndexById: number = this.state.workflow.steps.findIndex((step: any) => step.id === updatedStep.id)
       this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
     }
-    const crumb = {
+    const crumb: ICrumbDto = {
       step: updatedStep,
       depth: updatedStep.depth,
       text: updatedStep.name
     }
-    return this.addBreadCrumbs(crumb)
+    this.addBreadCrumbs(crumb)
   }
 
   deleteStep(stepInfo: { stepId: string, stepDepth: number }): void {
     const { stepId, stepDepth } = stepInfo
-    const parentStep = this.state.breadCrumbs.find(br => br.depth === stepDepth - 1)
+    const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === stepDepth - 1)
     this.filterBreadCrumbs(parentStep.depth)
     if (parentStep.step) {
       parentStep.step.steps = parentStep.step.steps.filter((step: any) => step.id !== stepId)
@@ -240,17 +266,17 @@ class RootMutations extends Mutations<RootState> {
     }
   }
 
-  addBreadCrumbs(breadCrumb: any): any {
+  addBreadCrumbs(breadCrumb: ICrumbDto): void {
     const indexByDepth: number = this.state.breadCrumbs.findIndex(
       br => br.depth === breadCrumb.depth
     );
     if (indexByDepth !== -1) {
       this.state.breadCrumbs.splice(indexByDepth, 1);
     }
-    return this.state.breadCrumbs.push(breadCrumb);
+    this.state.breadCrumbs.push(breadCrumb);
   }
 
-  toBreadCrumb(breadCrumb: any): void {
+  toBreadCrumb(breadCrumb: ICrumbDto): void {
     this.filterBreadCrumbs(breadCrumb.depth)
     if (breadCrumb.step) {
       this.mutateCurrentStep(breadCrumb.step)

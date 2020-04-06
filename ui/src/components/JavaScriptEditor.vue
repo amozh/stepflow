@@ -36,11 +36,10 @@ const Mappers = Vue.extend({
 });
 @Component
 export default class JavaScriptEditor extends Mappers {
-  @Prop() jscode!: string;
   @Prop() currentCode!: string;
-  @Prop() currentAction!: string;
+  @Prop() currentAction!: any;
 
-  @Provide() code: any = null;
+  @Provide() code: null | string = null;
   @Provide() cmOptions: any = {
     tabSize: 4,
     styleActiveLine: false,

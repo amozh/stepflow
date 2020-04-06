@@ -1,64 +1,49 @@
 <template>
   <div>
-    <h4>{{currentStep.step.name}}</h4>
-    <div class="container">
-      <v-form class="text-center" width="500" ref="form">
-        <v-text-field
-          label="Step name"
-          v-model="stepName"
-          prepend-icon="format_color_text"
-          :rules="inputRules"
-        ></v-text-field>
-        <v-text-field
-          label="Step description"
-          v-model="stepDescription"
-          prepend-icon="description"
-          :rules="inputRules"
-        ></v-text-field>
-        <VJsoneditor :rules="inputRules" class="mt-5" v-model="stepJson"></VJsoneditor>
-        <v-flex class="d-flex flex-row mt-5">
-          <StepsSlider
-            class="mr-6"
-            :steps="actions"
-            @add-step="addAction"
-            @open-step="openAction"
-            :orientation="'vertical'"
-            :currentStepIndex="currentAction&&currentAction.actionIndex"
-          />
-          <Action
-            v-if="(currentAction)"
-            :currentAction="currentAction"
-            @delete-action="deleteAction"
-            @save-action="saveAction"
-            :autoSave="autoSave"
-          />
-          <v-card class="center pt-8" width="100%" height="100" outlined v-else>ADD ACTIONS</v-card>
-        </v-flex>
-        <v-btn color="error" @click="deleteStep(currentStep.stepIndex, currentStep.step.depth)">
-          Delete
-          <v-icon class="ml-2">delete_forever</v-icon>
-        </v-btn>
-        <v-btn
-          text
-          class="success"
-          width="200"
-          @click="saveStep({
-            name:stepName, 
-            description:stepDescription, 
-            input:stepJson, 
-            depth: currentStep.step.depth,
-            actions:actions,
-            steps: subSteps
-            }, currentStep.stepIndex)"
-        >
-          Save step
-          <v-icon class="ml-2">save</v-icon>
-        </v-btn>
-      </v-form>
-    </div>
+    <v-form class="text-center" ref="form">
+      <v-text-field
+        label="Step name"
+        v-model="stepName"
+        prepend-icon="format_color_text"
+        :rules="inputRules"
+      ></v-text-field>
+      <v-text-field
+        label="Step description"
+        v-model="stepDescription"
+        prepend-icon="description"
+        :rules="inputRules"
+      ></v-text-field>
+      <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
+      <v-flex class="d-flex flex-row mt-10">
+        <Slider
+          orientation="vertical"
+          :steps="currentStep.actions"
+          :currentStep="currentAction"
+          @open-step="changeCurrentAction"
+          @add-new-step="addNewAction"
+        />
+        <Action
+          class="ml-7"
+          v-if="currentAction"
+          :currentAction="currentAction"
+          @remove-action="removeAction"
+          @save-current-action="saveCurrenAction"
+        />
+        <v-card v-else class="text-center" height="300" width="100%">
+          <v-card-title class="text-center">Choose action</v-card-title>
+        </v-card>
+      </v-flex>
+      <v-btn color="error" @click="removeStep(currentStep.id, currentStep.depth)">
+        Delete
+        <v-icon class="ml-2">delete_forever</v-icon>
+      </v-btn>
+      <v-btn text class="success" width="200" @click="saveCurrentStep">
+        Save step
+        <v-icon class="ml-2">save</v-icon>
+      </v-btn>
+    </v-form>
   </div>
 </template>
-
 
 <script lang="ts">
 import {
@@ -71,124 +56,83 @@ import {
   Watch
 } from "vue-property-decorator";
 import VJsoneditor from "v-jsoneditor";
-import StepsSlider from "./StepsSlider.vue";
-import { ValidationUtils } from "../../utils/validation-utils";
 import Action from "./Action.vue";
-
-export enum ActionType {
-  ON_START = "ON_START",
-  ON_SUBMIT = "ON_SUBMIT",
-  ON_COMPLETE = "ON_COMPLETE",
-  CUSTOM = "CUSTOM"
-}
+import Slider from "./Slider.vue";
+import { ValidationUtils } from "../../utils/validation-utils";
 
 const Mappers = Vue.extend({
   components: {
     VJsoneditor,
-    StepsSlider,
-    Action
+    Action,
+    Slider
   }
 });
+
 @Component
 export default class Step extends Mappers {
+  @Prop() currentStep!: any;
+  @Prop() currentAction!: any;
+
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
-  @Provide() stepJson: any = {};
   @Provide() stepName: string = "";
   @Provide() stepDescription: string = "";
-  @Provide() currentAction: any = null;
-  @Provide() actions: any[] = [];
-  @Provide() subSteps: any[] = [];
+  @Provide() stepJson: any = {};
 
-  @Prop() currentStep: any;
-  @Prop() autoSave: boolean;
-
-  @Emit("delete-step")
-  deleteStep(): void {
+  @Emit("change-sub-steps")
+  changeSubSteps(): void {
     return;
   }
 
-  @Emit("save-step")
-  saveStep(
-    step: object,
-    stepIndex: number
-  ): { step: object; stepIndex: number } {
-    return { step, stepIndex };
+  @Emit("remove-step")
+  removeStep(): void {
+    return;
+  }
+
+  @Emit("save-current-step")
+  saveCurrentStep(): any {
+    const step = {
+      id: this.currentStep.id,
+      depth: this.currentStep.depth,
+      name: this.stepName,
+      description: this.stepDescription,
+      input: this.stepJson,
+      actions: this.currentStep.actions,
+      steps: this.currentStep.steps
+    };
+    return step;
+  }
+
+  @Emit("change-current-action")
+  changeCurrentAction(): void {
+    return;
+  }
+
+  @Emit("add-new-action")
+  addNewAction(): void {
+    return;
+  }
+
+  @Emit("remove-action")
+  removeAction(): void {
+    return;
+  }
+
+  @Emit("save-current-action")
+  saveCurrenAction(): void {
+    return;
   }
 
   @Watch("currentStep")
-  watchCurrentStep(val: any, oldVal: any) {
-    if (
-      this.currentStep.step.actions &&
-      this.currentStep.step.actions[0] !== undefined
-    ) {
-      this.currentAction = {
-        action: this.currentStep.step.actions[0],
-        actionIndex: 0
-      };
-    } else {
-      this.currentAction = null;
-    }
-    this.stepName = this.currentStep.step.name;
-    this.stepDescription = this.currentStep.step.description;
-    this.stepJson = this.currentStep.step.input;
-    this.subSteps = this.currentStep.step.steps;
-    this.actions = this.currentStep.step.actions;
-  }
-
-  addAction(): any {
-    return this.actions.push({
-      name: `Random action :${Math.floor(Math.random() * 100)}`,
-      description: "Some descr",
-      alias: `alias:${Math.floor(Math.random() * 100)}`,
-      depth: 1,
-      body: "let summ = (a,b) => { return a+b }",
-      actionType: ActionType.ON_START
-    });
-  }
-
-  openAction(actionIndex: number, action: any): void {
-    this.currentAction = { action, actionIndex };
-  }
-
-  deleteAction(actionIndex: number): null {
-    this.actions.splice(actionIndex, 1);
-    return (this.currentAction = null);
-  }
-
-  saveAction({ action, actionIndex }): void {
-    this.actions.splice(actionIndex, 1, action);
-  }
-
-  beforeUpdate() {
-    if (this.autoSave) {
-      this.saveStep(
-        {
-          name: this.stepName,
-          description: this.stepDescription,
-          input: this.stepJson,
-          actions: this.actions,
-          steps: this.subSteps,
-          depth: this.currentStep.step.depth
-        },
-        this.currentStep.stepIndex
-      );
-    }
+  changeStepInfo(val: boolean, oldVal: boolean) {
+    this.stepName = this.currentStep.name;
+    this.stepDescription = this.currentStep.description;
+    this.stepJson = this.currentStep.input;
   }
 
   mounted() {
-    if (this.currentStep.step.actions[0] !== undefined) {
-      this.currentAction = {
-        action: this.currentStep.step.actions[0],
-        actionIndex: 0
-      };
-    } else {
-      this.currentAction = null;
-    }
-    this.stepName = this.currentStep.step.name;
-    this.stepDescription = this.currentStep.step.description;
-    this.stepJson = this.currentStep.step.input;
-    this.subSteps = this.currentStep.step.steps;
-    this.actions = this.currentStep.step.actions;
+    this.stepName = this.currentStep.name;
+    this.stepDescription = this.currentStep.description;
+    this.stepJson = this.currentStep.input;
   }
 }
 </script>

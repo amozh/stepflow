@@ -1,25 +1,5 @@
 <template>
-  <v-form class="full_width" ref="form">
-    <v-btn color="error" @click="deleteAction(currentAction.actionIndex)">
-      Delete action
-      <v-icon class="ml-2">delete_forever</v-icon>
-    </v-btn>
-    <v-btn
-      class="success"
-      width="200"
-      @click="saveAction({
-        name: actionName, 
-        description:actionDescription, 
-        body: actionJson, 
-        alias: actionAlias,
-        actionType: actionType
-        },
-        currentAction.actionIndex
-        )"
-    >
-      Save action
-      <v-icon class="ml-2">save</v-icon>
-    </v-btn>
+  <v-form class="text-left" ref="form">
     <v-text-field
       label="Action name"
       v-model="actionName"
@@ -40,11 +20,18 @@
       :rules="inputRules"
     ></v-text-field>
     <JavaScriptEditor
-      :jscode="actionJson"
-      :currentCode="currentAction.action.body"
+      :currentCode="currentAction.body"
       :currentAction="currentAction"
       @change-js="changeJs"
     />
+    <v-btn color="error" @click="removeAction(currentAction.id)">
+      Delete action
+      <v-icon class="ml-2">delete_forever</v-icon>
+    </v-btn>
+    <v-btn class="success" width="200" @click="saveCurrenAction">
+      Save action
+      <v-icon class="ml-2">save</v-icon>
+    </v-btn>
   </v-form>
 </template>
 
@@ -58,16 +45,8 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
-import VJsoneditor from "v-jsoneditor";
 import { ValidationUtils } from "../../utils/validation-utils";
 import JavaScriptEditor from "../../components/JavaScriptEditor.vue";
-
-const Mappers = Vue.extend({
-  components: {
-    VJsoneditor,
-    JavaScriptEditor
-  }
-});
 
 export enum ActionType {
   ON_START = "ON_START",
@@ -76,13 +55,21 @@ export enum ActionType {
   CUSTOM = "CUSTOM"
 }
 
+const Mappers = Vue.extend({
+  components: {
+    JavaScriptEditor
+  }
+});
+
 @Component
-export default class Form extends Mappers {
+export default class Action extends Mappers {
+  @Prop() currentAction!: any;
+
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
   @Provide() actionName: string = "";
   @Provide() actionDescription: string = "";
   @Provide() actionAlias: string = "";
-  @Provide() actionJson: any = "";
+  @Provide() actionBody: string = "";
   @Provide() actionType: ActionType = ActionType.ON_START;
   @Provide() TYPES: string[] = [
     ActionType.ON_START,
@@ -91,63 +78,48 @@ export default class Form extends Mappers {
     ActionType.CUSTOM
   ];
 
-  @Prop() currentAction!: any;
-  @Prop() autoSave: boolean;
-
   @Watch("currentAction")
-  watchCurrentAction(val: any, oldVal: any) {
-    this.actionName = this.currentAction.action.name;
-    this.actionType = this.currentAction.action.actionType;
-    this.actionDescription = this.currentAction.action.description;
-    this.actionAlias = this.currentAction.action.alias;
-    this.actionJson = this.currentAction.action.body;
+  changeCurrentAction(val: boolean, oldVal: boolean) {
+    this.actionName = this.currentAction.name;
+    this.actionType = this.currentAction.actionType;
+    this.actionDescription = this.currentAction.description;
+    this.actionAlias = this.currentAction.alias;
+    this.actionBody = this.currentAction.body;
   }
 
-  @Emit("delete-action")
-  deleteAction(actionIndex): void {
+  @Emit("remove-action")
+  removeAction(): void {
     return;
   }
 
-  @Emit("save-action")
-  saveAction(
-    action: object,
-    actionIndex: number
-  ): { action: object; actionIndex: number } {
-    console.log(this.actionJson, "actionJson");
-    return { action, actionIndex };
+  @Emit("save-current-action")
+  saveCurrenAction(): any {
+    const action = {
+      id: this.currentAction.id,
+      name: this.actionName,
+      actionType: this.actionType,
+      description: this.actionDescription,
+      alias: this.actionAlias,
+      body: this.actionBody
+    };
+    return action;
   }
 
   changeJs(code: string) {
-    this.actionJson = code;
-  }
-
-  beforeUpdate() {
-    if (this.autoSave) {
-      this.saveAction(
-        {
-          name: this.actionName,
-          actionType: this.actionType,
-          description: this.actionDescription,
-          alias: this.actionAlias,
-          body: this.actionJson
-        },
-        this.currentAction.actionIndex
-      );
-    }
+    this.actionBody = code;
   }
 
   mounted() {
-    this.actionName = this.currentAction.action.name;
-    this.actionType = this.currentAction.action.actionType;
-    this.actionDescription = this.currentAction.action.description;
-    this.actionAlias = this.currentAction.action.alias;
-    this.actionJson = this.currentAction.action.body;
+    this.actionName = this.currentAction.name;
+    this.actionType = this.currentAction.actionType;
+    this.actionDescription = this.currentAction.description;
+    this.actionAlias = this.currentAction.alias;
+    this.actionBody = this.currentAction.body;
   }
 }
 </script>
-<style lang="scss" scoped>
+<style scoped>
 form {
-  text-align: left;
   width: 100%;
 }
 </style>

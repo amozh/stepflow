@@ -5,7 +5,7 @@ import { ICreateWorkflowDto } from '@stepflow/shared';
 type Loading = boolean;
 
 class RootState {
-  workflow: ICreateWorkflowDto = { name: '', description: "", steps: [] };
+  workflow: ICreateWorkflowDto = { name: '', input: JSON, description: "", steps: [] };
   allWorkflows: ICreateWorkflowDto[] = [];
   isLoading: Loading = false;
 }

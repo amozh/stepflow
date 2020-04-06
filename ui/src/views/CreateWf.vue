@@ -1,25 +1,30 @@
 <template>
   <div class="container">
-    <BreadCrumbs :breadcrumbs="breadcrumbs" @to-crumb="toCrumb" />
-    <v-switch v-model="autoSave" class="mx-2" label="Autosave"></v-switch>
-    <!-- {{currentSteps}} -->
-    <StepsSlider
+    <BreadCrumbs :breadCrumbs="breadCrumbs" :toBreadCrumb="toBreadCrumb" />
+    <Slider
+      orientation="horizontal"
       :steps="currentSteps"
-      @add-step="addStep"
+      @add-new-step="addNewStep"
       @open-step="openStep"
-      :breadcrumbs="breadcrumbs"
-      @to-crumb="toCrumb"
-      :currentStepIndex="currentStep&&currentStep.stepIndex"
-      :orientation="'horizontal'"
+      :maxDepth="maxDepth"
+    />
+    <WorkflowInfo
+      v-if="currentStep===null"
+      :workflowInfo="workflowInfo"
+      @change-workflow-info="changeWorkflowInfo"
     />
     <Step
-      v-if="(currentStep)"
+      v-else
       :currentStep="currentStep"
-      @delete-step="deleteStep"
-      @save-step="saveStep"
-      :autoSave="autoSave"
+      :currentAction="currentAction"
+      @change-sub-steps="changeSubSteps"
+      @remove-step="removeStep"
+      @save-current-step="saveCurrentStep"
+      @change-current-action="changeCurrentAction"
+      @add-new-action="addNewAction"
+      @remove-action="removeAction"
+      @save-current-action="saveCurrenAction"
     />
-    <WorkflowInfo v-else :workflow="workflow" :autoSave="autoSave" @save-wf-info="saveWfInfo" />
   </div>
 </template>
 
@@ -33,197 +38,100 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
-import VJsoneditor from "v-jsoneditor";
+import { createWorkflowMapper } from "../store/modules/createWorkflow";
+import WorkflowInfo from "./workflow/WokrflowInfo.vue";
+import Slider from "./workflow/Slider.vue";
 import BreadCrumbs from "./workflow/BreadCrumbs.vue";
-import StepsSlider from "./workflow/StepsSlider.vue";
-import WorkflowInfo from "./workflow/WorkflowInfo.vue";
 import Step from "./workflow/Step.vue";
 
-export enum ActionType {
-  ON_START = "ON_START",
-  ON_SUBMIT = "ON_SUBMIT",
-  ON_COMPLETE = "ON_COMPLETE",
-  CUSTOM = "CUSTOM"
-}
-
 const Mappers = Vue.extend({
+  computed: {
+    ...createWorkflowMapper.mapGetters([
+      "workflow",
+      "breadCrumbs",
+      "currentStep",
+      "currentSteps",
+      "workflowInfo",
+      "maxDepth",
+      "currentAction"
+    ])
+  },
+  methods: {
+    ...createWorkflowMapper.mapMutations({
+      mutateWorkflowInfo: "mutateWorkflowInfo",
+      addBreadCrumbs: "addBreadCrumbs",
+      toBreadCrumb: "toBreadCrumb",
+      mutateCurrentSteps: "mutateCurrentSteps",
+      mutateCurrentStep: "mutateCurrentStep",
+      deleteStep: "deleteStep",
+      saveStep: "saveStep",
+      addStep: "addStep",
+      mutateCurrentAction: "mutateCurrentAction",
+      addAction: "addAction",
+      deleteAction: "deleteAction",
+      saveAction: "saveAction"
+    })
+  },
   components: {
-    VJsoneditor,
-    BreadCrumbs,
-    StepsSlider,
     WorkflowInfo,
+    Slider,
+    BreadCrumbs,
     Step
   }
 });
 
 @Component
 export default class CreateWorkflow extends Mappers {
-  @Provide() workflow: any = {
-    name: "Workflow_1",
-    depth: 0,
-    description:
-      "Using display utilities you can turn any element into a flexbox container transforming direct children elements into flex items. Using additional flex property utilities, you can customize their interaction even further.",
-    input: {
-      wfInput: "someJson"
-    },
-    steps: [
-      {
-        name: "first_1",
-        description: "first step description",
-        input: {},
-        depth: 1,
-        actions: [],
-        steps: [
-          {
-            name: "FIRST_SUB_STEP",
-            description: "first sub step with depth 2",
-            input: {},
-            depth: 2,
-            actions: [],
-            steps: []
-          }
-        ]
-      },
-      {
-        name: "depth_2",
-        description: "step with depth 2 some description",
-        input: { second: "depth" },
-        steps: [],
-        depth: 2,
-        actions: [
-          {
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 999",
-            body: "let summ = (a,b) => { return a+b }"
-          }
-        ]
-      },
-      {
-        name: "depth_3",
-        description: "some description of step with  with the greatest depth",
-        input: {},
-        steps: [],
-        depth: 3,
-        actions: [
-          {
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 999",
-            body: "let summ = (a,b) => { return a+b }"
-          },
-          {
-            name: "second_ACTION",
-            actionType: ActionType.ON_SUBMIT,
-            description: "second ACTION description 123123",
-            alias: "action alias 888",
-            body: "let summ = (a,b) => { return a+b }"
-          }
-        ]
-      }
-    ]
-  };
-  @Provide() breadcrumbs: any = [];
-  @Provide() currentStep: any = null;
-  @Provide() currentSteps: any[] = [];
-  @Provide() autoSave: boolean = false;
-
-  saveWfInfo(wfInfo: { name: string; description: string; input: JSON }): void {
-    this.workflow.name = wfInfo.name;
-    this.workflow.description = wfInfo.description;
-    this.workflow.input = wfInfo.input;
+  changeWorkflowInfo(workflowInfo): any {
+    return this.mutateWorkflowInfo(workflowInfo);
   }
 
-  addStep(stepDepth: number = 1): any {
-    return this.currentSteps.push({
-      name: `RandomStep:${Math.floor(Math.random() * 100)}`,
-      description: "Something",
-      depth: stepDepth,
-      input: {},
-      actions: [],
-      steps: []
-    });
+  addNewStep(depth: number): any {
+    return this.addStep(depth);
   }
 
-  // addAction(): any {
-  //   return this.workflow.steps.push({
-  //     name: `Random action :${Math.floor(Math.random() * 100)}`,
-  //     alias: `alias:${Math.floor(Math.random() * 100)}`
-  //   });
-  // }
-
-  saveStep({ step, stepIndex }): void {
-    const parentStep = this.breadcrumbs.find(br => br.depth === step.depth - 1);
-    if (parentStep.depth === 0) {
-      this.workflow.steps.splice(stepIndex, 1, step);
-    } else {
-      parentStep.stepInfo.step.steps.splice(stepIndex, 1, step);
-    }
+  saveCurrentStep(step: any): any {
+    return this.saveStep(step);
   }
 
-  deleteStep(stepIndex: number, stepDepth: number): void {
-    this.breadcrumbs = this.breadcrumbs.filter(br => br.depth < 1);
-    // const parentStep = this.breadcrumbs.find(br => br.depth === stepDepth - 1);
-    // if (parentStep.depth === 0) {
-    //   this.workflow.steps.splice(stepIndex, 1);
-    // } else {
-    //   parentStep.stepInfo.step.steps.splice(stepIndex, 1);
-    // }
-
-    // console.log(stepIndex, stepDepth);
-    // console.log(this.currentSteps, "this.currentSteps");
-    this.workflow.steps.splice(stepIndex, 1);
-    this.currentStep = null;
-    this.currentSteps = this.workflow.steps;
+  removeStep(stepId: string, stepDepth: number): any {
+    return this.deleteStep({ stepId, stepDepth });
   }
 
-  openStep(stepIndex: number, step: any): void {
-    this.currentSteps = step.steps;
-    const indexByDepth: number = this.breadcrumbs.findIndex(
-      br => br.depth === step.depth
-    );
-    if (indexByDepth !== -1) {
-      this.breadcrumbs.splice(indexByDepth, 1);
-    }
-    this.breadcrumbs.push({
-      text: step.name,
+  changeCurrentAction(action: any): any {
+    return this.mutateCurrentAction(action);
+  }
+
+  addNewAction(): any {
+    return this.addAction();
+  }
+
+  removeAction(actionId: string): any {
+    return this.deleteAction(actionId);
+  }
+
+  saveCurrenAction(updatedAction: any): any {
+    return this.saveAction(updatedAction);
+  }
+
+  openStep(step: any): void {
+    const breadCrumb = {
+      step,
       depth: step.depth,
-      stepInfo: { step, stepIndex }
-    });
-
-    // Отфильтрует все элементы массива, глубина которых больше текущего степа. Отсортирует по увеличению глубины
-    this.breadcrumbs = this.breadcrumbs
-      .filter(br => br.depth <= step.depth)
-      .sort((a, b) => {
-        return a.depth - b.depth;
-      });
-    this.currentStep = { step, stepIndex };
+      text: step.name
+    };
+    this.addBreadCrumbs(breadCrumb);
+    this.mutateCurrentStep(step); //установит текущий степ
+    this.mutateCurrentSteps(step.steps); //передаст слайдеру, актуальные для этого степа сабстепы
+    return;
   }
 
-  toCrumb(crumb): void {
-    this.breadcrumbs = this.breadcrumbs.filter(br => br.depth <= crumb.depth);
-    if (crumb.depth === 0) {
-      this.currentSteps = this.workflow.steps;
-      this.currentStep = null;
-    } else {
-      this.currentSteps = crumb.stepInfo.step.steps;
-      this.currentStep = crumb.stepInfo;
-    }
+  changeSubSteps(steps: any[]): any {
+    return this.mutateCurrentSteps(steps);
   }
 
   mounted() {
-    this.breadcrumbs.push({
-      text: this.workflow.name,
-      depth: this.workflow.depth
-    });
-    this.currentSteps = this.workflow.steps;
+    this.mutateCurrentSteps(this.workflow.steps);
   }
 }
 </script>
-<style scoped>
-.pointer {
-  cursor: pointer;
-}
-</style>

@@ -1,15 +1,16 @@
 <template>
   <div class="d-flex flex-row">
     <div
-      v-for="(crumb, crumbIndex) in breadcrumbs"
+      v-for="(crumb, crumbIndex) in breadCrumbs"
       :key="crumbIndex"
-      :class="crumbIndex+1===breadcrumbs.length ?'d-flex current':'d-flex pointer' "
+      :class="crumbIndex+1===breadCrumbs.length ?'d-flex current':'d-flex parent'"
     >
-      <h3 @click="toCrumb(crumb)">{{crumb.text}}</h3>
-      <v-icon v-if="breadcrumbs.length !== crumbIndex+1">mdi-chevron-right</v-icon>
+      <h2 class="ma-3" @click="toBreadCrumb(crumb)">{{crumb.text}}</h2>
+      <v-icon v-if="breadCrumbs.length !== crumbIndex+1">mdi-chevron-right</v-icon>
     </div>
   </div>
 </template>
+
 
 <script lang="ts">
 import {
@@ -18,22 +19,19 @@ import {
   Prop,
   Provide,
   Emit,
-  Ref
+  Ref,
+  Watch
 } from "vue-property-decorator";
 
-// const Mappers = Vue.extend({});
 @Component
 export default class BreadCrumbs extends Vue {
-  @Prop() breadcrumbs: any;
-
-  @Emit("to-crumb")
-  toCrumb(): void {
-    return;
-  }
+  @Prop() breadCrumbs!: any;
+  @Prop() toBreadCrumb!: any;
 }
 </script>
 <style scoped>
-.pointer {
+.parent {
+  color: #1976d2;
   cursor: pointer;
 }
 .current {

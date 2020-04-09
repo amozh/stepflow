@@ -62,21 +62,21 @@ const Mappers = Vue.extend({
   },
   methods: {
     ...createWorkflowMapper.mapMutations({
-      mutateWorkflowInfo: "mutateWorkflowInfo",
       addBreadCrumbs: "addBreadCrumbs",
-      toBreadCrumb: "toBreadCrumb",
       mutateCurrentSteps: "mutateCurrentSteps",
-      mutateCurrentStep: "mutateCurrentStep",
-      deleteStep: "deleteStep",
-      saveStep: "saveStep",
       addStep: "addStep",
       mutateCurrentAction: "mutateCurrentAction",
       addAction: "addAction",
-      deleteAction: "deleteAction",
-      saveAction: "saveAction"
+      deleteAction: "deleteAction"
     }),
     ...createWorkflowMapper.mapActions({
-      createWorkflow: "createWorkflow"
+      createWorkflow: "createWorkflow",
+      changeWorkflowDescription: "changeWorkflowDescription",
+      goToStep: "goToStep",
+      deleteStep: "deleteStep",
+      toBreadCrumb: "toBreadCrumb",
+      saveStep: "saveStep",
+      saveAction: "saveAction"
     })
   },
   components: {
@@ -91,7 +91,7 @@ const Mappers = Vue.extend({
 @Component
 export default class CreateWorkflow extends Mappers {
   changeWorkflowInfo(workflowInfo): any {
-    return this.mutateWorkflowInfo(workflowInfo);
+    return this.changeWorkflowDescription(workflowInfo);
   }
 
   addNewStep(depth: number): any {
@@ -133,7 +133,7 @@ export default class CreateWorkflow extends Mappers {
       text: step.name
     };
     this.addBreadCrumbs(breadCrumb);
-    this.mutateCurrentStep(step); //установит текущий степ
+    this.goToStep(step);
     this.mutateCurrentSteps(step.steps); //передаст слайдеру, актуальные для этого степа сабстепы
   }
 

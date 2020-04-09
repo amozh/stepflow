@@ -124,7 +124,6 @@ export class UserGroupService implements OnModuleInit {
     async getGroupById(id: number): Promise<UserGroupEntity> {
         try {
             const group = await this.userGroupRepo.findOne({ id })
-            // console.log(group,id, "группа?")
             return group
         } catch (e) {
             throw new NotFoundException(`User group with id ${id} is not found`)

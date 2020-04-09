@@ -188,16 +188,9 @@ class RootMutations extends Mutations<RootState> {
     this.state.workflow.name = workflowInfo.name
     this.state.workflow.description = workflowInfo.description
     this.state.workflow.input = workflowInfo.input
-    const crumb: ICrumbDto = {
-      step: null,
-      depth: 0,
-      text: workflowInfo.name
-    }
-    this.addBreadCrumbs(crumb)
   }
 
   mutateCurrentStep(step: any): ICreateStepDto {
-    this.mutateCurrentAction(null) // ОПЯТЬ ЖЕ, ВЫЗВАТЬ ОБЕ МУТАЦИИ В ОДНОМ ЭКШЕНЕ
     return this.state.currentStep = step
   }
 
@@ -260,12 +253,6 @@ class RootMutations extends Mutations<RootState> {
       const stepIndexById: number = this.state.workflow.steps.findIndex((step: any) => step.id === updatedStep.id)
       this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
     }
-    const crumb: ICrumbDto = {
-      step: updatedStep,
-      depth: updatedStep.depth,
-      text: updatedStep.name
-    }
-    this.addBreadCrumbs(crumb)
   }
 
   deleteStep(stepInfo: { stepId: string, stepDepth: number }): void {
@@ -291,17 +278,6 @@ class RootMutations extends Mutations<RootState> {
       this.state.breadCrumbs.splice(indexByDepth, 1);
     }
     this.state.breadCrumbs.push(breadCrumb);
-  }
-
-  toBreadCrumb(breadCrumb: ICrumbDto): void {
-    this.filterBreadCrumbs(breadCrumb.depth)
-    if (breadCrumb.step) {
-      this.mutateCurrentStep(breadCrumb.step)
-      this.mutateCurrentSteps(breadCrumb.step.steps)
-    } else {
-      this.mutateCurrentStep(null)
-      this.mutateCurrentSteps(this.state.workflow.steps)
-    }
   }
 
   filterBreadCrumbs(breadCrumbDepth: number): any[] {
@@ -341,8 +317,57 @@ class RootActions extends Actions<
       throw new Error(e);
     }
   }
-  changeWorkflowInfo(workflowInfo: IWorkflowInfoDto): void {}
-  // НУЖНО ВЫЗЫВАТЬ ЭКШЕНЫ, А ПОТОМ В НИХ УЖЕ ВЫЗЫВАТЬ СРАЗУ НЕСКОЛЬКО МУТАЦИЙ
+  changeWorkflowDescription(workflowInfo: IWorkflowInfoDto): void {
+    const crumb: ICrumbDto = {
+      step: null,
+      depth: 0,
+      text: workflowInfo.name
+    }
+    this.commit("addBreadCrumbs", crumb)
+    this.commit("mutateWorkflowInfo", workflowInfo)
+  }
+  goToStep(step: any): void {
+    this.commit("mutateCurrentAction", null)
+    this.commit("mutateCurrentStep", step)
+  }
+  saveStep(updatedStep: ICreateStepDto): void {
+    this.commit("saveStep", updatedStep)
+    const crumb: ICrumbDto = {
+      step: updatedStep,
+      depth: updatedStep.depth,
+      text: updatedStep.name
+    }
+    this.commit("addBreadCrumbs", crumb)
+  }
+  deleteStep(stepInfo: { stepId: string, stepDepth: number }): void {
+    const { stepId, stepDepth } = stepInfo
+    const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === stepDepth - 1)
+    this.commit("filterBreadCrumbs", parentStep.depth)
+    if (parentStep.step) {
+      parentStep.step.steps = parentStep.step.steps.filter((step: any) => step.id !== stepId)
+      this.commit("mutateCurrentStep", parentStep.step)
+      this.commit("mutateCurrentSteps", parentStep.step.steps)
+    } else {
+      this.state.workflow.steps = this.state.workflow.steps.filter((step: any) => step.id !== stepId)
+      this.commit("mutateCurrentStep", null)
+      this.commit("mutateCurrentSteps", this.state.workflow.steps)
+    }
+  }
+  toBreadCrumb(breadCrumb: ICrumbDto): void {
+    this.commit("filterBreadCrumbs", breadCrumb.depth)
+    if (breadCrumb.step) {
+      this.commit("mutateCurrentStep", breadCrumb.step)
+      this.commit("mutateCurrentSteps", breadCrumb.step.steps)
+    } else {
+      this.commit("mutateCurrentStep", null)
+      this.commit("mutateCurrentSteps", this.state.workflow.steps)
+    }
+  }
+  saveAction(updatedAction: ICreateActionDto): void {
+    this.commit("saveAction", updatedAction)
+    const actionById = this.state.currentStep?.actions.find(action => action.id === updatedAction.id)
+    this.commit("mutateCurrentAction", actionById)
+  }
 }
 
 const createWorkflowStore = new Module({

@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    executedWorkflow: {{executedWorkflow}}
     <div v-if="isLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
@@ -29,12 +30,18 @@ import Step from "../components/Step.vue";
 const Mappers = Vue.extend({
   components: { Step },
   computed: {
-    ...workflowMapper.mapGetters(["currentWorkflow", "isLoading"])
+    ...workflowMapper.mapGetters([
+      "currentWorkflow",
+      "executedWorkflow",
+      "isLoading"
+    ])
   },
   methods: {
     ...workflowMapper.mapActions({
       getWorkflowById: "getWorkflowById",
-      checkAnswer: "checkAnswer"
+      checkAnswer: "checkAnswer",
+      executeWorkflow: "executeWorkflow",
+      getExecutionWorkflow: "getExecutionWorkflow"
     })
   }
 });
@@ -53,8 +60,10 @@ export default class Workflow extends Mappers {
     }
   }
 
-  mounted() {
-    this.getWorkflowById(this.$route.params.id);
+  async mounted() {
+    // await this.getWorkflowById(this.$route.params.id);
+    // await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
+    await this.getExecutionWorkflow(this.$route.params.id);
   }
 }
 </script>

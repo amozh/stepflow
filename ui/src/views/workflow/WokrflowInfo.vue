@@ -18,12 +18,16 @@
       <VJsoneditor :rules="inputRules" class="mt-5" height="500px" v-model="wfJson"></VJsoneditor>
       <v-btn
         text
-        class="success"
+        class="success mr-10"
         width="200"
         @click="changeWorkflowInfo({name:wfName, description:wfDescription, input:wfJson})"
       >
         Save
         <v-icon class="ml-2">save</v-icon>
+      </v-btn>
+      <v-btn class="success" @click="createNewWorkflow">
+        Create Workflow: {{workflowInfo.name}}
+        <v-icon class="ml-2">create_new_folder</v-icon>
       </v-btn>
     </v-form>
   </div>
@@ -65,6 +69,11 @@ export default class WorkflowInfo extends Mappers {
 
   @Emit("change-workflow-info")
   changeWorkflowInfo(): void {
+    return;
+  }
+
+  @Emit("create-new-workflow")
+  createNewWorkflow(): void {
     return;
   }
 

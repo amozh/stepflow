@@ -1,6 +1,6 @@
 import { Getters, Mutations, Actions, Module, createMapper } from "vuex-smart-module";
 import { v4 as uuidv4 } from "uuid";
-// import { workflowApi } from "../api/index";
+import { workflowApi } from "../api/index";
 
 interface ICreateWorkflowDto {
   id: null,
@@ -40,6 +40,10 @@ interface ICreateActionDto {
   alias: string,
   body: string
 }
+interface IWorkflowCreatedStatus {
+  success: boolean | null,
+  text: string
+}
 
 export enum ActionType {
   ON_START = "ON_START",
@@ -56,33 +60,36 @@ class RootState {
     description:
       "Using display utilities you can turn any element into a flexbox container transforming direct children elements into flex items. Using additional flex property utilities, you can customize their interaction even further.",
     input: {
-      wfInput: "someJson"
+      // wfInput: "someJson"
     },
     steps: [
-      {
-        id: uuidv4(),
-        name: "first_1",
-        description: "first step description",
-        input: {},
-        depth: 1,
-        actions: [],
-        steps: [
-          {
-            id: uuidv4(),
-            name: "FIRST_SUB_STEP",
-            description: "first sub step with depth 2",
-            input: {},
-            depth: 2,
-            actions: [],
-            steps: []
-          }
-        ]
-      },
+      // {
+      //   id: uuidv4(),
+      //   name: "first_1",
+      //   description: "first step description",
+      //   input: {},
+      //   depth: 1,
+      //   actions: [],
+      //   steps: [
+      //     {
+      //       id: uuidv4(),
+      //       name: "FIRST_SUB_STEP",
+      //       description: "first sub step with depth 2",
+      //       input: {},
+      //       depth: 2,
+      //       actions: [],
+      //       steps: []
+      //     }
+      //   ]
+      // },
       {
         id: uuidv4(),
         name: "depth_2",
         description: "step with depth 2 some description",
-        input: { second: "depth" },
+        input: {
+          a: 51,
+          b: 14
+        },
         steps: [],
         depth: 1,
         actions: [
@@ -92,7 +99,7 @@ class RootState {
             actionType: ActionType.ON_START,
             description: "first ACTION description",
             alias: "action alias 999",
-            body: "let summ = (a,b) => { return a+b }"
+            body: "function fn(a,b){return a+b};  res = fn(a,b);"
           }
         ]
       },
@@ -100,7 +107,10 @@ class RootState {
         id: uuidv4(),
         name: "depth_3",
         description: "some description of step with  with the greatest depth",
-        input: {},
+        input: {
+          a: 61,
+          b: 10
+        },
         steps: [],
         depth: 1,
         actions: [
@@ -110,16 +120,16 @@ class RootState {
             actionType: ActionType.ON_START,
             description: "first ACTION description",
             alias: "action alias 12415",
-            body: "let summ = (a,b) => { return a+b }"
+            body: "function fn(a,b){return a+b};  res = fn(a,b);"
           },
-          {
-            id: "19adpldnw7189",
-            name: "second_ACTION",
-            actionType: ActionType.ON_SUBMIT,
-            description: "second ACTION description 123123",
-            alias: "action alias 888",
-            body: "let summ = (a,b) => { return a+b }"
-          }
+          // {
+          //   id: "19adpldnw7189",
+          //   name: "second_ACTION",
+          //   actionType: ActionType.ON_SUBMIT,
+          //   description: "second ACTION description 123123",
+          //   alias: "action alias 888",
+          //   body: "function fn(a,b){return a+b};  res = fn(a,b);"
+          // }
         ]
       }
     ]
@@ -128,6 +138,10 @@ class RootState {
   currentSteps: ICreateStepDto[] = []
   currentAction: ICreateActionDto | null = null
   workflowInfo: IWorkflowInfoDto | {} = {}
+  workflowStatus: IWorkflowCreatedStatus = {
+    success: null,
+    text: ""
+  }
   breadCrumbs: any[] = [{
     step: null,
     depth: 0,
@@ -163,6 +177,9 @@ class RootGetters extends Getters<RootState> {
   }
   get currentAction(): ICreateActionDto | null {
     return this.state.currentAction
+  }
+  get workflowStatus(): IWorkflowCreatedStatus {
+    return this.state.workflowStatus
   }
 }
 
@@ -294,6 +311,19 @@ class RootMutations extends Mutations<RootState> {
         return a.depth - b.depth;
       });
   }
+  mutateWorkflowCreateStatus(status: number): IWorkflowCreatedStatus {
+    if (status === 201) {
+      return this.state.workflowStatus = {
+        success: true,
+        text: `Workflow ${this.state.workflow.name} has been created`
+      }
+    } else {
+      return this.state.workflowStatus = {
+        success: false,
+        text: "Something went wrong"
+      }
+    }
+  }
 }
 
 class RootActions extends Actions<
@@ -302,6 +332,16 @@ class RootActions extends Actions<
   RootMutations,
   RootActions
   > {
+  async createWorkflow(): Promise<any> {
+    try {
+      const response = await workflowApi.createWorkflow(this.state.workflow);
+      this.commit("mutateWorkflowCreateStatus", response.status)
+      return response
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+  changeWorkflowInfo(workflowInfo: IWorkflowInfoDto): void {}
   // НУЖНО ВЫЗЫВАТЬ ЭКШЕНЫ, А ПОТОМ В НИХ УЖЕ ВЫЗЫВАТЬ СРАЗУ НЕСКОЛЬКО МУТАЦИЙ
 }
 

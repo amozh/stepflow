@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <Snackbar :snackbar="workflowStatus.success" :snackbarText="workflowStatus.text" />
     <BreadCrumbs :breadCrumbs="breadCrumbs" :toBreadCrumb="toBreadCrumb" />
     <Slider
       orientation="horizontal"
@@ -12,6 +13,7 @@
       v-if="currentStep===null"
       :workflowInfo="workflowInfo"
       @change-workflow-info="changeWorkflowInfo"
+      @create-new-workflow="createNewWorkflow"
     />
     <Step
       v-else
@@ -43,6 +45,7 @@ import WorkflowInfo from "./workflow/WokrflowInfo.vue";
 import Slider from "./workflow/Slider.vue";
 import BreadCrumbs from "./workflow/BreadCrumbs.vue";
 import Step from "./workflow/Step.vue";
+import Snackbar from "../components/Snackbar.vue";
 
 const Mappers = Vue.extend({
   computed: {
@@ -53,7 +56,8 @@ const Mappers = Vue.extend({
       "currentSteps",
       "workflowInfo",
       "maxDepth",
-      "currentAction"
+      "currentAction",
+      "workflowStatus"
     ])
   },
   methods: {
@@ -70,13 +74,17 @@ const Mappers = Vue.extend({
       addAction: "addAction",
       deleteAction: "deleteAction",
       saveAction: "saveAction"
+    }),
+    ...createWorkflowMapper.mapActions({
+      createWorkflow: "createWorkflow"
     })
   },
   components: {
     WorkflowInfo,
     Slider,
     BreadCrumbs,
-    Step
+    Step,
+    Snackbar
   }
 });
 
@@ -114,6 +122,10 @@ export default class CreateWorkflow extends Mappers {
     return this.saveAction(updatedAction);
   }
 
+  createNewWorkflow(): any {
+    return this.createWorkflow();
+  }
+
   openStep(step: any): void {
     const breadCrumb = {
       step,
@@ -123,7 +135,6 @@ export default class CreateWorkflow extends Mappers {
     this.addBreadCrumbs(breadCrumb);
     this.mutateCurrentStep(step); //установит текущий степ
     this.mutateCurrentSteps(step.steps); //передаст слайдеру, актуальные для этого степа сабстепы
-    return;
   }
 
   changeSubSteps(steps: any[]): any {

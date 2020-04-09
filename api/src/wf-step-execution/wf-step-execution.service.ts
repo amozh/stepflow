@@ -39,6 +39,7 @@ export class WfStepExecutionService {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const input = stepExecution.input;
         const state = stepExecution.state;
+        console.log(state, "state?")
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
         input["submittedAnswer"] = body.submittedAnswer
@@ -75,6 +76,7 @@ export class WfStepExecutionService {
 
         const finalState = outputs[outputs.length - 1].state;
         const finalStatus = outputs[outputs.length - 1].status;
+        console.log(finalState, "finalState in step?") //
 
         await this.wfStepExecutionRepository.update(id, { status: finalStatus, state: finalState })
         await this.wfExecutionsService.updateWfExecution(
@@ -170,7 +172,6 @@ export class WfStepExecutionService {
             const output = await this.executeAction(actionInput, a.body);
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
-
 
         const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {

@@ -19,6 +19,13 @@ import { Workflow as WorkflowEntity } from "../workflow/workflow.entity"
 import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity";
 import { WfStepActionExecutionEntity } from '../wf-step-action-execution/wf-step-action-execution.entity';
 
+export enum ActionType {
+    ON_START = "ON_START",
+    ON_SUBMIT = "ON_SUBMIT",
+    ON_COMPLETE = "ON_COMPLETE",
+    CUSTOM = "CUSTOM"
+}
+
 @Entity("action")
 export class ActionEntity {
     @PrimaryGeneratedColumn("uuid")
@@ -36,6 +43,9 @@ export class ActionEntity {
     @Unique(["alias"])
     @Column({ type: "varchar", length: 512 })
     alias: string;
+
+    @Column({ default: ActionType.ON_START })
+    actionType: ActionType
     // Нужно переделать логику ActionType. Он должен добавляться здесь, а не в Action Executed
 
     // @Unique(["version"])

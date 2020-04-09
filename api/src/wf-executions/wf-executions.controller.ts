@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes, Get } from '@nestjs/common';
 import { WfExecutionsService, IWorkflowActionExecutionInput } from "./wf-executions.service"
 import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
 import { ValidationPipe } from "./wf-executions.pipe"
@@ -19,7 +19,6 @@ export class ITestDto {
     readonly count: number;
 }
 
-
 @Controller('wf-executions')
 export class WfExecutionsController {
     constructor(
@@ -37,6 +36,16 @@ export class WfExecutionsController {
     @UsePipes(new ValidationPipe())
     getSmt(@Body() body: ITestDto): ITestDto {
         return body
+    }
+
+    @Get()
+    getAllWfExecution(): Promise<IWorkflowExecutionDto[]> {
+        return this.wfExecutionsService.getAllWfExecution()
+    }
+
+    @Get(":id")
+    getWfExecution(@Param('id', ParseIntPipe) id: number): Promise<IWorkflowExecutionDto> {
+        return this.wfExecutionsService.getWfExecution(id)
     }
 
     @Post()

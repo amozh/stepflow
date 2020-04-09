@@ -1,5 +1,3 @@
-
-import { Answer } from '../answer/answer.entity';
 import {
   Injectable,
   InternalServerErrorException,
@@ -23,13 +21,8 @@ export class WorkflowService {
     try {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
 
-      let wokflowSteps = steps.map(step => {
+      const wokflowSteps = steps.map(step => {
         const workflowStep = new WorkflowStep();
-
-        const stepAnswer = new Answer();
-        stepAnswer.answer = step.answer.answer
-
-        workflowStep.answer = stepAnswer;
         workflowStep.name = step.name;
         workflowStep.input = step.input;
         workflowStep.actions = step.actions;

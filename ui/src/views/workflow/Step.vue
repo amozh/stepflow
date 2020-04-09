@@ -33,14 +33,16 @@
           <v-card-title class="text-center">Choose action</v-card-title>
         </v-card>
       </v-flex>
-      <v-btn color="error" @click="removeStep(currentStep.id, currentStep.depth)">
-        Delete
-        <v-icon class="ml-2">delete_forever</v-icon>
-      </v-btn>
-      <v-btn text class="success" width="200" @click="saveCurrentStep">
-        Save step
-        <v-icon class="ml-2">save</v-icon>
-      </v-btn>
+      <v-container class="d-flex flex-row btns">
+        <v-btn color="error" @click="removeStep(currentStep.id, currentStep.depth)">
+          Delete
+          <v-icon class="ml-2">delete_forever</v-icon>
+        </v-btn>
+        <v-btn text class="success" width="200" @click="saveCurrentStep">
+          Save step
+          <v-icon class="ml-2">save</v-icon>
+        </v-btn>
+      </v-container>
     </v-form>
   </div>
 </template>
@@ -136,3 +138,9 @@ export default class Step extends Mappers {
   }
 }
 </script>
+
+<style scoped>
+.btns {
+  justify-content: space-around;
+}
+</style>

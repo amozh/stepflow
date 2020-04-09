@@ -24,14 +24,16 @@
       :currentAction="currentAction"
       @change-js="changeJs"
     />
-    <v-btn color="error" @click="removeAction(currentAction.id)">
-      Delete action
-      <v-icon class="ml-2">delete_forever</v-icon>
-    </v-btn>
-    <v-btn class="success" width="200" @click="saveCurrenAction">
-      Save action
-      <v-icon class="ml-2">save</v-icon>
-    </v-btn>
+    <v-container class="d-flex flex-row btns">
+      <v-btn color="error" @click="removeAction(currentAction.id)">
+        Delete action
+        <v-icon class="ml-2">delete_forever</v-icon>
+      </v-btn>
+      <v-btn class="success" width="200" @click="saveCurrenAction">
+        Save action
+        <v-icon class="ml-2">save</v-icon>
+      </v-btn>
+    </v-container>
   </v-form>
 </template>
 
@@ -121,5 +123,8 @@ export default class Action extends Mappers {
 <style scoped>
 form {
   width: 100%;
+}
+.btns {
+  justify-content: space-around;
 }
 </style>

@@ -5,17 +5,12 @@ import { ActionEntity } from './action.entity';
 import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
 const vm = require("vm")
 
-
 @Injectable()
 export class ActionService {
     constructor(
         @InjectRepository(ActionEntity)
         private readonly actionRepository: Repository<ActionEntity>,
     ) { }
-
-    getAction(): string {
-        return "Action!"
-    }
 
     async getActionById(id: string): Promise<IActionDto> {
         const action = await this.actionRepository.findOne(id)

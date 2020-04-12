@@ -26,12 +26,6 @@ export class WfExecutionsController {
         private readonly wfStepExecutionService: WfStepExecutionService
     ) { }
 
-    //Why do we need controllers
-    // 1. Accept request
-    // 2. Validate request
-    // 3. Execute business logic
-    // 4. Return response
-
     @Post("test")
     @UsePipes(new ValidationPipe())
     getSmt(@Body() body: ITestDto): ITestDto {
@@ -56,10 +50,10 @@ export class WfExecutionsController {
         return this.wfExecutionsService.createWfExecution(body.workflowId); /*3, 4*/
     }
 
-    @Put(":id")
-    updateWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
-        return this.wfExecutionsService.updateWfExecution(id, body)
-    }
+    // @Put(":id")
+    // updateWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+    //     return this.wfExecutionsService.updateWfExecution(id, body)
+    // }
 
     // WORKFLOWS EXECUTIONS
     @Put('start/:id')

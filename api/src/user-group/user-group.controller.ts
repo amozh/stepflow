@@ -9,11 +9,6 @@ import { UserGroupEntity } from './user-group.entity';
 export class UserGroupController {
     constructor(private readonly userGroup: UserGroupService) { }
 
-    @Get()
-    get(): string {
-        return this.userGroup.get()
-    }
-
     @Get("/:id")
     getUserGroupById(@Param("id", ParseIntPipe) id: number): Promise<UserGroupEntity> {
         return this.userGroup.getGroupById(id)

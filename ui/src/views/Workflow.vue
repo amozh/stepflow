@@ -62,7 +62,7 @@ export default class Workflow extends Mappers {
 
   async mounted() {
     // await this.getWorkflowById(this.$route.params.id);
-    // await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
+    await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
     await this.getExecutionWorkflow(this.$route.params.id);
   }
 }

@@ -11,12 +11,10 @@ import {
   JoinColumn
 } from 'typeorm';
 import { Workflow } from '../workflow/workflow.entity';
-import { Answer } from '../answer/answer.entity';
 import { ActionEntity } from "../action/action.entity"
 import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 
 @Entity("wf-step")
-// @Tree("nested-set")
 export class WorkflowStep {
   @PrimaryGeneratedColumn({ type: "int" })
   id: number;
@@ -36,23 +34,11 @@ export class WorkflowStep {
   @Column({ type: "json", default: null })
   input: JSON
 
-  @BeforeUpdate()
-  updateTimestamp() {
-    this.updated = new Date();
-  }
-
   @ManyToOne(
     () => Workflow,
     wf => wf.steps,
   )
   workflow: Workflow;
-
-  @OneToOne(
-    () => Answer,
-    answ => answ.workFlowStep,
-    { eager: false, cascade: true }
-  )
-  answer: Answer
 
   @ManyToMany(
     () => ActionEntity,
@@ -70,4 +56,15 @@ export class WorkflowStep {
   @JoinColumn()
   stepExecutions: WfStepExecutionEntity[]
 
+  @OneToMany(
+    () => WorkflowStep,
+    subStep => subStep,
+    { cascade: true, eager: true }
+  )
+  subSteps: WorkflowStep[]
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updated = new Date();
+  }
 }

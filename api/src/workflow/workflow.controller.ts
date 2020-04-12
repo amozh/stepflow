@@ -30,13 +30,4 @@ export class WorkflowController {
   getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
     return this.workflowService.findById(id);
   }
-
-  @Post('answer')
-  giveAnswer(
-    @Body()
-    @Query("workflow", ParseIntPipe) workflow:number,
-    @Query("step", ParseIntPipe) step:number)
-  : void {
-    return console.log("workflowNumber:", workflow, "stepNumber:",step)
-  }
 }

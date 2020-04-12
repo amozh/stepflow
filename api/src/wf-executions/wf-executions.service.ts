@@ -10,14 +10,13 @@ import { IWorkflowExecutionDto } from '@stepflow/shared';
 const vm = require("vm")
 
 export interface IWorkflowActionExecutionInput {
-    input: any
+    workflowInput: any
+    submittedData?: any
     state?: JSON
-    // status?: WorkflowExecutionStatus
 }
 
 export interface IWorkflowActionExecutionOutput {
     state: JSON
-    // status: WorkflowExecutionStatus
     result: {
         isSuccess: boolean
         message: string
@@ -54,15 +53,18 @@ export class WfExecutionsService {
     async createWfExecution(workflowId: number): Promise<IWorkflowExecutionDto> {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
 
-        // TODO: Try to use const where variable is not changed
         const workflowExecution = new WokrflowExecution()
+        const preWorkflowExecution = await this.wfExecutionRepository.save(workflowExecution)
 
         // СОХРАНЕНИЕ ЭКШЕНОВ СЮДА (В ВОРКФЛОУ) И В КАЖДЫЙ СТЕП
         const executionSteps: Promise<WfStepExecutionEntity[]> = workflow.steps.map(async step => {
+            const wfStepExecution = new WfStepExecutionEntity()
+            // Сохранение степа в самом начале нужно для того, чтобы использовать wfStepExecution.id в wfStepExecution
+            const preWfStepExecution = await this.wfStepExecutionRepository.save(wfStepExecution)
             const stepActionExecutions: WfStepActionExecution[] = step.actions.map(action => {
                 const wfStepActionExecution = new WfStepActionExecution()
                 wfStepActionExecution.actionId = action.id
-                wfStepActionExecution.workflow_step_execution_id = step.id
+                wfStepActionExecution.workflow_step_execution_id = preWfStepExecution.id
                 wfStepActionExecution.alias = `Alias: ${Math.floor(Math.random() * 1000)}`
                 wfStepActionExecution.actionType = action.actionType
                 wfStepActionExecution.name = action.name
@@ -72,9 +74,7 @@ export class WfExecutionsService {
             })
             const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository
                 .save(stepActionExecutions)
-            const wfStepExecution = new WfStepExecutionEntity()
-            console.log(step.input, "step???")
-            wfStepExecution.workflow_execution_id = workflow.id
+            wfStepExecution.workflow_execution_id = preWorkflowExecution.id
             wfStepExecution.workflow_step_id = step.id
             wfStepExecution.name = step.name
             wfStepExecution.description = step.description
@@ -86,7 +86,7 @@ export class WfExecutionsService {
         const executionActions: WfActionExecutionEntity[] = workflow.actions.map(action => {
             const wfActionExecution = new WfActionExecutionEntity()
             wfActionExecution.actionId = action.id
-            wfActionExecution.workflow_execution_id = workflow.id
+            wfActionExecution.workflow_execution_id = preWorkflowExecution.id
             wfActionExecution.alias = action.alias
             wfActionExecution.name = action.name
             wfActionExecution.description = action.description
@@ -97,13 +97,10 @@ export class WfExecutionsService {
         const savedActions: WfActionExecutionEntity[] = await this.wWfActionExecutionRepository.save(executionActions)
         const savedSteps: WfStepExecutionEntity[] = await this.wfStepExecutionRepository
             .save(await Promise.all(executionSteps))
-        // Запишет в Workflow input данные про все его steps
-        const wfInput = await savedSteps.map(step => {
-            return { stepId: step.id, stepStatus: step.status, state: step.state, input: step.input }
-        })
+
         workflowExecution.name = workflow.name
         workflowExecution.description = workflow.description
-        workflowExecution.input = JSON.parse(JSON.stringify(wfInput))
+        workflowExecution.input = workflow.input
         workflowExecution.workflow_id = workflowId
         workflowExecution.wfStepsExecution = savedSteps
         workflowExecution.wfActionsExecution = savedActions
@@ -111,46 +108,40 @@ export class WfExecutionsService {
         return await this.wfExecutionRepository.save(workflowExecution)
     }
 
-    async updateWfExecution(wfExecutionId: number, body?: any, wfStepExecutionId?: number): Promise<void> {
-        // Переделать логику получения wfExecutionId
-        console.log(wfExecutionId, body, wfStepExecutionId, "update execution?")
-        const executedWf = await this.wfExecutionRepository.findOne(1)
-        let stateResult: JSON
-        if (body && wfStepExecutionId) {
-            stateResult = {
-                ...executedWf.state,
-                ["stepId_" + wfStepExecutionId]: body
-            }
-            console.log(stateResult, "stateResult111")
-        }
-        console.log(stateResult, "stateResult222")
+    // async updateWfExecution(wfExecutionId: number, body?: any, wfStepExecutionId?: number): Promise<void> {
+    //     const executedWf = await this.wfExecutionRepository.findOne(wfExecutionId)
+    //     let stateResult: JSON
+    //     if (body && wfStepExecutionId) {
+    //         stateResult = {
+    //             ...executedWf.state,
+    //             ["stepId_" + wfStepExecutionId]: body
+    //         }
+    //     }
 
-        let updatedStatus: WorkflowExecutionStatus
-        switch (executedWf.status) {
-            case WorkflowExecutionStatus.NOT_STARTED:
-                updatedStatus = WorkflowExecutionStatus.STARTED
-                break
-            case WorkflowExecutionStatus.STARTED:
-                if (Object.values(executedWf.input)
-                    .length === executedWf.wfStepsExecution
-                        .filter(e => e.status === WorkflowStepExecutionStatus.COMPLETE).length) {
-                    updatedStatus = WorkflowExecutionStatus.COMPLETE
-                    break;
-                }
-            default:
-                updatedStatus = executedWf.status
-                break;
-        }//
-        await this.wfExecutionRepository.update(1, { status: updatedStatus, state: stateResult })
-    }
+    //     let updatedStatus: WorkflowExecutionStatus
+    //     switch (executedWf.status) {
+    //         case WorkflowExecutionStatus.NOT_STARTED:
+    //             updatedStatus = WorkflowExecutionStatus.STARTED
+    //             break
+    //         case WorkflowExecutionStatus.STARTED:
+    //             if (Object.values(executedWf.input)
+    //                 .length === executedWf.wfStepsExecution
+    //                     .filter(e => e.status === WorkflowStepExecutionStatus.COMPLETE).length) {
+    //                 updatedStatus = WorkflowExecutionStatus.COMPLETE
+    //                 break;
+    //             }
+    //         default:
+    //             updatedStatus = executedWf.status
+    //             break;
+    //     }
+    //     await this.wfExecutionRepository.update(wfExecutionId, { status: updatedStatus, state: stateResult })
+    // }
 
     async startWfExecution(id: number, body: any): Promise<any> {
         const wfExecution = await this.wfExecutionRepository.findOne(id)
-        const input = wfExecution.input;
+        const workflowInput = wfExecution.input;
         const state = wfExecution.state;
         const actions = wfExecution.wfActionsExecution;
-        // const status = wfExecution.status;
-        input["submittedAnswer"] = body.submittedAnswer
 
         const onSubmitActions = actions.filter(a => a.actionType === WfActionType.ON_START);
         const outputs: IWorkflowActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
@@ -159,17 +150,14 @@ export class WfExecutionsService {
             let actionInput: IWorkflowActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    input,
-                    state,
-                    // status
+                    workflowInput,
+                    state
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
-                // const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    input,
+                    workflowInput,
                     state: prevState,
-                    // status: prevStatus
                 }
             }
 
@@ -183,20 +171,16 @@ export class WfExecutionsService {
         })
 
         const finalState = outputs[outputs.length - 1].state;
-        // const finalStatus = outputs[outputs.length - 1].status;
-
-        // await this.wfStepExecutionRepository.update(id, { state: finalState })
-        await this.updateWfExecution(id, finalState)
+        await this.wfExecutionRepository.update(id, { state: finalState })
         return { finalState, failedActions }
     }
 
     async completeWfExecution(id: number, body: any): Promise<any> {
         const wfExecution = await this.wfExecutionRepository.findOne(id)
-        const input = wfExecution.input;
+        const workflowInput = wfExecution.input;
         const state = wfExecution.state;
         const actions = wfExecution.wfActionsExecution;
-        // const status = wfExecution.status;
-        input["submittedAnswer"] = body.submittedAnswer
+        const submittedData = body;
 
         const onSubmitActions = actions.filter(a => a.actionType === WfActionType.ON_COMPLETE);
         const outputs: IWorkflowActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
@@ -205,17 +189,16 @@ export class WfExecutionsService {
             let actionInput: IWorkflowActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    input,
-                    state,
-                    // status
+                    workflowInput,
+                    submittedData,
+                    state
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
-                // const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    input,
+                    workflowInput,
+                    submittedData,
                     state: prevState,
-                    // status: prevStatus
                 }
             }
 
@@ -227,22 +210,17 @@ export class WfExecutionsService {
         failedActions.forEach(a => {
             //do something with failed action
         })
-
         const finalState = outputs[outputs.length - 1].state;
-        // const finalStatus = outputs[outputs.length - 1].status;
-
-        // await this.wfStepExecutionRepository.update(id, { state: finalState })
-        await this.updateWfExecution(id, finalState)
+        await this.wfExecutionRepository.update(id, { state: finalState })
         return { finalState, failedActions }
     }
 
     async submitWfExecution(id: number, body: any): Promise<any> {
         const wfExecution = await this.wfExecutionRepository.findOne(id)
-        const input = wfExecution.input;
+        const workflowInput = wfExecution.input;
         const state = wfExecution.state;
         const actions = wfExecution.wfActionsExecution;
-        // const status = wfExecution.status;
-        input["submittedAnswer"] = body.submittedAnswer
+        const submittedData = body;
 
         const onSubmitActions = actions.filter(a => a.actionType === WfActionType.ON_SUBMIT);
         const outputs: IWorkflowActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
@@ -251,17 +229,16 @@ export class WfExecutionsService {
             let actionInput: IWorkflowActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    input,
-                    state,
-                    // status
+                    workflowInput,
+                    submittedData,
+                    state
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
-                // const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    input,
+                    workflowInput,
+                    submittedData,
                     state: prevState,
-                    // status: prevStatus
                 }
             }
 
@@ -275,21 +252,17 @@ export class WfExecutionsService {
         })
 
         const finalState = outputs[outputs.length - 1].state;
-        // const finalStatus = outputs[outputs.length - 1].status;
-
-        // await this.wfStepExecutionRepository.update(id, { state: finalState })
-        await this.updateWfExecution(id, finalState)
+        await this.wfExecutionRepository.update(id, { state: finalState })
         return { finalState, failedActions }
     }
 
     async executeCustomWfAction(id: number, actionAlias: string, actionsInput: IWorkflowActionExecutionInput):
         Promise<any> {
         const wfExecution = await this.wfExecutionRepository.findOne(id)
-        const input = wfExecution.input;
+        const workflowInput = wfExecution.input;
         const state = wfExecution.state;
         const actions = wfExecution.wfActionsExecution;
-        // const status = wfExecution.status;
-        input["submittedAnswer"] = actionsInput.input.submittedAnswer
+        const submittedData = actionsInput;
 
         const onSubmitActions = actions.filter(a => a.alias === actionAlias);
         const outputs: IWorkflowActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
@@ -298,17 +271,16 @@ export class WfExecutionsService {
             let actionInput: IWorkflowActionExecutionInput;
             if (existingOutputs.length === 0) {
                 actionInput = {
-                    input,
-                    state,
-                    // status
+                    workflowInput,
+                    submittedData,
+                    state
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
-                // const prevStatus = existingOutputs[existingOutputs.length - 1].status;
                 actionInput = {
-                    input,
+                    workflowInput,
+                    submittedData,
                     state: prevState,
-                    // status: prevStatus
                 }
             }
 
@@ -322,32 +294,29 @@ export class WfExecutionsService {
         })
 
         const finalState = outputs[outputs.length - 1].state;
-        await this.updateWfExecution(wfExecution.id, finalState)
+        await this.wfExecutionRepository.update(id, { state: finalState })
         return { finalState, failedActions }
     }
 
     private async executeAction(input: IWorkflowActionExecutionInput, action: string)
         : Promise<IWorkflowActionExecutionOutput> {
         let output: IWorkflowActionExecutionOutput;
-        // Переделать эту логику. Здесь данные захардкожены
-        input.input = {
-            a: 5,
-            b: 7,
-            h: 4
-        }
         try {
             const script = new vm.Script(`${action}`);
-            const context = vm.createContext(input.input);
-            await script.runInContext(context);
+            const context = vm.createContext({
+                currentState: input.state,
+                workflowInput: input.workflowInput,
+                submittedData: input.submittedData
+            });
+            const result = await script.runInContext(context);
             output = {
-                state: context,
+                state: result,
                 result: {
                     isSuccess: true,
                     message: "You gave an answer"
                 }
             }
         } catch (e) {
-            console.error(`Failed to execute action ${action} with input ${JSON.stringify(input)}`, e);
             output = {
                 state: input.state,
                 result: {

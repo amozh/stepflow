@@ -10,7 +10,7 @@ import { WfExecutionsModule } from "../wf-executions/wf-executions.module"
   imports: [TypeOrmModule.forFeature([
     WfStepExecutionEntity,
     WorkflowStep,
-    WfStepActionExecutionEntity
+    WfStepActionExecutionEntity,
   ]),
     WfExecutionsModule
   ],

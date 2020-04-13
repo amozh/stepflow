@@ -1,56 +1,65 @@
 import { Getters, Mutations, Actions, Module, createMapper } from "vuex-smart-module";
 import { v4 as uuidv4 } from "uuid";
 import { workflowApi } from "../api/index";
+import {
+  ICreateWorkflowDto,
+  ICreateWorkflowStepDto,
+  IWorkflowInfoDto,
+  ICrumbDto,
+  IActionDto,
+  IWorkflowCreatedStatus,
+  ActionType
+} from '@stepflow/shared';
 
-interface ICreateWorkflowDto {
-  id: null,
-  name: string,
-  depth: number,
-  description: string,
-  input: JSON | any,
-  steps: ICreateStepDto[]
-}
-interface ICreateStepDto {
-  id: string,
-  name: string,
-  description: string,
-  input: JSON | any,
-  depth: number,
-  actions: ICreateActionDto[],
-  steps: ICreateStepDto[]
-}
+// interface ICreateWorkflowDto {
+//   id: null,
+//   name: string,
+//   depth: number,
+//   description: string,
+//   input: JSON | any,
+//   steps: ICreateWorkflowStepDto[]
+// }
+// interface ICreateWorkflowStepDto {
+//   id: string,
+//   name: string,
+//   description: string,
+//   input: JSON | any,
+//   depth: number,
+//   actions: IActionDto[],
+//   steps: ICreateWorkflowStepDto[]
+// }
 
-interface IWorkflowInfoDto {
-  name: string,
-  description: string,
-  input: any
-}
+// interface IWorkflowInfoDto {
+//   name: string,
+//   description: string,
+//   input: any
+// }
 
-interface ICrumbDto {
-  step: any | null,
-  depth: number,
-  text: string
-}
+// interface ICrumbDto {
+//   step: any | null,
+//   depth: number,
+//   text: string
+// }
 
-interface ICreateActionDto {
-  id: string,
-  name: string,
-  actionType: ActionType,
-  description: string,
-  alias: string,
-  body: string
-}
-interface IWorkflowCreatedStatus {
-  success: boolean | null,
-  text: string
-}
+// interface IActionDto {
+//   id: string,
+//   name: string,
+//   actionType: ActionType,
+//   description: string,
+//   alias: string,
+//   body: string
+// }
+// interface IWorkflowCreatedStatus {
+//   success: boolean | null,
+//   text: string
+// }
 
-export enum ActionType {
-  ON_START = "ON_START",
-  ON_SUBMIT = "ON_SUBMIT",
-  ON_COMPLETE = "ON_COMPLETE",
-  CUSTOM = "CUSTOM"
-}
+// export enum ActionType {
+//   ON_START = "ON_START",
+//   ON_SUBMIT = "ON_SUBMIT",
+//   ON_COMPLETE = "ON_COMPLETE",
+//   CUSTOM = "CUSTOM"
+// }
 
 class RootState {
   workflow: ICreateWorkflowDto = {
@@ -134,9 +143,9 @@ class RootState {
       }
     ]
   }
-  currentStep: ICreateStepDto | null = null
-  currentSteps: ICreateStepDto[] = []
-  currentAction: ICreateActionDto | null = null
+  currentStep: ICreateWorkflowStepDto | null = null
+  currentSteps: ICreateWorkflowStepDto[] = []
+  currentAction: IActionDto | null = null
   workflowInfo: IWorkflowInfoDto | {} = {}
   workflowStatus: IWorkflowCreatedStatus = {
     success: null,
@@ -166,16 +175,16 @@ class RootGetters extends Getters<RootState> {
   get breadCrumbs(): any {
     return this.state.breadCrumbs
   }
-  get currentStep(): ICreateStepDto | null {
+  get currentStep(): ICreateWorkflowStepDto | null {
     return this.state.currentStep
   }
-  get currentSteps(): ICreateStepDto[] {
+  get currentSteps(): ICreateWorkflowStepDto[] {
     return this.state.currentSteps
   }
   get maxDepth(): number {
     return this.state.breadCrumbs[this.state.breadCrumbs.length - 1].depth + 1;
   }
-  get currentAction(): ICreateActionDto | null {
+  get currentAction(): IActionDto | null {
     return this.state.currentAction
   }
   get workflowStatus(): IWorkflowCreatedStatus {
@@ -190,20 +199,20 @@ class RootMutations extends Mutations<RootState> {
     this.state.workflow.input = workflowInfo.input
   }
 
-  mutateCurrentStep(step: any): ICreateStepDto {
+  mutateCurrentStep(step: any): ICreateWorkflowStepDto {
     return this.state.currentStep = step
   }
 
-  mutateCurrentAction(action: any): ICreateActionDto {
+  mutateCurrentAction(action: any): IActionDto {
     return this.state.currentAction = action
   }
 
-  mutateCurrentSteps(steps: ICreateStepDto[]): ICreateStepDto[] {
+  mutateCurrentSteps(steps: ICreateWorkflowStepDto[]): ICreateWorkflowStepDto[] {
     return this.state.currentSteps = steps
   }
 
   addAction(): void {
-    const action: ICreateActionDto = {
+    const action: IActionDto = {
       id: uuidv4(),
       name: "New action",
       actionType: ActionType.ON_START,
@@ -214,7 +223,7 @@ class RootMutations extends Mutations<RootState> {
     this.state.currentStep?.actions.push(action)
   }
 
-  saveAction(updatedAction: ICreateActionDto): void {
+  saveAction(updatedAction: IActionDto): void {
     const actionIndexById: number | undefined = this.state.currentStep?.actions
       .findIndex(action => action.id === updatedAction.id)
     if (actionIndexById !== -1) {
@@ -232,7 +241,7 @@ class RootMutations extends Mutations<RootState> {
   }
 
   addStep(depth: number): void {
-    const step: ICreateStepDto = {
+    const step: ICreateWorkflowStepDto = {
       id: uuidv4(),
       depth,
       name: "New step",
@@ -244,7 +253,7 @@ class RootMutations extends Mutations<RootState> {
     this.state.currentSteps.push(step)
   }
 
-  saveStep(updatedStep: ICreateStepDto): void {
+  saveStep(updatedStep: ICreateWorkflowStepDto): void {
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
     if (parentStep.step) {
       const stepIndexById: number = parentStep.step.steps.findIndex((step: any) => step.id === updatedStep.id)
@@ -330,7 +339,7 @@ class RootActions extends Actions<
     this.commit("mutateCurrentAction", null)
     this.commit("mutateCurrentStep", step)
   }
-  saveStep(updatedStep: ICreateStepDto): void {
+  saveStep(updatedStep: ICreateWorkflowStepDto): void {
     this.commit("saveStep", updatedStep)
     const crumb: ICrumbDto = {
       step: updatedStep,
@@ -363,7 +372,7 @@ class RootActions extends Actions<
       this.commit("mutateCurrentSteps", this.state.workflow.steps)
     }
   }
-  saveAction(updatedAction: ICreateActionDto): void {
+  saveAction(updatedAction: IActionDto): void {
     this.commit("saveAction", updatedAction)
     const actionById = this.state.currentStep?.actions.find(action => action.id === updatedAction.id)
     this.commit("mutateCurrentAction", actionById)

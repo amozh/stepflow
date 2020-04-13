@@ -11,6 +11,7 @@ import {
   Emit,
   Watch
 } from "vue-property-decorator";
+import { IActionDto } from '@stepflow/shared';
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 // language
@@ -37,7 +38,7 @@ const Mappers = Vue.extend({
 @Component
 export default class JavaScriptEditor extends Mappers {
   @Prop() currentCode!: string;
-  @Prop() currentAction!: any;
+  @Prop() currentAction!: IActionDto;
 
   @Provide() code: null | string = null;
   @Provide() cmOptions: any = {

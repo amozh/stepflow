@@ -24,7 +24,7 @@
 import { Vue, Component, Provide } from "vue-property-decorator";
 // import WorkflowStore from "../store/modules/workflow";
 import { workflowMapper } from "../store/modules/workflow";
-import { IWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
+import { ICreateWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
 import Step from "../components/Step.vue";
 
 const Mappers = Vue.extend({

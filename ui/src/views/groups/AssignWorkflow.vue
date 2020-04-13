@@ -42,7 +42,7 @@ import {
   Prop
 } from "vue-property-decorator";
 import Snackbar from "../../components/Snackbar.vue";
-import { IUserGroupDto, IWorkflowEntityDto } from "@stepflow/shared";
+import { IUserGroupDto, ICreateWorkflowDto } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
   components: {
@@ -52,14 +52,14 @@ const Mappers = Vue.extend({
 
 @Component
 export default class AssignWorkflow extends Mappers {
-  @Provide() workflows: IWorkflowEntityDto[] = [];
+  @Provide() workflows: ICreateWorkflowDto[] = [];
   @Provide() selectedGroupId: string = "";
-  @Provide() selectedWorkflow: IWorkflowEntityDto[] = [];
+  @Provide() selectedWorkflow: ICreateWorkflowDto[] = [];
   @Provide() snackbarText: string = "";
   @Provide() snackbar: boolean = false;
 
-  @Prop() getAllWorkflows!: () => IWorkflowEntityDto[]; //fix
-  @Prop() allWorkflows!: IWorkflowEntityDto[];
+  @Prop() getAllWorkflows!: () => ICreateWorkflowDto[]; //fix
+  @Prop() allWorkflows!: ICreateWorkflowDto[];
   @Prop() workflowsLoading!: boolean;
   @Prop() userGroups!: IUserGroupDto[];
   @Prop() updateGroup!: (group: { id: string; group: IUserGroupDto }) => void;

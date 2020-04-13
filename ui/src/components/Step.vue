@@ -31,7 +31,7 @@ import {
 import WorkflowStore from "../store/modules/workflow";
 import StepButton from "../components/StepButton.vue";
 import { ValidationUtils } from "../utils/validation-utils";
-import { IWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
+import { ICreateWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
 
 const Mappers = Vue.extend({
   components: { StepButton }
@@ -43,7 +43,7 @@ export default class Step extends Mappers {
   @Provide() answerResult: string = "";
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
 
-  @Prop() step!: IWorkflowStepDto;
+  @Prop() step!: ICreateWorkflowStepDto;
   @Prop() index!: number;
   @Prop() result: any;
 

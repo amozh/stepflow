@@ -5,11 +5,11 @@
       v-for="step in steps"
       :key="step.id"
       @click="openStep(step)"
-      :class="step===currentStep?'current-step pt-0 py-4 ma-3 pointer':'pt-0 py-4 ma-3 pointer'"
+      :class="step===currentStep?'current-step ma-2 pointer':'ma-2 pointer'"
       class="scroll-x"
       hover
     >
-      <v-card-title height="100">{{step.name}}</v-card-title>
+      <v-card-title :class="orientation==='vertical'?'card-title-y':'card-title-x'">{{step.name}}</v-card-title>
     </v-card>
   </div>
   <div class="plus-icon">
@@ -62,7 +62,7 @@ export default class Slider extends Vue {
   overflow-x:auto;
 }
 .scroll-x {
-  min-height: 100px;
+  min-height: 70px;
   min-width: 150px;
 }
 .plus-icon {
@@ -72,5 +72,15 @@ export default class Slider extends Vue {
 }
 .plus-icon button {
   height: 40px;
+}
+.card-title-x {
+  justify-content: center;
+  align-items: center;
+  font-size: 14pt;
+}
+.card-title-y {
+  justify-content: center;
+  align-items: center;
+  font-size: 12pt;
 }
 </style>

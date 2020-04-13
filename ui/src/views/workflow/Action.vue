@@ -25,11 +25,11 @@
       @change-js="changeJs"
     />
     <v-container class="d-flex flex-row btns">
-      <v-btn color="error" @click="removeAction(currentAction.id)">
+      <v-btn color="error" class="btn" @click="removeAction(currentAction.id)">
         Delete action
         <v-icon class="ml-2">delete_forever</v-icon>
       </v-btn>
-      <v-btn class="success" width="200" @click="saveCurrenAction">
+      <v-btn class="success btn" width="200" @click="saveCurrenAction">
         Save action
         <v-icon class="ml-2">save</v-icon>
       </v-btn>
@@ -127,5 +127,8 @@ form {
 }
 .btns {
   justify-content: space-around;
+}
+.btn {
+  width: 180px;
 }
 </style>

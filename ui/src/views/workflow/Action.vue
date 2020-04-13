@@ -47,7 +47,7 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
-import { IActionDto } from '@stepflow/shared';
+import { IActionDto } from "@stepflow/shared";
 import { ValidationUtils } from "../../utils/validation-utils";
 import JavaScriptEditor from "../../components/JavaScriptEditor.vue";
 
@@ -74,7 +74,7 @@ export default class Action extends Mappers {
   @Provide() actionAlias: string = "";
   @Provide() actionBody: string = "";
   @Provide() actionType: ActionType = ActionType.ON_START;
-  @Provide() TYPES: string[] = [
+  @Provide() TYPES: ActionType[] = [
     ActionType.ON_START,
     ActionType.ON_SUBMIT,
     ActionType.ON_COMPLETE,
@@ -84,9 +84,9 @@ export default class Action extends Mappers {
   @Watch("currentAction")
   changeCurrentAction(val: boolean, oldVal: boolean) {
     this.actionName = this.currentAction.name;
-    this.actionType = this.currentAction.actionType;
+    this.actionType = this.currentAction.actionType || ActionType.ON_START;
     this.actionDescription = this.currentAction.description;
-    this.actionAlias = this.currentAction.alias;
+    this.actionAlias = this.currentAction.alias || "";
     this.actionBody = this.currentAction.body;
   }
 
@@ -114,9 +114,9 @@ export default class Action extends Mappers {
 
   mounted() {
     this.actionName = this.currentAction.name;
-    this.actionType = this.currentAction.actionType;
+    this.actionType = this.currentAction.actionType || ActionType.ON_START;
     this.actionDescription = this.currentAction.description;
-    this.actionAlias = this.currentAction.alias;
+    this.actionAlias = this.currentAction.alias || "";
     this.actionBody = this.currentAction.body;
   }
 }

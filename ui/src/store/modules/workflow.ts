@@ -98,14 +98,14 @@ class RootActions extends Actions<
     }
   }
 
-  async checkAnswer(step: { stepId: string; answer: string }): Promise<any> {
-    const answer = {
-      parent: step.stepId,
-      answer: step.answer
-    };
-    const response = await workflowApi.checkAnswer(answer);
-    return response;
-  }
+  // async checkAnswer(step: { stepId: string; answer: string }): Promise<any> {
+  //   const answer = {
+  //     parent: step.stepId,
+  //     answer: step.answer
+  //   };
+  //   const response = await workflowApi.checkAnswer(answer);
+  //   return response;
+  // }
   async createWorkflow(workflow: ICreateWorkflowDto): Promise<any> {
     const response = await workflowApi.createWorkflow(workflow);
     return response;

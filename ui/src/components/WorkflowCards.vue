@@ -8,7 +8,6 @@
             <h3 class="grey--text">{{index+1}} {{workflow.name}}</h3>
             <p>{{workflow.description}}</p>
           </div>
-          id: {{workflow.id}}
           <v-btn
             v-if="!workflow.status || workflow.status==='NOT_STARTED'"
             large

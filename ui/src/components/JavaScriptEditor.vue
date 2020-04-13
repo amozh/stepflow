@@ -11,7 +11,7 @@ import {
   Emit,
   Watch
 } from "vue-property-decorator";
-import { IActionDto } from '@stepflow/shared';
+import { IActionDto } from "@stepflow/shared";
 import { codemirror } from "vue-codemirror";
 import "codemirror/lib/codemirror.css";
 // language
@@ -72,7 +72,7 @@ export default class JavaScriptEditor extends Mappers {
   // }
 
   @Emit("change-js")
-  changeJs(code: string): void {
+  changeJs(code: string | null): void {
     return;
   }
 
@@ -81,7 +81,7 @@ export default class JavaScriptEditor extends Mappers {
     this.code = this.currentCode;
   }
 
-  onCmCodeChange(cm) {
+  onCmCodeChange(cm: any) {
     this.changeJs(this.code);
   }
 

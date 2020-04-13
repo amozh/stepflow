@@ -22,25 +22,6 @@ class RootState {
       // wfInput: "someJson"
     },
     steps: [
-      // {
-      //   id: uuidv4(),
-      //   name: "first_1",
-      //   description: "first step description",
-      //   input: {},
-      //   depth: 1,
-      //   actions: [],
-      //   steps: [
-      //     {
-      //       id: uuidv4(),
-      //       name: "FIRST_SUB_STEP",
-      //       description: "first sub step with depth 2",
-      //       input: {},
-      //       depth: 2,
-      //       actions: [],
-      //       steps: []
-      //     }
-      //   ]
-      // },
       {
         id: uuidv4(),
         name: "depth_2",
@@ -80,15 +61,7 @@ class RootState {
             description: "first ACTION description",
             alias: "action alias 12415",
             body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          },
-          // {
-          //   id: "19adpldnw7189",
-          //   name: "second_ACTION",
-          //   actionType: ActionType.ON_SUBMIT,
-          //   description: "second ACTION description 123123",
-          //   alias: "action alias 888",
-          //   body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          // }
+          }
         ]
       }
     ]
@@ -206,10 +179,12 @@ class RootMutations extends Mutations<RootState> {
   saveStep(updatedStep: ICreateWorkflowStepDto): ICreateWorkflowStepDto[] {
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
     if (parentStep.step) {
-      const stepIndexById: number = parentStep.step.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
+      const stepIndexById: number = parentStep.step.steps
+        .findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
       return parentStep.step.steps.splice(stepIndexById, 1, updatedStep)
     } else {
-      const stepIndexById: number = this.state.workflow.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
+      const stepIndexById: number = this.state.workflow.steps
+        .findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
       return this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
     }
   }

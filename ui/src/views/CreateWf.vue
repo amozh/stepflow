@@ -48,7 +48,7 @@ import {
   IActionDto,
   IWorkflowCreatedStatus,
   ActionType
-} from '@stepflow/shared';
+} from "@stepflow/shared";
 import { createWorkflowMapper } from "../store/modules/createWorkflow";
 import WorkflowInfo from "./workflow/WokrflowInfo.vue";
 import Slider from "./workflow/Slider.vue";
@@ -99,7 +99,9 @@ const Mappers = Vue.extend({
 
 @Component
 export default class CreateWorkflow extends Mappers {
-  changeWorkflowInfo(workflowInfo): Promise<IWorkflowInfoDto> {
+  changeWorkflowInfo(
+    workflowInfo: IWorkflowInfoDto
+  ): Promise<IWorkflowInfoDto> {
     return this.changeWorkflowDescription(workflowInfo);
   }
 
@@ -107,7 +109,9 @@ export default class CreateWorkflow extends Mappers {
     return this.addStep(depth);
   }
 
-  saveCurrentStep(step: ICreateWorkflowStepDto): Promise<ICreateWorkflowStepDto[]> {
+  saveCurrentStep(
+    step: ICreateWorkflowStepDto
+  ): Promise<ICreateWorkflowStepDto[]> {
     return this.saveStep(step);
   }
 

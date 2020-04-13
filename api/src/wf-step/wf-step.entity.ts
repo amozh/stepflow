@@ -56,13 +56,6 @@ export class WorkflowStep {
   @JoinColumn()
   stepExecutions: WfStepExecutionEntity[]
 
-  @OneToMany(
-    () => WorkflowStep,
-    subStep => subStep,
-    { cascade: true, eager: true }
-  )
-  subSteps: WorkflowStep[]
-
   @BeforeUpdate()
   updateTimestamp() {
     this.updated = new Date();

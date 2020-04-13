@@ -8,13 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
-import { ActionEntity } from "../action/action.entity"
 
 @Injectable()
 export class WorkflowService {
   constructor(
-    @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>,
-    @InjectRepository(ActionEntity) private readonly actionRepository: Repository<ActionEntity>
+    @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>
   ) { }
 
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
@@ -41,7 +39,6 @@ export class WorkflowService {
 
       return this.workflowRepository.save(workflow);
     } catch (error) {
-      console.log(error, "error")
       throw new InternalServerErrorException();
     }
   }

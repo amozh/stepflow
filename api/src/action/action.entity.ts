@@ -73,7 +73,7 @@ export class ActionEntity {
     @OneToMany(
         () => WfActionExecutionEntity,
         wfActionExecution => wfActionExecution.action,
-        { cascade: true, eager: true }
+        { cascade: true }
     )
     @JoinColumn()
     wfActionExecutions: WfActionExecutionEntity[]
@@ -81,7 +81,7 @@ export class ActionEntity {
     @OneToMany(
         () => WfStepActionExecutionEntity,
         wfStepActionExecution => wfStepActionExecution.action,
-        { cascade: true, eager: true }
+        { cascade: true }
     )
     @JoinColumn()
     wfStepActionExecutions: WfStepActionExecutionEntity[]

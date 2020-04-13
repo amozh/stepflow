@@ -56,7 +56,6 @@ export class WfExecutionsService {
         const workflowExecution = new WokrflowExecution()
         const preWorkflowExecution = await this.wfExecutionRepository.save(workflowExecution)
 
-        // СОХРАНЕНИЕ ЭКШЕНОВ СЮДА (В ВОРКФЛОУ) И В КАЖДЫЙ СТЕП
         const executionSteps: Promise<WfStepExecutionEntity[]> = workflow.steps.map(async step => {
             const wfStepExecution = new WfStepExecutionEntity()
             // Сохранение степа в самом начале нужно для того, чтобы использовать wfStepExecution.id в wfStepExecution

@@ -7,9 +7,9 @@ enum WorkflowExecutionStatus {
 }
 
 export interface ICreateWorkflowDto {
-  id: any,
+  id?: any,
   name: string,
-  depth: number,
+  depth?: number,
   description: string,
   input: JSON | any,
   actions?: IActionDto[],

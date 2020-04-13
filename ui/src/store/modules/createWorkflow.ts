@@ -159,7 +159,7 @@ class RootState {
 }
 
 class RootGetters extends Getters<RootState> {
-  get workflow(): any {
+  get workflow(): ICreateWorkflowDto {
     return this.state.workflow;
   }
   get workflowInfo(): any {
@@ -256,10 +256,10 @@ class RootMutations extends Mutations<RootState> {
   saveStep(updatedStep: ICreateWorkflowStepDto): void {
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
     if (parentStep.step) {
-      const stepIndexById: number = parentStep.step.steps.findIndex((step: any) => step.id === updatedStep.id)
+      const stepIndexById: number = parentStep.step.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
       parentStep.step.steps.splice(stepIndexById, 1, updatedStep)
     } else {
-      const stepIndexById: number = this.state.workflow.steps.findIndex((step: any) => step.id === updatedStep.id)
+      const stepIndexById: number = this.state.workflow.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
       this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
     }
   }
@@ -269,11 +269,11 @@ class RootMutations extends Mutations<RootState> {
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === stepDepth - 1)
     this.filterBreadCrumbs(parentStep.depth)
     if (parentStep.step) {
-      parentStep.step.steps = parentStep.step.steps.filter((step: any) => step.id !== stepId)
+      parentStep.step.steps = parentStep.step.steps.filter((step: ICreateWorkflowStepDto) => step.id !== stepId)
       this.mutateCurrentStep(parentStep.step)
       this.mutateCurrentSteps(parentStep.step.steps)
     } else {
-      this.state.workflow.steps = this.state.workflow.steps.filter((step: any) => step.id !== stepId)
+      this.state.workflow.steps = this.state.workflow.steps.filter((step: ICreateWorkflowStepDto) => step.id !== stepId)
       this.mutateCurrentStep(null)
       this.mutateCurrentSteps(this.state.workflow.steps)
     }
@@ -335,7 +335,7 @@ class RootActions extends Actions<
     this.commit("addBreadCrumbs", crumb)
     this.commit("mutateWorkflowInfo", workflowInfo)
   }
-  goToStep(step: any): void {
+  goToStep(step: ICreateWorkflowStepDto): void {
     this.commit("mutateCurrentAction", null)
     this.commit("mutateCurrentStep", step)
   }
@@ -353,11 +353,11 @@ class RootActions extends Actions<
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === stepDepth - 1)
     this.commit("filterBreadCrumbs", parentStep.depth)
     if (parentStep.step) {
-      parentStep.step.steps = parentStep.step.steps.filter((step: any) => step.id !== stepId)
+      parentStep.step.steps = parentStep.step.steps.filter((step: ICreateWorkflowStepDto) => step.id !== stepId)
       this.commit("mutateCurrentStep", parentStep.step)
       this.commit("mutateCurrentSteps", parentStep.step.steps)
     } else {
-      this.state.workflow.steps = this.state.workflow.steps.filter((step: any) => step.id !== stepId)
+      this.state.workflow.steps = this.state.workflow.steps.filter((step: ICreateWorkflowStepDto) => step.id !== stepId)
       this.commit("mutateCurrentStep", null)
       this.commit("mutateCurrentSteps", this.state.workflow.steps)
     }

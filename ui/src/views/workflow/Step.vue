@@ -57,6 +57,7 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import { ICreateWorkflowStepDto, IActionDto } from '@stepflow/shared';
 import VJsoneditor from "v-jsoneditor";
 import Action from "./Action.vue";
 import Slider from "./Slider.vue";
@@ -72,8 +73,8 @@ const Mappers = Vue.extend({
 
 @Component
 export default class Step extends Mappers {
-  @Prop() currentStep!: any;
-  @Prop() currentAction!: any;
+  @Prop() currentStep!: ICreateWorkflowStepDto;
+  @Prop() currentAction!: IActionDto;
 
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
   @Provide() stepName: string = "";
@@ -91,7 +92,7 @@ export default class Step extends Mappers {
   }
 
   @Emit("save-current-step")
-  saveCurrentStep(): any {
+  saveCurrentStep(): ICreateWorkflowStepDto {
     const step = {
       id: this.currentStep.id,
       depth: this.currentStep.depth,

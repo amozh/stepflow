@@ -11,56 +11,6 @@ import {
   ActionType
 } from '@stepflow/shared';
 
-// interface ICreateWorkflowDto {
-//   id: null,
-//   name: string,
-//   depth: number,
-//   description: string,
-//   input: JSON | any,
-//   steps: ICreateWorkflowStepDto[]
-// }
-// interface ICreateWorkflowStepDto {
-//   id: string,
-//   name: string,
-//   description: string,
-//   input: JSON | any,
-//   depth: number,
-//   actions: IActionDto[],
-//   steps: ICreateWorkflowStepDto[]
-// }
-
-// interface IWorkflowInfoDto {
-//   name: string,
-//   description: string,
-//   input: any
-// }
-
-// interface ICrumbDto {
-//   step: any | null,
-//   depth: number,
-//   text: string
-// }
-
-// interface IActionDto {
-//   id: string,
-//   name: string,
-//   actionType: ActionType,
-//   description: string,
-//   alias: string,
-//   body: string
-// }
-// interface IWorkflowCreatedStatus {
-//   success: boolean | null,
-//   text: string
-// }
-
-// export enum ActionType {
-//   ON_START = "ON_START",
-//   ON_SUBMIT = "ON_SUBMIT",
-//   ON_COMPLETE = "ON_COMPLETE",
-//   CUSTOM = "CUSTOM"
-// }
-
 class RootState {
   workflow: ICreateWorkflowDto = {
     id: null,
@@ -253,14 +203,14 @@ class RootMutations extends Mutations<RootState> {
     this.state.currentSteps.push(step)
   }
 
-  saveStep(updatedStep: ICreateWorkflowStepDto): void {
+  saveStep(updatedStep: ICreateWorkflowStepDto): ICreateWorkflowStepDto[] {
     const parentStep: ICrumbDto = this.state.breadCrumbs.find(br => br.depth === updatedStep.depth - 1)
     if (parentStep.step) {
       const stepIndexById: number = parentStep.step.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
-      parentStep.step.steps.splice(stepIndexById, 1, updatedStep)
+      return parentStep.step.steps.splice(stepIndexById, 1, updatedStep)
     } else {
       const stepIndexById: number = this.state.workflow.steps.findIndex((step: ICreateWorkflowStepDto) => step.id === updatedStep.id)
-      this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
+      return this.state.workflow.steps.splice(stepIndexById, 1, updatedStep)
     }
   }
 
@@ -336,8 +286,13 @@ class RootActions extends Actions<
     this.commit("mutateWorkflowInfo", workflowInfo)
   }
   goToStep(step: ICreateWorkflowStepDto): void {
-    this.commit("mutateCurrentAction", null)
-    this.commit("mutateCurrentStep", step)
+    if (step.actions && step.actions.length) {
+      this.commit("mutateCurrentAction", step.actions[0])
+      this.commit("mutateCurrentStep", step)
+    } else {
+      this.commit("mutateCurrentAction", null)
+      this.commit("mutateCurrentStep", step)
+    }
   }
   saveStep(updatedStep: ICreateWorkflowStepDto): void {
     this.commit("saveStep", updatedStep)

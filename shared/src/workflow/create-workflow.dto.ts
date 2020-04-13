@@ -26,29 +26,6 @@ export interface ICreateWorkflowStepDto {
   steps: ICreateWorkflowStepDto[]
 }
 
-// export interface ICreateWorkflowDto {
-//   id?: number | null,
-//   name: string,
-//   depth?: number,
-//   description: string,
-//   input?: JSON | any,
-//   actions?: IActionDto[],
-//   wfExecutions?: any[],
-//   steps?: ICreateWorkflowStepDto[],
-// }
-
-// export interface ICreateWorkflowStepDto {
-//   id?: string | null,
-//   name: string,
-//   depth?: number,
-//   description: string,
-//   input: JSON | any,
-//   answer?: AnswerDto,
-//   actions?: IActionDto[],
-//   steps?: ICreateWorkflowStepDto[],
-//   parent?: ICreateWorkflowStepDto,
-// }
-
 export interface IWorkflowExecutionDto extends ICreateWorkflowDto {
   readonly workflow_id: number;
   readonly state: JSON;
@@ -81,46 +58,3 @@ export interface IAnswerResult {
   readonly result?: string;
   readonly stepId?: string | number;
 }
-
-
-
-
-
-/* Last version
-export interface ICreateWorkflowDto {
-  readonly name: string;
-  readonly description: string;
-  readonly input: JSON;
-  readonly actions?: any[];
-  readonly wfExecutions?: any[];
-  readonly steps?: ICreateWorkflowStepDto[];
-}
-export interface IWorkflowEntityDto extends ICreateWorkflowDto {
-  readonly id?: number;
-}
-export interface AnswerDto {
-  readonly answer: string;
-  readonly parent?: ICreateWorkflowStepDto;
-}
-
-export interface IAnswerResult {
-  readonly result?: string;
-  readonly stepId?: string | number
-}
-
-export interface ICreateWorkflowStepDto {
-  readonly name: string;
-  readonly description: string;
-  readonly answer: AnswerDto;
-  readonly steps?: ICreateWorkflowStepDto[];
-  readonly parent?: ICreateWorkflowStepDto;
-}
-export interface IWorkflowStepDto extends ICreateWorkflowStepDto {
-  readonly id: string;
-}
-
-export interface IWorkflowExecutionDto extends ICreateWorkflowDto {
-  readonly workflow_id: number;
-  readonly state: JSON;
-  readonly status: WorkflowExecutionStatus
-}*/

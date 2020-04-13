@@ -30,11 +30,12 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import { ICreateWorkflowStepDto } from '@stepflow/shared';
 
 @Component
 export default class Slider extends Vue {
   @Prop() orientation!: string;
-  @Prop() steps!: any[];
+  @Prop() steps!: ICreateWorkflowStepDto[];
   @Prop() maxDepth!: number;
   @Prop() currentStep!: string;
 

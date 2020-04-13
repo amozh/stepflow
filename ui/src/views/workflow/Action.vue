@@ -47,6 +47,7 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import { IActionDto } from '@stepflow/shared';
 import { ValidationUtils } from "../../utils/validation-utils";
 import JavaScriptEditor from "../../components/JavaScriptEditor.vue";
 
@@ -65,7 +66,7 @@ const Mappers = Vue.extend({
 
 @Component
 export default class Action extends Mappers {
-  @Prop() currentAction!: any;
+  @Prop() currentAction!: IActionDto;
 
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
   @Provide() actionName: string = "";
@@ -95,7 +96,7 @@ export default class Action extends Mappers {
   }
 
   @Emit("save-current-action")
-  saveCurrenAction(): any {
+  saveCurrenAction(): IActionDto {
     const action = {
       id: this.currentAction.id,
       name: this.actionName,

@@ -16,19 +16,21 @@
         :rules="inputRules"
       ></v-text-field>
       <VJsoneditor :rules="inputRules" class="mt-5" height="500px" v-model="wfJson"></VJsoneditor>
-      <v-btn
-        text
-        class="success mr-10"
-        width="200"
-        @click="changeWorkflowInfo({name:wfName, description:wfDescription, input:wfJson})"
-      >
-        Save
-        <v-icon class="ml-2">save</v-icon>
-      </v-btn>
-      <v-btn class="success" @click="createNewWorkflow">
-        Create Workflow: {{workflowInfo.name}}
-        <v-icon class="ml-2">create_new_folder</v-icon>
-      </v-btn>
+      <v-container class="d-flex flex-row btns">
+        <v-btn
+          text
+          class="success mr-10"
+          width="200"
+          @click="changeWorkflowInfo({name:wfName, description:wfDescription, input:wfJson})"
+        >
+          Save
+          <v-icon class="ml-2">save</v-icon>
+        </v-btn>
+        <v-btn class="success" @click="createNewWorkflow">
+          Create Workflow: {{workflowInfo.name}}
+          <v-icon class="ml-2">create_new_folder</v-icon>
+        </v-btn>
+      </v-container>
     </v-form>
   </div>
 </template>
@@ -84,3 +86,9 @@ export default class WorkflowInfo extends Mappers {
   }
 }
 </script>
+
+<style scoped>
+.btns {
+  justify-content: space-around;
+}
+</style>

@@ -1,6 +1,6 @@
 import { Getters, Mutations, Actions, Module, createMapper } from "vuex-smart-module";
 import { workflowApi } from "../api/index";
-import { ICreateWorkflowDto } from '@stepflow/shared';
+import { ICreateWorkflowDto, IWorkflowExecutionDto } from '@stepflow/shared';
 
 type Loading = boolean;
 
@@ -37,13 +37,13 @@ class RootMutations extends Mutations<RootState> {
   mutateAllWorkflows(workflows: ICreateWorkflowDto[]): void {
     this.state.allWorkflows = workflows;
   }
-  mutateAllExecutionWorkflows(executionWorkflows: any[]): any {
+  mutateAllExecutionWorkflows(executionWorkflows: IWorkflowExecutionDto[]): any {
     return this.state.allExecutionWorkflows = executionWorkflows
   }
   mutateWorkflowById(workflow: ICreateWorkflowDto): void {
     this.state.workflow = workflow;
   }
-  mutateExecutionWorkflow(executionWf: any): any {
+  mutateExecutionWorkflow(executionWf: IWorkflowExecutionDto): any {
     return this.state.executionWorkflow = executionWf
   }
 }

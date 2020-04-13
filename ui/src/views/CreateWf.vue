@@ -40,6 +40,15 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import {
+  ICreateWorkflowDto,
+  ICreateWorkflowStepDto,
+  IWorkflowInfoDto,
+  ICrumbDto,
+  IActionDto,
+  IWorkflowCreatedStatus,
+  ActionType
+} from '@stepflow/shared';
 import { createWorkflowMapper } from "../store/modules/createWorkflow";
 import WorkflowInfo from "./workflow/WokrflowInfo.vue";
 import Slider from "./workflow/Slider.vue";
@@ -90,43 +99,43 @@ const Mappers = Vue.extend({
 
 @Component
 export default class CreateWorkflow extends Mappers {
-  changeWorkflowInfo(workflowInfo): any {
+  changeWorkflowInfo(workflowInfo): Promise<IWorkflowInfoDto> {
     return this.changeWorkflowDescription(workflowInfo);
   }
 
-  addNewStep(depth: number): any {
+  addNewStep(depth: number): void {
     return this.addStep(depth);
   }
 
-  saveCurrentStep(step: any): any {
+  saveCurrentStep(step: ICreateWorkflowStepDto): Promise<ICreateWorkflowStepDto[]> {
     return this.saveStep(step);
   }
 
-  removeStep(stepId: string, stepDepth: number): any {
+  removeStep(stepId: string, stepDepth: number): Promise<void> {
     return this.deleteStep({ stepId, stepDepth });
   }
 
-  changeCurrentAction(action: any): any {
+  changeCurrentAction(action: IActionDto): void {
     return this.mutateCurrentAction(action);
   }
 
-  addNewAction(): any {
+  addNewAction(): void {
     return this.addAction();
   }
 
-  removeAction(actionId: string): any {
+  removeAction(actionId: string): void {
     return this.deleteAction(actionId);
   }
 
-  saveCurrenAction(updatedAction: any): any {
+  saveCurrenAction(updatedAction: IActionDto): Promise<void> {
     return this.saveAction(updatedAction);
   }
 
-  createNewWorkflow(): any {
+  createNewWorkflow(): Promise<ICreateWorkflowDto> {
     return this.createWorkflow();
   }
 
-  openStep(step: any): void {
+  openStep(step: ICreateWorkflowStepDto): void {
     const breadCrumb = {
       step,
       depth: step.depth,
@@ -137,7 +146,7 @@ export default class CreateWorkflow extends Mappers {
     this.mutateCurrentSteps(step.steps); //передаст слайдеру, актуальные для этого степа сабстепы
   }
 
-  changeSubSteps(steps: any[]): any {
+  changeSubSteps(steps: ICreateWorkflowStepDto[]): void {
     return this.mutateCurrentSteps(steps);
   }
 

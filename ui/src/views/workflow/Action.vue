@@ -24,14 +24,16 @@
       :currentAction="currentAction"
       @change-js="changeJs"
     />
-    <v-btn color="error" @click="removeAction(currentAction.id)">
-      Delete action
-      <v-icon class="ml-2">delete_forever</v-icon>
-    </v-btn>
-    <v-btn class="success" width="200" @click="saveCurrenAction">
-      Save action
-      <v-icon class="ml-2">save</v-icon>
-    </v-btn>
+    <v-container class="d-flex flex-row btns">
+      <v-btn color="error" @click="removeAction(currentAction.id)">
+        Delete action
+        <v-icon class="ml-2">delete_forever</v-icon>
+      </v-btn>
+      <v-btn class="success" width="200" @click="saveCurrenAction">
+        Save action
+        <v-icon class="ml-2">save</v-icon>
+      </v-btn>
+    </v-container>
   </v-form>
 </template>
 
@@ -45,6 +47,7 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
+import { IActionDto } from '@stepflow/shared';
 import { ValidationUtils } from "../../utils/validation-utils";
 import JavaScriptEditor from "../../components/JavaScriptEditor.vue";
 
@@ -63,7 +66,7 @@ const Mappers = Vue.extend({
 
 @Component
 export default class Action extends Mappers {
-  @Prop() currentAction!: any;
+  @Prop() currentAction!: IActionDto;
 
   @Provide() inputRules = [ValidationUtils.nonEmptyString];
   @Provide() actionName: string = "";
@@ -93,7 +96,7 @@ export default class Action extends Mappers {
   }
 
   @Emit("save-current-action")
-  saveCurrenAction(): any {
+  saveCurrenAction(): IActionDto {
     const action = {
       id: this.currentAction.id,
       name: this.actionName,
@@ -121,5 +124,8 @@ export default class Action extends Mappers {
 <style scoped>
 form {
   width: 100%;
+}
+.btns {
+  justify-content: space-around;
 }
 </style>

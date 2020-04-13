@@ -27,7 +27,7 @@ export const workflowApi = {
   // checkAnswer(answer: any) { //--fix
   //   return api.post("answer", answer);
   // },
-  createWorkflow(workflow: any) { //ICreateWorkflowDto
+  createWorkflow(workflow: ICreateWorkflowDto) {
     return api.post("workflows", workflow);
   }
 };

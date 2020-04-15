@@ -19,15 +19,14 @@
       <v-container class="d-flex flex-row btns">
         <v-btn
           text
-          class="success mr-10"
-          width="200"
+          class="success mr-10 btn"
           @click="changeWorkflowInfo({name:wfName, description:wfDescription, input:wfJson})"
         >
-          Save
+          Save Workflow
           <v-icon class="ml-2">save</v-icon>
         </v-btn>
-        <v-btn class="success" @click="createNewWorkflow">
-          Create Workflow: {{workflowInfo.name}}
+        <v-btn class="success btn" @click="createNewWorkflow">
+          Create Workflow
           <v-icon class="ml-2">create_new_folder</v-icon>
         </v-btn>
       </v-container>
@@ -90,5 +89,8 @@ export default class WorkflowInfo extends Mappers {
 <style scoped>
 .btns {
   justify-content: space-around;
+}
+.btn {
+  width: 250px;
 }
 </style>

@@ -34,11 +34,11 @@
         </v-card>
       </v-flex>
       <v-container class="d-flex flex-row btns">
-        <v-btn color="error" @click="removeStep(currentStep.id, currentStep.depth)">
-          Delete
+        <v-btn color="error" class="btn" @click="removeStep(currentStep.id, currentStep.depth)">
+          Delete step
           <v-icon class="ml-2">delete_forever</v-icon>
         </v-btn>
-        <v-btn text class="success" width="200" @click="saveCurrentStep">
+        <v-btn text class="success btn" @click="saveCurrentStep">
           Save step
           <v-icon class="ml-2">save</v-icon>
         </v-btn>
@@ -143,5 +143,9 @@ export default class Step extends Mappers {
 <style scoped>
 .btns {
   justify-content: space-around;
+}
+.btn {
+  width: 250px;
+  height: 45px;
 }
 </style>

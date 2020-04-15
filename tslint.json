@@ -17,6 +17,10 @@
 		"no-console": false,
 		"max-classes-per-file": false,
 		"eofline": false,
-		"semicolon": false
+		"semicolon": false,
+		"no-var-requires": false,
+		"no-shadowed-variable": false,
+		"variable-name": false,
+		"no-string-literal": false
 	}
 }

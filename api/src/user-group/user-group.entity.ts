@@ -25,11 +25,6 @@ export class UserGroupEntity {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
 
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
-
     @ManyToMany(
         () => UserEntity,
         user => user.userGroups,
@@ -44,4 +39,10 @@ export class UserGroupEntity {
         { eager: true, cascade: true }
     )
     workflows: Workflow[]
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
+
 }

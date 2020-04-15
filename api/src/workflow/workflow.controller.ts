@@ -14,7 +14,7 @@ import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(private readonly workflowService: WorkflowService) { }
 
   @Get()
   getAll(): Promise<Workflow[]> {

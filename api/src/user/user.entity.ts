@@ -35,15 +35,15 @@ export class UserEntity {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated: Date;
 
-    @BeforeUpdate()
-    updateTimestamp() {
-        this.updated = new Date();
-    }
-
     @ManyToMany(
         () => UserGroupEntity,
         userGroup => userGroup.users,
         // { eager: true }
     )
     userGroups: UserGroupEntity[]
+
+    @BeforeUpdate()
+    updateTimestamp() {
+        this.updated = new Date();
+    }
 }

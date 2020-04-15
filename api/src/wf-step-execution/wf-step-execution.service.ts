@@ -32,6 +32,21 @@ export class WfStepExecutionService {
         private readonly wfExecutionsService: WfExecutionsService
     ) { }
 
+    createWfStepExecution(
+        wfStepExecution: any,
+        createdStepActions: any,
+        step: any,
+        preWorkflowExecutionId: number
+    ): WfStepExecutionEntity {
+        wfStepExecution.workflow_execution_id = preWorkflowExecutionId
+        wfStepExecution.workflow_step_id = step.id
+        wfStepExecution.name = step.name
+        wfStepExecution.description = step.description
+        wfStepExecution.input = step.input
+        wfStepExecution.wfStepActionExecutions = createdStepActions
+        return wfStepExecution
+    }
+
     async startWfStepExecution(id: number, body: any): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const workflowExecution = await this.wfExecutionsService.getWfExecution(stepExecution.workflow_execution_id)

@@ -168,7 +168,7 @@ class RootMutations extends Mutations<RootState> {
       id: uuidv4(),
       depth,
       name: "New step",
-      description: "",
+      description: "some description",
       input: {},
       actions: [],
       steps: []

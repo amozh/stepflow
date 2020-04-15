@@ -19,6 +19,9 @@ export class WorkflowStep {
   @PrimaryGeneratedColumn({ type: "int" })
   id: number;
 
+  @Column({ default: null })
+  parent: number | null;
+
   @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
   name: string;
 

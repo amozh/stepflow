@@ -14,16 +14,17 @@ export interface ICreateWorkflowDto {
   input: JSON | any,
   actions?: IActionDto[],
   wfExecutions?: any[],
-  steps: ICreateWorkflowStepDto[]
+  steps?: ICreateWorkflowStepDto[]
 }
 export interface ICreateWorkflowStepDto {
   id: any,
+  parent?: number | null,
   name: string,
   description: string,
   input: JSON | any,
   depth: number,
   actions: IActionDto[],
-  steps: ICreateWorkflowStepDto[]
+  steps?: ICreateWorkflowStepDto[]
 }
 
 export interface IWorkflowExecutionDto extends ICreateWorkflowDto {

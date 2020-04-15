@@ -6,6 +6,8 @@ import { Workflow } from "../workflow/workflow.entity"
 import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "../wf-step-execution/wf-step-execution.entity"
 import { WfStepActionExecutionEntity as WfStepActionExecution } from "../wf-step-action-execution/wf-step-action-execution.entity"
 import { WfActionExecutionEntity, WfActionType } from "../wf-action-execution/wf-action-execution.entity"
+import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
+// import { WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service"
 import { IWorkflowExecutionDto } from '@stepflow/shared';
 const vm = require("vm")
 
@@ -32,7 +34,9 @@ export class WfExecutionsService {
         @InjectRepository(WfStepActionExecution)
         private readonly wfStepActionExecutionRepository: Repository<WfStepActionExecution>,
         @InjectRepository(WfActionExecutionEntity)
-        private readonly wWfActionExecutionRepository: Repository<WfActionExecutionEntity>
+        private readonly wWfActionExecutionRepository: Repository<WfActionExecutionEntity>,
+        private readonly wfActionExecutionService: WfActionExecutionService,
+        // private readonly wfStepExecutionService: WfStepExecutionService
     ) { }
 
     async getAllWfExecution(): Promise<IWorkflowExecutionDto[]> {
@@ -56,23 +60,20 @@ export class WfExecutionsService {
         const workflowExecution = new WokrflowExecution()
         const preWorkflowExecution = await this.wfExecutionRepository.save(workflowExecution)
 
-        const executionSteps: Promise<WfStepExecutionEntity[]> = workflow.steps.map(async step => {
+        const executionSteps: any[] = workflow.steps.map(async step => {
             const wfStepExecution = new WfStepExecutionEntity()
             // Сохранение степа в самом начале нужно для того, чтобы использовать wfStepExecution.id в wfStepExecution
             const preWfStepExecution = await this.wfStepExecutionRepository.save(wfStepExecution)
             const stepActionExecutions: WfStepActionExecution[] = step.actions.map(action => {
-                const wfStepActionExecution = new WfStepActionExecution()
-                wfStepActionExecution.actionId = action.id
-                wfStepActionExecution.workflow_step_execution_id = preWfStepExecution.id
-                wfStepActionExecution.alias = `Alias: ${Math.floor(Math.random() * 1000)}`
-                wfStepActionExecution.actionType = action.actionType
-                wfStepActionExecution.name = action.name
-                wfStepActionExecution.description = action.description
-                wfStepActionExecution.body = action.body
-                return wfStepActionExecution
+                return this.wfActionExecutionService.createWfStepActionExecution(action, preWfStepExecution.id)
             })
             const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository
                 .save(stepActionExecutions)
+            // return this.wfStepExecutionService.createWfStepExecution(
+            //     wfStepExecution,
+            //     createdStepActions,
+            //     step,
+            //     preWorkflowExecution.id)
             wfStepExecution.workflow_execution_id = preWorkflowExecution.id
             wfStepExecution.workflow_step_id = step.id
             wfStepExecution.name = step.name
@@ -83,19 +84,12 @@ export class WfExecutionsService {
         })
 
         const executionActions: WfActionExecutionEntity[] = workflow.actions.map(action => {
-            const wfActionExecution = new WfActionExecutionEntity()
-            wfActionExecution.actionId = action.id
-            wfActionExecution.workflow_execution_id = preWorkflowExecution.id
-            wfActionExecution.alias = action.alias
-            wfActionExecution.name = action.name
-            wfActionExecution.description = action.description
-            wfActionExecution.body = action.body
-            return wfActionExecution
+            return this.wfActionExecutionService.createWfActionExecution(action, preWorkflowExecution.id)
         })
 
         const savedActions: WfActionExecutionEntity[] = await this.wWfActionExecutionRepository.save(executionActions)
         const savedSteps: WfStepExecutionEntity[] = await this.wfStepExecutionRepository
-            .save(await Promise.all(executionSteps))
+            .save(await Promise.all(await executionSteps))
 
         workflowExecution.name = workflow.name
         workflowExecution.description = workflow.description
@@ -106,35 +100,6 @@ export class WfExecutionsService {
 
         return await this.wfExecutionRepository.save(workflowExecution)
     }
-
-    // async updateWfExecution(wfExecutionId: number, body?: any, wfStepExecutionId?: number): Promise<void> {
-    //     const executedWf = await this.wfExecutionRepository.findOne(wfExecutionId)
-    //     let stateResult: JSON
-    //     if (body && wfStepExecutionId) {
-    //         stateResult = {
-    //             ...executedWf.state,
-    //             ["stepId_" + wfStepExecutionId]: body
-    //         }
-    //     }
-
-    //     let updatedStatus: WorkflowExecutionStatus
-    //     switch (executedWf.status) {
-    //         case WorkflowExecutionStatus.NOT_STARTED:
-    //             updatedStatus = WorkflowExecutionStatus.STARTED
-    //             break
-    //         case WorkflowExecutionStatus.STARTED:
-    //             if (Object.values(executedWf.input)
-    //                 .length === executedWf.wfStepsExecution
-    //                     .filter(e => e.status === WorkflowStepExecutionStatus.COMPLETE).length) {
-    //                 updatedStatus = WorkflowExecutionStatus.COMPLETE
-    //                 break;
-    //             }
-    //         default:
-    //             updatedStatus = executedWf.status
-    //             break;
-    //     }
-    //     await this.wfExecutionRepository.update(wfExecutionId, { status: updatedStatus, state: stateResult })
-    // }
 
     async startWfExecution(id: number, body: any): Promise<any> {
         const wfExecution = await this.wfExecutionRepository.findOne(id)

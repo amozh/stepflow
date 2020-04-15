@@ -7,6 +7,7 @@ import { WorkflowStep } from "./wf-step.entity";
 @Module({
   imports: [TypeOrmModule.forFeature([WorkflowStep])],
   controllers: [WfStepController],
-  providers: [WfStepService]
+  providers: [WfStepService],
+  exports: [WfStepService]
 })
-export class WfStepModule {}
+export class WfStepModule { }

@@ -1,39 +1,32 @@
 <template>
   <div class="container">
-    <Snackbar :snackbar="snackbar" :snackbarText="snackbarText" />
-    <h1 class="subheading text-center">Create a new workflow</h1>
-    <v-form class="text-center" ref="form">
-      <v-text-field
-        class
-        label="Title"
-        v-model="title"
-        prepend-icon="mdi-subtitles-outline"
-        :rules="inputRules"
-      ></v-text-field>
-      <v-text-field
-        class
-        label="Description"
-        v-model="description"
-        prepend-icon="mdi-format-text"
-        :rules="inputRules"
-      ></v-text-field>
-      <CreateStep
-        v-for="(step, index) in steps"
-        :key="`${index}`"
-        :step="step"
-        :index="index"
-        @save-step="saveStep(step, index)"
-        @delete-step="deleteStep(index)"
-      />
-      <v-btn @click="addStep" class="mr-10" width="200" color="primary">Add new step</v-btn>
-      <v-btn
-        text
-        class="success mx-0"
-        width="200"
-        @click="submit"
-        :disabled="!steps.length"
-      >Create workflow</v-btn>
-    </v-form>
+    <Snackbar :snackbar="workflowStatus.success" :snackbarText="workflowStatus.text" />
+    <BreadCrumbs :breadCrumbs="breadCrumbs" :toBreadCrumb="toBreadCrumb" />
+    <Slider
+      orientation="horizontal"
+      :steps="currentSteps"
+      @add-new-step="addNewStep"
+      @open-step="openStep"
+      :maxDepth="maxDepth"
+    />
+    <WorkflowInfo
+      v-if="currentStep===null"
+      :workflowInfo="workflowInfo"
+      @change-workflow-info="changeWorkflowInfo"
+      @create-new-workflow="createNewWorkflow"
+    />
+    <Step
+      v-else
+      :currentStep="currentStep"
+      :currentAction="currentAction"
+      @change-sub-steps="changeSubSteps"
+      @remove-step="removeStep"
+      @save-current-step="saveCurrentStep"
+      @change-current-action="changeCurrentAction"
+      @add-new-action="addNewAction"
+      @remove-action="removeAction"
+      @save-current-action="saveCurrenAction"
+    />
   </div>
 </template>
 
@@ -44,106 +37,125 @@ import {
   Prop,
   Provide,
   Emit,
-  Ref
+  Ref,
+  Watch
 } from "vue-property-decorator";
-// import WorkflowStore from "../store/modules/workflow";
-import { workflowMapper } from "../store/modules/workflow";
-import CreateStep from "../components/CreateStep.vue";
-import Snackbar from "../components/Snackbar.vue";
 import {
-  CreateWorkflowStepDto,
   ICreateWorkflowDto,
-  IWorkflowStepDto
+  ICreateWorkflowStepDto,
+  IWorkflowInfoDto,
+  ICrumbDto,
+  IActionDto,
+  IWorkflowCreatedStatus,
+  ActionType
 } from "@stepflow/shared";
-import { ValidationUtils } from "../utils/validation-utils";
+import { createWorkflowMapper } from "../store/modules/createWorkflow";
+import WorkflowInfo from "./workflow/WokrflowInfo.vue";
+import Slider from "./workflow/Slider.vue";
+import BreadCrumbs from "./workflow/BreadCrumbs.vue";
+import Step from "./workflow/Step.vue";
+import Snackbar from "../components/Snackbar.vue";
 
 const Mappers = Vue.extend({
-  components: {
-    CreateStep,
-    Snackbar
+  computed: {
+    ...createWorkflowMapper.mapGetters([
+      "workflow",
+      "breadCrumbs",
+      "currentStep",
+      "currentSteps",
+      "workflowInfo",
+      "maxDepth",
+      "currentAction",
+      "workflowStatus"
+    ])
   },
   methods: {
-    ...workflowMapper.mapActions({
-      createWorkflow: "createWorkflow"
+    ...createWorkflowMapper.mapMutations({
+      addBreadCrumbs: "addBreadCrumbs",
+      mutateCurrentSteps: "mutateCurrentSteps",
+      addStep: "addStep",
+      mutateCurrentAction: "mutateCurrentAction",
+      addAction: "addAction",
+      deleteAction: "deleteAction"
+    }),
+    ...createWorkflowMapper.mapActions({
+      createWorkflow: "createWorkflow",
+      changeWorkflowDescription: "changeWorkflowDescription",
+      goToStep: "goToStep",
+      deleteStep: "deleteStep",
+      toBreadCrumb: "toBreadCrumb",
+      saveStep: "saveStep",
+      saveAction: "saveAction"
     })
+  },
+  components: {
+    WorkflowInfo,
+    Slider,
+    BreadCrumbs,
+    Step,
+    Snackbar
   }
 });
+
 @Component
 export default class CreateWorkflow extends Mappers {
-  $refs!: {
-    form: HTMLFormElement & { validate: () => boolean };
-  };
-
-  @Provide() title: string = "";
-  @Provide() description: string = "";
-  @Provide() snackbar: boolean = false;
-  @Provide() snackbarText: string = "";
-  @Provide() saveAllSteps: boolean = false;
-  @Provide() inputRules = [ValidationUtils.nonEmptyString];
-  @Provide() steps: CreateWorkflowStepDto[] = [];
-
-  @Ref("form") readonly form!: HTMLInputElement;
-
-  @Emit()
-  addStep() {
-    this.steps.push({
-      name: "",
-      description: "",
-      answer: {
-        answer: ""
-      }
-    });
+  changeWorkflowInfo(
+    workflowInfo: IWorkflowInfoDto
+  ): Promise<IWorkflowInfoDto> {
+    return this.changeWorkflowDescription(workflowInfo);
   }
 
-  @Emit()
-  saveStep(newStep: CreateWorkflowStepDto, index: number): void {
-    this.steps.splice(index, 1, newStep);
+  addNewStep(depth: number): void {
+    return this.addStep(depth);
   }
 
-  @Emit()
-  deleteStep(index: number): void {
-    this.steps.splice(index, 1);
+  saveCurrentStep(
+    step: ICreateWorkflowStepDto
+  ): Promise<ICreateWorkflowStepDto[]> {
+    return this.saveStep(step);
   }
 
-  @Emit()
-  async submit(): Promise<void> {
-    // Проверит все ли дочерние элементы формы (степы) проходят валидацию
-    const validateSteps: boolean[] = this.$refs.form.$children.map(
-      (child: HTMLFormElement, index: number) => {
-        if (![0, 1, 2, 3].some(e => e === index)) {
-          return child.form.validate();
-        } else {
-          return true;
-        }
-      }
-    );
-    if (
-      this.$refs.form.validate() &&
-      validateSteps.every(e => e === true) &&
-      this.steps.length
-    ) {
-      // Переведёт isSave в true в каждом step, что добавит их в массив steps
-      this.saveAllSteps = true;
-      const workflow: ICreateWorkflowDto = {
-        name: this.title,
-        description: this.description,
-        steps: this.steps
-      };
-      await this.createWorkflow(workflow);
-      this.snackbar = true;
-      this.snackbarText = `Workflow "${this.title}" has been created`;
-      this.$router.push("/");
-    }
+  removeStep(stepId: string, stepDepth: number): Promise<void> {
+    return this.deleteStep({ stepId, stepDepth });
+  }
+
+  changeCurrentAction(action: IActionDto): void {
+    return this.mutateCurrentAction(action);
+  }
+
+  addNewAction(): void {
+    return this.addAction();
+  }
+
+  removeAction(actionId: string): void {
+    return this.deleteAction(actionId);
+  }
+
+  saveCurrenAction(updatedAction: IActionDto): Promise<void> {
+    return this.saveAction(updatedAction);
+  }
+
+  createNewWorkflow(): Promise<ICreateWorkflowDto> {
+    return this.createWorkflow();
+  }
+
+  openStep(step: ICreateWorkflowStepDto): void {
+    const breadCrumb = {
+      step,
+      depth: step.depth,
+      text: step.name
+    };
+    this.addBreadCrumbs(breadCrumb);
+    this.goToStep(step);
+    this.mutateCurrentSteps(step.steps); //передаст слайдеру, актуальные для этого степа сабстепы
+  }
+
+  changeSubSteps(steps: ICreateWorkflowStepDto[]): void {
+    return this.mutateCurrentSteps(steps);
   }
 
   mounted() {
-    this.steps.push({
-      name: "",
-      description: "",
-      answer: {
-        answer: ""
-      }
-    });
+    this.mutateCurrentSteps(this.workflow.steps);
   }
 }
 </script>

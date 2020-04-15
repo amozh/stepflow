@@ -50,11 +50,15 @@ export class UserService implements OnModuleInit {
         if (user) {
             return "A user with that name already exists"
         }
-        const newUser = new UserEntity()
-        newUser.username = username
-        newUser.password = password
-        newUser.userRole = userRole
-        return await this.userRepo.save(newUser)
+        try {
+            const newUser = new UserEntity()
+            newUser.username = username
+            newUser.password = password
+            newUser.userRole = userRole
+            return await this.userRepo.save(newUser)
+        } catch (e) {
+            throw new Error(e)
+        }
     }
 
     async deleteUser(id: number): Promise<string> {

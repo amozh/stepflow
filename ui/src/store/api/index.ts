@@ -9,12 +9,24 @@ export const workflowApi = {
   getAll() {
     return api.get("workflows");
   },
+  getAllExecution() {
+    return api.get("wf-executions")
+  },
   getById(id: string) {
     return api.get(`workflows/${id}`);
   },
-  checkAnswer(answer: any) { //--fix
-    return api.post("answer", answer);
+  getExecutionWorkflow(id: string) {
+    return api.get(`wf-executions/${id}`)
   },
+  executeWorkflow(id: string) {
+    return api.post("wf-executions", { workflowId: id })
+  },
+  // getExecutionWorkflow(id: string) {
+  //   return api.get(`wf-executions/${id}`);
+  // },
+  // checkAnswer(answer: any) { //--fix
+  //   return api.post("answer", answer);
+  // },
   createWorkflow(workflow: ICreateWorkflowDto) {
     return api.post("workflows", workflow);
   }
@@ -61,5 +73,4 @@ export const groupApi = {
   deleteGroup(id: string) {
     return api.delete(`group/${id}`)
   },
-
 }

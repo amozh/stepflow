@@ -14,7 +14,7 @@ import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(private readonly workflowService: WorkflowService) { }
 
   @Get()
   getAll(): Promise<Workflow[]> {
@@ -29,14 +29,5 @@ export class WorkflowController {
   @Get('/:id')
   getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
     return this.workflowService.findById(id);
-  }
-
-  @Post('answer')
-  giveAnswer(
-    @Body()
-    @Query("workflow", ParseIntPipe) workflow: number,
-    @Query("step", ParseIntPipe) step: number)
-  : void {
-    return console.log("workflowNumber:", workflow, "stepNumber:", step)
   }
 }

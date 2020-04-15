@@ -1,4 +1,4 @@
-import { ICreateWorkflowDto, UserDto, IWorkflowEntityDto } from '../index';
+import { ICreateWorkflowDto, UserDto } from '../index';
 
 export interface IUserGroupDto {
   readonly id: string;
@@ -9,7 +9,7 @@ export interface IUserGroupDto {
 
 export interface IUserGroupBaseDto {
   readonly groupName: string;
-  readonly workflows?: IWorkflowEntityDto[];
+  readonly workflows?: ICreateWorkflowDto[];
   readonly users?: UserDto[];
 }
 

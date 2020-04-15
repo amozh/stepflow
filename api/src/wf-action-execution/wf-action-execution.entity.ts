@@ -10,12 +10,19 @@ import {
 } from 'typeorm';
 
 import { ActionEntity } from "../action/action.entity"
+import { WokrflowExecution } from '../wf-executions/wf-executions.entity';
 
 export enum WokrflowActionExecutionStatus {
     EXECUTED = "EXECUTED",
     NOT_EXECUTED = "NOT_EXECUTED"
 }
 
+export enum WfActionType {
+    ON_START = "ON_START",
+    ON_SUBMIT = "ON_SUBMIT",
+    ON_COMPLETE = "ON_COMPLETE",
+    CUSTOM = "CUSTOM"
+}
 
 @Entity("wf-action-execution")
 export class WfActionExecutionEntity {
@@ -23,13 +30,16 @@ export class WfActionExecutionEntity {
     id: number;
 
     @Column()
-    actionId: number;
+    actionId: string;
 
     @Column()
-    workflow_execution_id: string;
+    workflow_execution_id: number;
 
     @Column({ type: "varchar", length: 512 }) // varchar - количество символов + байт для хранения длины
     alias: string;
+
+    @Column({ default: WfActionType.ON_START })
+    actionType: WfActionType
 
     @Column()
     name: string;
@@ -54,6 +64,12 @@ export class WfActionExecutionEntity {
         action => action.wfActionExecutions
     )
     action: ActionEntity
+
+    @ManyToOne(
+        () => WokrflowExecution,
+        wfExecution => wfExecution.wfActionsExecution
+    )
+    wfExecution: WokrflowExecution
 
     @BeforeUpdate()
     updateTimestamp() {

@@ -10,7 +10,7 @@ import { Workflow } from "../workflow/workflow.entity";
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserGroupEntity]),
-    TypeOrmModule.forFeature([Workflow]),
+    TypeOrmModule.forFeature([Workflow]), //
     TypeOrmModule.forFeature([UserEntity])
   ],
   controllers: [UserGroupController],

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ActionEntity } from './action.entity';
 import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
-const vm = require("vm");
+const vm = require("vm")
 
 @Injectable()
 export class ActionService {
@@ -11,10 +11,6 @@ export class ActionService {
         @InjectRepository(ActionEntity)
         private readonly actionRepository: Repository<ActionEntity>,
     ) { }
-
-    getAction(): string {
-        return "Action!"
-    }
 
     async getActionById(id: string): Promise<IActionDto> {
         const action = await this.actionRepository.findOne(id)

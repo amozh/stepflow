@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 //modules
-import { AnswerModule } from './answer/answer.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { WfStepModule } from './wf-step/wf-step.module';
 import { UserModule } from './user/user.module';
@@ -21,7 +20,6 @@ import { WfStepActionExecutionModule } from './wf-step-action-execution/wf-step-
         TypeOrmModule.forRoot(),
         WorkflowModule,
         WfStepModule,
-        AnswerModule,
         UserModule,
         UserGroupModule,
         ActionModule,

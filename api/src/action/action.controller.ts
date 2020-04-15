@@ -1,15 +1,10 @@
 import { ActionService } from './action.service';
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
 
 @Controller('action')
 export class ActionController {
     constructor(private readonly actionService: ActionService) { }
-
-    @Get()
-    getAction(): string {
-        return this.actionService.getAction()
-    }
 
     @Post("new_action")
     createAction(@Body() actionDto: IActionDto): Promise<IActionDto> {
@@ -21,5 +16,3 @@ export class ActionController {
         return this.actionService.executeAction(body)
     }
 }
-
-

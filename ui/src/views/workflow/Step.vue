@@ -33,6 +33,7 @@
           <v-card-title class="text-center">Choose action</v-card-title>
         </v-card>
       </v-flex>
+      <GenerateContent />
       <v-container class="d-flex flex-row btns">
         <v-btn color="error" class="btn" @click="removeStep(currentStep.id, currentStep.depth)">
           Delete step
@@ -62,12 +63,14 @@ import VJsoneditor from "v-jsoneditor";
 import Action from "./Action.vue";
 import Slider from "./Slider.vue";
 import { ValidationUtils } from "../../utils/validation-utils";
+import GenerateContent from "../../components/GenerateContent.vue"
 
 const Mappers = Vue.extend({
   components: {
     VJsoneditor,
     Action,
-    Slider
+    Slider,
+    GenerateContent
   }
 });
 

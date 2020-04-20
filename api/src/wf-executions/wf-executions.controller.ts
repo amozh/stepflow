@@ -1,23 +1,23 @@
-import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes, Get, Delete } from '@nestjs/common';
 import { WfExecutionsService, IWorkflowActionExecutionInput } from "./wf-executions.service"
 import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
-import { ValidationPipe } from "./wf-executions.pipe"
+// import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
-import { Length, IsNotEmpty, IsNumber, IsBoolean, IsString } from "class-validator"
+// import { Length, IsNotEmpty, IsNumber, IsBoolean, IsString } from "class-validator"
 
 // Не работает валидация, если импортировать из папки shared
-export class ITestDto {
-    @IsString()
-    @Length(1, 4, { message: "Wrong length!" })
-    readonly someString: string;
-    @IsBoolean()
-    @IsNotEmpty()
-    readonly someBoolean: boolean;
-    @IsNotEmpty()
-    @IsNumber()
-    readonly count: number;
-}
+// export class ITestDto {
+//     @IsString()
+//     @Length(1, 4, { message: "Wrong length!" })
+//     readonly someString: string;
+//     @IsBoolean()
+//     @IsNotEmpty()
+//     readonly someBoolean: boolean;
+//     @IsNotEmpty()
+//     @IsNumber()
+//     readonly count: number;
+// }
 
 @Controller('wf-executions')
 export class WfExecutionsController {
@@ -26,11 +26,11 @@ export class WfExecutionsController {
         private readonly wfStepExecutionService: WfStepExecutionService
     ) { }
 
-    @Post("test")
-    @UsePipes(new ValidationPipe())
-    getSmt(@Body() body: ITestDto): ITestDto {
-        return body
-    }
+    // @Post("test")
+    // @UsePipes(new ValidationPipe())
+    // getSmt(@Body() body: ITestDto): ITestDto {
+    //     return body
+    // }
 
     @Get()
     getAllWfExecution(): Promise<IWorkflowExecutionDto[]> {
@@ -42,6 +42,11 @@ export class WfExecutionsController {
         return this.wfExecutionsService.getWfExecution(id)
     }
 
+    @Delete(":id")
+    deleteWfExecution(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return this.wfExecutionsService.deleteWfExecution(id)
+    }
+
     @Post()
     createWfExecution(@Body() body: { workflowId: number }/*1*/): Promise<IWorkflowExecutionDto> {
         // if (!body || !body.workflowId) { /*2*/
@@ -49,11 +54,6 @@ export class WfExecutionsController {
         // }
         return this.wfExecutionsService.createWfExecution(body.workflowId); /*3, 4*/
     }
-
-    // @Put(":id")
-    // updateWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
-    //     return this.wfExecutionsService.updateWfExecution(id, body)
-    // }
 
     // WORKFLOWS EXECUTIONS
     @Put('start/:id')

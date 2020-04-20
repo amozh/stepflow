@@ -23,7 +23,7 @@ export class UserService implements OnModuleInit {
         });
     }
 
-    get(): string {
+    getSecure(): string {
         return "Hello, New user!"
     }
 
@@ -44,20 +44,22 @@ export class UserService implements OnModuleInit {
         }
     }
 
-    async createUser(userDto: UserDto): Promise<UserEntity | string> {
+    async createUser(userDto: UserDto): Promise<UserEntity> {
         const { username, password, userRole } = userDto
-        const user = await this.userRepo.findOne({ username })
-        if (user) {
-            return "A user with that name already exists"
-        }
+        // const user = await this.userRepo.findOne({ username })
+        const user = false
         try {
-            const newUser = new UserEntity()
-            newUser.username = username
-            newUser.password = password
-            newUser.userRole = userRole
-            return await this.userRepo.save(newUser)
+            if (!user) {
+                const newUser = new UserEntity()
+                newUser.username = username
+                newUser.password = password
+                newUser.userRole = userRole
+                return await this.userRepo.save(newUser)
+            } else {
+                throw new InternalServerErrorException("A user with that name already exists")
+            }
         } catch (e) {
-            throw new Error(e)
+            throw new InternalServerErrorException("A user with that name already exists")
         }
     }
 

@@ -3,10 +3,7 @@ import {
     Column,
     Entity,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
-    ManyToMany,
-    JoinTable
 } from 'typeorm';
 
 import { ActionEntity } from "../action/action.entity"
@@ -67,7 +64,8 @@ export class WfActionExecutionEntity {
 
     @ManyToOne(
         () => WokrflowExecution,
-        wfExecution => wfExecution.wfActionsExecution
+        wfExecution => wfExecution.wfActionsExecution,
+        { onDelete: "CASCADE" }
     )
     wfExecution: WokrflowExecution
 

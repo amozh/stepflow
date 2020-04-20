@@ -78,7 +78,6 @@ export class WfStepExecutionService {
                     status: prevStatus
                 }
             }
-
             const output = await this.executeAction(actionInput, a.body);
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
@@ -116,7 +115,7 @@ export class WfStepExecutionService {
                 actionInput = {
                     stepInput,
                     workflowInput,
-                    submittedData,
+                    submittedData, //
                     state,
                     status
                 }
@@ -138,7 +137,7 @@ export class WfStepExecutionService {
 
         const failedActions: IStepActionExecutionOutput[] = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
-            //do something with failed action
+            //do something with failed action//
         })
 
         const finalState = outputs[outputs.length - 1].state;
@@ -189,7 +188,7 @@ export class WfStepExecutionService {
 
         const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
-            //do something with failed action
+            //do something with failed action //////
         })
 
         const finalState = outputs[outputs.length - 1].state;
@@ -209,9 +208,9 @@ export class WfStepExecutionService {
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
         const submittedData = actionsInput;
+        // const submittedData = {}.
 
         const onSubmitActions = actions.filter(a => a.alias === actionAlias);
-
         const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
             const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
             let actionInput: IStepActionExecutionInput;
@@ -221,7 +220,7 @@ export class WfStepExecutionService {
                     workflowInput,
                     submittedData,
                     state,
-                    status
+                    status //
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
@@ -276,7 +275,7 @@ export class WfStepExecutionService {
                 status: WorkflowStepExecutionStatus.COMPLETE,
                 result: {
                     isSuccess: true,
-                    message: "You gave an answer"
+                    message: "You gave an answer" //
                 }
             }
         } catch (e) {

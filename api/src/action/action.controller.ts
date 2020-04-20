@@ -4,15 +4,15 @@ import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
 
 @Controller('action')
 export class ActionController {
-    constructor(private readonly actionService: ActionService) { }
+    // constructor(private readonly actionService: ActionService) { }
 
-    @Post("new_action")
-    createAction(@Body() actionDto: IActionDto): Promise<IActionDto> {
-        return this.actionService.createAction(actionDto)
-    }
+    // @Post("new_action")
+    // createAction(@Body() actionDto: IActionDto): Promise<IActionDto> {
+    //     return this.actionService.createAction(actionDto)
+    // }
 
-    @Post("execute")
-    executeAction(@Body() body: IActionExecutionBodyDto): Promise<any> {
-        return this.actionService.executeAction(body)
-    }
+    // @Post("execute")
+    // executeAction(@Body() body: IActionExecutionBodyDto): Promise<any> {
+    //     return this.actionService.executeAction(body)
+    // }
 }

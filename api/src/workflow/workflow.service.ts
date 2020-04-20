@@ -17,36 +17,27 @@ export class WorkflowService {
     private readonly wfStepService: WfStepService
   ) { }
 
+  async delete(id: number): Promise<any> {
+    try {
+      // const workflow = await this.workflowRepository.findOne({ id })
+      // console.log(workflow, "workflow?")
+      // workflow.actions = []
+      // await this.workflowRepository.save(workflow)
+      // await this.workflowRepository.remove(workflow)
+
+      // отфильтровать и сохранить без экшенов
+      return await this.workflowRepository.delete({ id })
+    } catch (e) {
+      throw new InternalServerErrorException(e)
+    }
+  }
+
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
-
+      // console.log(steps, "steps?")
       const wokflowSteps = await this.wfStepService.createWfSteps(steps)
-      // console.log(wokflowSteps, "wokflowSteps???")
-      // console.log(wokflowSteps.map(s => {
-      //   return console.log(s.id, s.name)
-      // }))
-      // const a = Promise.all(wokflowSteps);
-      // const wokflowSteps = steps.map(step => {
-      //   // this.wfStepService.createWfStep(step.steps[0])
-      //   return this.wfStepService.createWfStep(step)
-      // });
-      // console.log(steps, "steps")
-      // const allSteps: any[] = [];
-      // const takeArr = (array) => {
-      //   // console.log(array, "array")
-      //   array.forEach(e => {
-      //     console.log(e, "eeeeeeeee?")
-      //     allSteps.push(e.name)
-      //     if (e.steps && e.steps.length > 0) {
-      //       takeArr(e.steps)
-      //     }
-      //   }
-      //   )
-      // }
-      // takeArr(steps)
-      // console.log(allSteps, "allSteps???")
-
+      // const workflowActions = await this
       const workflow = new Workflow();
       workflow.name = name;
       workflow.description = description;

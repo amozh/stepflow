@@ -4,8 +4,6 @@ import {
     BeforeUpdate,
     Column,
     Entity,
-    JoinColumn,
-    OneToMany,
     PrimaryGeneratedColumn,
     ManyToMany,
     JoinTable,

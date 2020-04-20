@@ -16,7 +16,7 @@ import { WfActionExecutionModule } from './wf-action-execution/wf-action-executi
 import { WfStepActionExecutionModule } from './wf-step-action-execution/wf-step-action-execution.module';
 
 @Module({
-    imports: [
+    imports: [ //
         TypeOrmModule.forRoot(),
         WorkflowModule,
         WfStepModule,
@@ -31,5 +31,4 @@ import { WfStepActionExecutionModule } from './wf-step-action-execution/wf-step-
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule { }

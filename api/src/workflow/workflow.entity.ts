@@ -6,7 +6,8 @@ import {
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
-  ManyToOne, ManyToMany, JoinTable,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { WorkflowStep } from '../wf-step/wf-step.entity';
 import { UserGroupEntity } from '../user-group/user-group.entity';
@@ -50,7 +51,7 @@ export class Workflow {
   @ManyToMany(
     () => ActionEntity,
     action => action.workflows,
-    { cascade: true, eager: true } //
+    { eager: true }
   )
   @JoinTable()
   actions: ActionEntity[]
@@ -58,7 +59,7 @@ export class Workflow {
   @OneToMany(
     () => WokrflowExecution,
     execution => execution.workflow,
-    { cascade: true, eager: true }
+    { onDelete: "CASCADE" }
   )
   @JoinColumn()
   wfExecutions: WokrflowExecution[]

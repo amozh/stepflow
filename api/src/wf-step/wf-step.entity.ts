@@ -36,6 +36,9 @@ export class WorkflowStep {
   @Column({ type: "json", default: null })
   input: JSON
 
+  @Column({ type: "json", default: null })
+  stepViewJson: JSON
+
   @ManyToOne(
     () => Workflow,
     wf => wf.steps,

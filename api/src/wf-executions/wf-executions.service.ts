@@ -91,6 +91,7 @@ export class WfExecutionsService {
             wfStepExecution.name = step.name
             wfStepExecution.description = step.description
             wfStepExecution.input = step.input
+            wfStepExecution.stepViewJson = step.stepViewJson
             wfStepExecution.wfStepActionExecutions = createdStepActions
             return wfStepExecution
         })

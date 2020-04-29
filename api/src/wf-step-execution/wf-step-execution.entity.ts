@@ -39,6 +39,9 @@ export class WfStepExecutionEntity {
     input: JSON;
 
     @Column({ type: "json", default: null })
+    stepViewJson: JSON
+
+    @Column({ type: "json", default: null })
     state: JSON //если есть какие-то подшаги (информация про ошибки или про выполнение теста)
 
     @Column({ default: WorkflowStepExecutionStatus.NOT_STARTED })

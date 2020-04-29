@@ -82,6 +82,7 @@ export class UserGroupService implements OnModuleInit {
                             actionType: ActionType.ON_COMPLETE
                         }],
                         input: { a: 24, b: 41 },
+                        stepViewJson: { componentType: "button" }
                     },
                     {
                         name: 'two',

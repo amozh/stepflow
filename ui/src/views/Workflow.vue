@@ -2,14 +2,20 @@
   <div class="container">
     executedWorkflow: {{executedWorkflow.wfStepsExecution[0].stepViewJson}}
     <div
-      v-for="el in executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement"
+      v-for="(el,index) in executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
       <div v-if="el.component.componentType === 'test'">
         <p>{{el.component.data.question}}</p>
-        <div v-for="option in el.component.data.options" :key="option.id">
-          <v-checkbox :label="option.value"></v-checkbox>
-        </div>
+        <v-radio-group v-model="radioAnswers[index]">
+          <v-radio
+            v-for="(option) in el.component.data.options"
+            :key="option.id"
+            :label="option.value"
+            :value="`${index+1}:${option.value}`"
+          ></v-radio>
+        </v-radio-group>
+        {{radioAnswers}}
       </div>
 
       <div v-if="el.component.componentType === 'button'">
@@ -52,16 +58,18 @@ const Mappers = Vue.extend({
 @Component
 export default class Workflow extends Mappers {
   @Provide() result: IAnswerResult = {};
+  @Provide() radioAnswers: any = [];
   async submit() {
     if (
       this.executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement[0]
         .onClick === "submit"
     ) {
       axios.put("http://localhost:4000/wf-executions/step/submit/1", {
-        submitInfo: "Works!"
+        submitInfo: this.radioAnswers
       });
     }
   }
+
   // async sendAnswer(answer: any): Promise<void> {
   //   if (answer) {
   //     const response = await this.checkAnswer(answer);
@@ -74,7 +82,7 @@ export default class Workflow extends Mappers {
 
   async mounted() {
     // await this.getWorkflowById(this.$route.params.id);
-    // await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
+    await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
     await this.getExecutionWorkflow(this.$route.params.id);
   }
 }

@@ -128,12 +128,82 @@ export class UserGroupService implements OnModuleInit {
                   {
                     component: {
                       id: 1,
+                      componentType: "test",
+                      data: {
+                        question: "First question",
+                        options: [
+                          { value: "First option", isCorrect: true},
+                          { value: "Second option", isCorrect: false},
+                          { value: "Third option", isCorrect: false}
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    component: {
+                      id: 2,
+                      componentType: "test",
+                      data: {
+                        question: "Second question",
+                        options: [
+                          { value: "First option", isCorrect: true},
+                          { value: "Second option", isCorrect: false},
+                          { value: "Third option", isCorrect: false}
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    component: {
+                      id: 3,
+                      componentType: "test",
+                      data: {
+                        question: "Thirth question",
+                        options: [
+                          { value: "First option", isCorrect: true},
+                          { value: "Second option", isCorrect: false},
+                          { value: "Third option", isCorrect: false}
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    component: {
+                      id: 4,
+                      componentType: "test",
+                      data: {
+                        question: "Fourth question",
+                        options: [
+                          { value: "First option", isCorrect: true},
+                          { value: "Second option", isCorrect: false},
+                          { value: "Third option", isCorrect: false}
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    component: {
+                      id: 5,
+                      componentType: "test",
+                      data: {
+                        question: "Fifth question",
+                        options: [
+                          { value: "First option", isCorrect: true},
+                          { value: "Second option", isCorrect: false},
+                          { value: "Third option", isCorrect: false}
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    component: {
+                      id: 6,
                       componentType: "button",
                       label: "Кнопка"
                     },
                     onClick: "submit",
                     data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)
-                  },
+                  }
                 ]
             }
           }

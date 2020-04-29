@@ -59,3 +59,24 @@ export interface IAnswerResult {
   readonly result?: string;
   readonly stepId?: string | number;
 }
+
+export interface IStepViewJson {
+  elements: IStepViewElement[];
+}
+
+export interface IStepViewElement Array<{
+  component: {
+    id: number;
+    componentType: string;
+    data: {
+      question: string;
+      options: Array<{
+        value: string;
+        isCorrect: boolean;
+      }>
+    } | Array<{
+        type: string;
+        label: string;
+    }>
+  };
+}>

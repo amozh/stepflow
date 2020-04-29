@@ -8,10 +8,42 @@ import {
   ICrumbDto,
   IActionDto,
   IWorkflowCreatedStatus,
-  ActionType
+  ActionType,
+  IStepViewElement,
+  IStepViewJson
 } from '@stepflow/shared';
 
 class RootState {
+  StepViewElement: IStepViewElement[] = [
+    {
+    component: {
+      id: 1,
+      componentType: "test",
+      data: {
+        question: "First question",
+        options: [
+          { value: "First option", isCorrect: true},
+          { value: "Second option", isCorrect: false},
+          { value: "Third option", isCorrect: false}
+        ]
+      }
+    }
+  },
+  {
+    component:{
+      id: 2,
+      componentType: "input-set",
+      data: [
+        { type: "submit", label: "Button input" },
+        { type: "submit", label: "Button input" },
+        { type: "text", label: "Text input"}
+      ]
+    }
+  }
+]
+  StepViewJson: IStepViewJson = {
+    elements: this.StepViewElement
+  }
   workflow: ICreateWorkflowDto = {
     id: null,
     name: "Workflow_1",
@@ -79,9 +111,16 @@ class RootState {
     depth: 0,
     text: this.workflow.name
   }]
+  
 }
 
 class RootGetters extends Getters<RootState> {
+  get stepViewElement(): IStepViewElement {
+    return this.state.StepViewElement
+  }
+  get stepViewJson(): IStepViewJson {
+    return this.state.StepViewJson
+  }
   get workflow(): ICreateWorkflowDto {
     return this.state.workflow;
   }
@@ -233,6 +272,15 @@ class RootMutations extends Mutations<RootState> {
         text: "Something went wrong"
       }
     }
+  }
+  addQuestion(newQuestion: any): void {
+    this.state.StepViewElement.push(newQuestion)
+  }
+  addText(newText: string): void {
+    this.state.StepViewElement.push(newText)
+  }
+  addInput(newInput: any): void {
+    this.state.StepViewElement.push(newInput)
   }
 }
 

@@ -80,7 +80,7 @@
       :disabled="!valid"
       color="success"
       class="mr-4"
-      @click="addQuestion"
+      @click="addNewQuestion"
     >
       Add question
     </v-btn>
@@ -98,21 +98,45 @@
 
 <script lang="ts">
 import { Vue, Component, Provide, Emit } from "vue-property-decorator";
+import { createWorkflowMapper } from "../store/modules/createWorkflow";
+
+const Mappers = Vue.extend({
+  methods: {
+    ...createWorkflowMapper.mapMutations({
+      addQuestion: "addQuestion"
+    })
+  }
+});
 
 @Component
-export default class AddQuestionForm extends Vue {
+export default class AddQuestionForm extends Mappers {
   @Provide() tab: any = null;
   @Provide() counter: any = 25;
   @Provide() counts: any = 0;
   @Provide() valid: any = true;
   @Provide() questionField: any = '';
-  @Provide() variant_id: any = [
-  ];
+  @Provide() variant_id: any = [];
+  @Provide() options: any = [];
 
-  @Emit("addQuestion") addQuestion(){
-    return(this.questionField, this.variant_id)
+  addNewQuestion() {
+    for (let i = 0; i < this.variant_id.length; i++) {
+      const val = { value: this.variant_id[i], isCorrect: false};
+      this.options.push(val)
+    }
+    const newQuestion = {
+    component: {
+      id: 3,
+      componentType: "test",
+      data: {
+        question: this.questionField,
+        options: this.options
+      }
+    }
+  }
+    return this.addQuestion(newQuestion)
   }
 }
+
 </script>
 
 <style scoped>

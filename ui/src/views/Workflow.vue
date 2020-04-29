@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     executedWorkflow: {{executedWorkflow}}
-    <div v-if="isLoading" class="text-center mt-10">
+    ////////////////
+    <!-- <div v-if="isLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
     <div v-else>
@@ -16,7 +17,23 @@
         :key="step.id"
         :result="result"
       />
+    </div> -->
+    <div v-for="el in executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement" :key="el.component.id">
+
+      <div v-if="el.component.componentType == 'test'">
+        <p>{{el.component.data.question}}</p>
+        <div v-for="option in el.component.data.options" :key="option.id">
+          <v-checkbox
+            :label="option.value"
+          ></v-checkbox>
+        </div>
+      </div>
+
+      <div v-if="el.component.componentType == 'button'">
+        <input type="submit" :value="el.component.label" class="button">
+      </div>
     </div>
+
   </div>
 </template>
 <script lang="ts">
@@ -66,3 +83,15 @@ export default class Workflow extends Mappers {
   }
 }
 </script>
+
+<style scoped>
+  .button{
+      background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+</style>

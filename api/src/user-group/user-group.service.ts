@@ -64,6 +64,7 @@ export class UserGroupService implements OnModuleInit {
                             b: 25,
                             h: 12
                         },
+                        stepViewJson: { componentType: "button" }
                     },
                     {
                         name: 'two',
@@ -81,11 +82,130 @@ export class UserGroupService implements OnModuleInit {
                             b: 5,
                             h: 7
                         },
+                        stepViewJson: { componentType: "button" }
                     }
                 ],
                 userGroups: [group]
             }
         );
+        await this.workflowRepo.save(
+            {
+                name: "Test for students",
+                description: "Test consist of five question. You should score three or more points to pass the test",
+                input: {
+                    minMark: 3,
+                    mark: 0
+                },
+                actions: [{
+                    name: "testInit",
+                    description: "action to find the SUMM",
+                    body: "function fn(a,b,h){return (a+b+h)}; res = fn(a,b,h)",
+                    version: "1.0",
+                    alias: "action alias 098"
+                }],
+                steps: [
+                    {
+                        name: "test",
+                        description: "test for students",
+                        actions: [{
+                            name: "firstAction",
+                            description: "action to find the area",
+                            body:
+                                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+                            version: "1.0",
+                            alias: "action alias 10123"
+                        }],
+                        input: {
+                            a: 45,
+                            b: 25,
+                            h: 12
+                        },
+                        stepViewJson: { stepViewElement:
+                            [
+                                {
+                                component: {
+                                  id: 1,
+                                  componentType: "test",
+                                  data: {
+                                    question: "First question",
+                                    options: [
+                                      { value: "First option", isCorrect: true},
+                                      { value: "Second option", isCorrect: false},
+                                      { value: "Third option", isCorrect: false}
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                component: {
+                                  id: 2,
+                                  componentType: "test",
+                                  data: {
+                                    question: "Second question",
+                                    options: [
+                                      { value: "First option", isCorrect: true},
+                                      { value: "Second option", isCorrect: false},
+                                      { value: "Third option", isCorrect: false}
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                component: {
+                                  id: 3,
+                                  componentType: "test",
+                                  data: {
+                                    question: "Thirth question",
+                                    options: [
+                                      { value: "First option", isCorrect: true},
+                                      { value: "Second option", isCorrect: false},
+                                      { value: "Third option", isCorrect: false}
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                component: {
+                                  id: 4,
+                                  componentType: "test",
+                                  data: {
+                                    question: "Fourth question",
+                                    options: [
+                                      { value: "First option", isCorrect: true},
+                                      { value: "Second option", isCorrect: false},
+                                      { value: "Third option", isCorrect: false}
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                component: {
+                                  id: 5,
+                                  componentType: "test",
+                                  data: {
+                                    question: "Fifth question",
+                                    options: [
+                                      { value: "First option", isCorrect: true},
+                                      { value: "Second option", isCorrect: false},
+                                      { value: "Third option", isCorrect: false}
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                component: {
+                                  id: 6,
+                                  componentType: "button",
+                                  label: "Завершити тест"
+                                },
+                                onClick: "submit",
+                                data: []
+                              }
+                            ]
+                        }
+                    }
+                ]
+            })
     }
 
     async getGroupById(id: number): Promise<UserGroupEntity> {

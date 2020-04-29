@@ -61,7 +61,7 @@ export default class Workflow extends Mappers {
   @Provide() radioAnswers: any = [];
   async submit() {
     if (
-      this.executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement[0]
+      this.executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement[5]
         .onClick === "submit"
     ) {
       axios.put("http://localhost:4000/wf-executions/step/submit/1", {

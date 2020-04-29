@@ -4,7 +4,7 @@ export interface UserDto {
   readonly username: string;
   readonly password: string;
   readonly userRole?: Partial<UserRole>;
-  readonly userGroups?: Partial<IUserGroupDto[]>;
+  readonly userGroups?: Partial<IUserGroupDto[]> | any;
 }
 
 export interface IEntityUserDto extends UserDto {

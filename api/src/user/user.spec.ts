@@ -56,6 +56,9 @@ class GenericFactory {
 //             }
 //         ])
 //     })
+//     afterEach(() => {
+//         jest.resetAllMocks();
+//     });
 // })
 
 // describe("create", () => {
@@ -66,24 +69,23 @@ class GenericFactory {
 //     beforeEach(async () => {
 //         mockRepository = {} as Repository<UserEntity>
 //         mockRepository = Object.assign(mockRepository, {
-//             gg: new Function()
+//             save: new Function()
 //         })
 //         mock = sinon.mock(mockRepository)
-//         mock.expects('gg').resolves(
+//         mock.expects('save').resolves(
 //             GenericFactory.create<UserEntity>(UserEntity, {
-//                 id: 1,
-//                 username: "2",
-//                 password: "2"
+//                 id: 21,
+//                 username: "Gena",
+//                 password: "Gena224"
 //             }))
 //         userService = new UserService(mockRepository)
 //     })
 //     it("create", () => {
 //         const user = new UserEntity()
 //         user.id = 1
-//         user.username = "2"
-//         user.password = "2"
+//         user.username = "2123123"
+//         user.password = "23"
 //         expect(userService.createUser(user)).resolves.toStrictEqual(user)
-//         // expect(userService.createUser(user)).toReturn()
 //     })
 // })
 
@@ -94,73 +96,88 @@ describe("user", () => {
 })
 // // -----------------------------------------------------------------------------------------------------------
 
-// describe("getSecure", () => {
-//     let controller: UserController
-//     let service: UserService
+describe("getSecure", () => {
+    let controller: UserController
+    let service: UserService
+    const newUser = {
+        username: "newTestUser",
+        password: "testPassword",
+        userRole: UserRole.STUDENT,
+        created: new Date(),
+        updated: new Date()
+    }
+    beforeEach(async () => {
 
-//     beforeEach(async () => {
-//         const module: TestingModule = await Test.createTestingModule({
-//             controllers: [UserController],
-//             providers: [
-//                 {
-//                     provide: UserService, useFactory: () => ({
-//                         getSecure: jest.fn(() => "Hello, New user"),
-//                         getAllUsers: jest.fn(() => [
-//                             {
-//                                 id: 1,
-//                                 username: "2",
-//                                 password: "2",
-//                                 userGroups: [],
-//                                 userRole: UserRole.STUDENT,
-//                                 created: new Date(),
-//                                 updated: new Date()
-//                             }
-//                         ])
-//                     })
-//                 }
-//             ],
-//             // imports: [UserModule]
-//             // imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([UserEntity])]
-//         }).compile();
-//         controller = module.get<UserController>(UserController);
-//         service = module.get<UserService>(UserService)
-//     })
-//     it("getSecure", async () => {
-//         expect(service.getSecure()).toBe("Hello, New user")
-//     })
-//     it("getttUsers", async () => {
-//         const users: any[] = [
-//             {
-//                 id: 1,
-//                 username: "2",
-//                 password: "2",
-//                 userGroups: [],
-//                 userRole: UserRole.STUDENT,
-//                 created: new Date(),
-//                 updated: new Date()
-//             }
-//         ]
-//         expect(service.getAllUsers()).toStrictEqual(users)
-//     })
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [UserController],
+            providers: [
+                {
+                    provide: UserService, useFactory: () => ({
+                        getSecure: jest.fn(() => "Hello, New user"),
+                        getAllUsers: jest.fn(() => [
+                            {
+                                id: 1,
+                                username: "2",
+                                password: "2",
+                                userGroups: [],
+                                userRole: UserRole.STUDENT,
+                                created: new Date(),
+                                updated: new Date()
+                            }
+                        ]),
+                        createUser: jest.fn(() => (newUser))
+                    })
+                }
+            ],
+        }).compile();
+        controller = module.get<UserController>(UserController);
+        service = module.get<UserService>(UserService)
+    })
+    it("getSecure", async () => {
+        expect(service.getSecure()).toBe("Hello, New user")
+    })
+    it("getttUsers", async () => {
+        const users: any[] = [
+            {
+                id: 1,
+                username: "2",
+                password: "2",
+                userGroups: [],
+                userRole: UserRole.STUDENT,
+                created: new Date(),
+                updated: new Date()
+            }
+        ]
+        expect(await service.getAllUsers()).toStrictEqual(users)
+    })
+    it("createUser", () => {
+        const user = {
+            username: "newTestUser",
+            password: "testPassword",
+        }
+        controller.createUser(user)
+        expect(service.createUser).toHaveBeenCalledWith(user)
+        expect(service.createUser(user)).toStrictEqual(newUser) //в данном случае параметр не имеет значения
+    })
 
-// })
+})
 // // -----------------------------------------------------------------------------------------------------------
 
-  // it('SHOULD BE!', async () => {
-    //     const result = "Hello, New user"
-    //     // console.log(result)
-    //     jest.spyOn(controller, "getSecure").mockImplementation(() => result);
-    //     expect(await controller.getSecure()).toBe(result);
-    // });
-    // fit("create User", async () => {
-    //     const user: any = {
-    //         id: 25,
-    //         username: "2",
-    //         password: "2",
-    //     }
-    //     jest.spyOn(controller, "createUser").mockImplementation(() => user);
-    //     expect(await controller.createUser(user)).toBe(user);
-    // })
+//   it('SHOULD BE!', async () => {
+//         const result = "Hello, New user"
+//         // console.log(result)
+//         jest.spyOn(controller, "getSecure").mockImplementation(() => result);
+//         expect(await controller.getSecure()).toBe(result);
+//     });
+//     fit("create User", async () => {
+//         const user: any = {
+//             id: 25,
+//             username: "2",
+//             password: "2",
+//         }
+//         jest.spyOn(controller, "createUser").mockImplementation(() => user);
+//         expect(await controller.createUser(user)).toBe(user);
+//     })
 
 // describe("createUser", () => {
 //     let controller: UserController
@@ -169,18 +186,15 @@ describe("user", () => {
 //         const module: TestingModule = await Test.createTestingModule({
 //             controllers: [UserController],
 //             providers: [UserService],
-//             imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature([UserEntity])]
+//             imports: [TypeOrmModule.forFeature([UserEntity])]
 //         }).compile();
 //         controller = module.get<UserController>(UserController);
 //     })
-//     fit("create User", async () => {
+//     it("create User", async () => {
 //         const user: any = {
 //             id: 25,
 //             username: "2",
 //             password: "2",
-//             // userRole: "STUDENT",
-//             // created: "2020-04-17T12:07:28.000Z",
-//             // updated: "2020-04-17T12:07:28.000Z"
 //         }
 //         jest.spyOn(controller, "createUser").mockImplementation(() => user);
 //         expect(await controller.createUser(user)).toBe(user);

@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "./wf-step-execution.entity"
 import { WfExecutionsService } from "../wf-executions/wf-executions.service"
 import { ActionType } from "../wf-step-action-execution/wf-step-action-execution.entity"
-const vm = require("vm")
+import * as vm from "vm"
+// const vm = require("vm")
 
 export interface IStepActionExecutionInput {
     stepInput: any,
@@ -47,7 +48,7 @@ export class WfStepExecutionService {
         return wfStepExecution
     }
 
-    async startWfStepExecution(id: number, body: any): Promise<any> {
+    async startWfStepExecution(id: number, body?: any): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const workflowExecution = await this.wfExecutionsService.getWfExecution(stepExecution.workflow_execution_id)
         const stepInput = stepExecution.input;
@@ -208,7 +209,7 @@ export class WfStepExecutionService {
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
         const submittedData = actionsInput;
-        // const submittedData = {}.
+        // const submittedData = {}. //
 
         const onSubmitActions = actions.filter(a => a.alias === actionAlias);
         const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
@@ -267,7 +268,9 @@ export class WfStepExecutionService {
                 currentState: input.state,
                 stepInput: input.stepInput,
                 workflowInput: input.workflowInput,
-                submittedData: input.submittedData
+                submittedData: input.submittedData,
+                // libs
+                lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
             output = {
@@ -275,7 +278,7 @@ export class WfStepExecutionService {
                 status: WorkflowStepExecutionStatus.COMPLETE,
                 result: {
                     isSuccess: true,
-                    message: "You gave an answer" //
+                    message: "You gave an answer"
                 }
             }
         } catch (e) {

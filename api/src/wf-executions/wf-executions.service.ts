@@ -8,7 +8,9 @@ import { WfStepActionExecutionEntity as WfStepActionExecution } from "../wf-step
 import { WfActionExecutionEntity, WfActionType } from "../wf-action-execution/wf-action-execution.entity"
 import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
 import { IWorkflowExecutionDto } from '@stepflow/shared'; ////
-const vm = require("vm")
+import * as vm from "vm"
+// const lodash = require('lodash')
+// const vm = require("vm")
 
 export interface IWorkflowActionExecutionInput {
     workflowInput: any
@@ -71,7 +73,7 @@ export class WfExecutionsService {
 
     async createWfExecution(workflowId: number): Promise<IWorkflowExecutionDto> {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
-        // console.log(workflow.steps, "workflow.steps???")
+        // console.log(workflow.steps, "workflow.steps???") //
         const workflowExecution = new WokrflowExecution()
         const preWorkflowExecution = await this.wfExecutionRepository.save(workflowExecution)
 
@@ -281,7 +283,9 @@ export class WfExecutionsService {
             const context = vm.createContext({
                 currentState: input.state,
                 workflowInput: input.workflowInput,
-                submittedData: input.submittedData
+                submittedData: input.submittedData,
+                // libs
+                lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
             output = {

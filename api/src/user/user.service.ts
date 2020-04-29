@@ -46,7 +46,7 @@ export class UserService implements OnModuleInit {
 
     async createUser(userDto: UserDto): Promise<UserEntity> {
         const { username, password, userRole } = userDto
-        // const user = await this.userRepo.findOne({ username })
+        // const user = await this.userRepo.findOne({ username }) //
         const user = false
         try {
             if (!user) {

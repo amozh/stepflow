@@ -27,7 +27,7 @@ export class UserController {
     }
 
     @Post()
-    // @UseGuards(AdminGuard) //
+    // @UseGuards(AdminGuard)
     createUser(@Body() userDto: UserDto): Promise<UserEntity> {
         return this.userService.createUser(userDto)
     }

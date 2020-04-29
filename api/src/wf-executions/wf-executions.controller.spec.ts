@@ -11,6 +11,7 @@ import { ActionType } from "../action/action.entity"
 //Wf imports
 import { WfExecutionsController } from './wf-executions.controller';
 import { WfExecutionsService } from './wf-executions.service';
+import { WorkflowExecutionStatus } from "./wf-executions.entity"
 import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
 import { WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
@@ -19,150 +20,23 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user/user.service';
 import { UserEntity } from '../user/user.entity';
 import { UserModule } from '../user/user.module'
-// import { request } from 'express';
 
-// describe('testing conroller', () => {
-//   let userC: UserController;
-
-//   beforeEach(async () => {
-//     const APP: TestingModule = await Test.createTestingModule({
-//       // imports: [TypeOrmModule.forFeature([UserEntity])],
-//       controllers: [UserController],
-//       providers: [UserService],
-//     }).compile();
-
-//     userC = APP.get<UserController>(UserController);
-//   });
-
-//   it('USER DEFINED!', () => {
-//     expect(userC).toBeDefined();
-//   });
-// })
-
-// describe('testing conroller', () => {
-//   let app: INestApplication;
-//   let userService = { getAllUsers: () => [] };
-
-//   beforeEach(async () => {
-//     const moduleRef = await Test.createTestingModule({
-//       imports: [UserModule],
-//       // controllers: [AppController],
-//       // providers: [AppService],
-//     })
-//       .overrideProvider(UserService)
-//       .useValue(userService)
-//       .compile();
-
-//     app = moduleRef.createNestApplication();
-//     await app.init();
-//   });
-
-//   it('USERS DEFINED!', () => {
-//     // console.log(app.getHttpServer(), "SERVER???")
-//     // return request("http://localhost:4000").get("/user").expect(200)
-//     // "http://localhost:4000/user"
-//     // expect(userC).toBeDefined();
-//   });
-
-//   afterAll(async () => {
-//     await app.close();
-//   });
-// })
-
-// describe('testing conroller', () => {
-//   let appController: AppController;
-
-//   beforeEach(async () => {
-//     const APP: TestingModule = await Test.createTestingModule({
-//       controllers: [AppController],
-//       providers: [AppService],
-//     }).compile();
-
-//     appController = APP.get<AppController>(AppController);
-//   });
-
-//   it('should be defined', () => {
-//     expect(appController).toBeDefined();
-//   });
-// })
-
-// ---------------------------------------------------------------------------------------
-
-// describe('WfExecutions Controller', () => {
-//   let wfController: WfExecutionsController;
-//   let service: any
-//   // let wfService:
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [WfExecutionsController],
-//       providers: [WfExecutionsService, WfActionExecutionService, WfStepExecutionService],
-//     }).compile();
-
-//     wfController = module.get(WfExecutionsController);
-//     // service = module.get<WfExecutionsService>(WfExecutionsService);
-//   });
-
-//   it('should be defined', () => {
-//     expect(wfController).toBeDefined();
-//   });
-// })
-
-// -----------------------------------------------------------------------------------
-// it('should take users', () => {
-//   return request(app)
-//     .get("/user")
-//     .expect(200)
-//     .expect(({ body }) => {
-//       body.forEach(user => {
-//         expect(user.id).toBeDefined()
-//         expect(user.username).toBeDefined()
-//         expect(user.password).toBeDefined()
-//         // expect(user.userRole).toEqual("ADMIN")
-//       });
-//     })
-// })
-
-// it("Create random user", () => {
-//   const name = `${new Date()}`
-//   const pass = `${Math.random()}`
-//   const user = {
-//     username: name,
-//     password: pass
-//   }
-//   return request(app)
-//     .post('/user')
-//     .set("Accept", "application/json")
-//     .send(user)
-//     .expect(({ body }) => {
-//       expect(body.username).toBeDefined();
-//       expect(body.username).toEqual(name)
-//       expect(body.password).toEqual(pass);
-//       expect(body.created).toBeDefined()
-//       expect(body.id).toBeDefined()
-//     })
-//     .expect(HttpStatus.CREATED)
-// })
-
-// -------------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------------
 const app = "http://localhost:4000"
 
-fdescribe("ALL USERS", () => {
-  // it("wf", () => {
-  //   console.log("wf")
-  // })
+describe("user", () => {
+  it("wf", () => {
+    console.log("wf")
+  })
+})
 
+describe("e2e test action", () => {
   // Подготовка данных
   // Выполнение бизнес логики
   // Проверка результатов
   // Очистка данных
-
-  // вызывать в одном beforeAll 2 запроса
-  // протестировать стейт воркфлоу
-  // подключить лодаш к VM
   let wfId: number;
   let wfStepId: number;
+  let wfExecutionId: number;
   let customActionAlias: string;
 
   beforeAll(() => {
@@ -236,6 +110,7 @@ fdescribe("ALL USERS", () => {
       }).expect(({ body }) => {
         customActionAlias = body.wfStepsExecution[0].wfStepActionExecutions.find(a => a.actionType === "CUSTOM").alias
         wfStepId = body.wfStepsExecution[0].id
+        wfExecutionId = body.id
       })
 
   })
@@ -317,60 +192,129 @@ fdescribe("ALL USERS", () => {
   })
 
   afterAll(async () => {
+    await request(app)
+      .delete(`/wf-executions/${wfExecutionId}`)
     return await request(app)
       .delete(`/workflows/${wfId}`)
   })
+})
 
-  // it("WfStepExecution onSubmit action", () => {
-  //   const stepSubmitBody = {
-  //     numberToCheck: 65
-  //   }
-  //   return request(app)
-  //     .put("/wf-executions/step/submit/1")
-  //     .set("Accept", "application/json")
-  //     .send(stepSubmitBody)
-  //     .expect(({ body }) => {
-  //       expect(body.finalState).toBeDefined()
-  //       expect(body.finalStatus).toBe("COMPLETE")
-  //       expect(body.failedActions).toStrictEqual([]) //проверка на строгое равенство
-  //     })
-  // })
+// у компонента должен быть доступ к input & state
+fdescribe('unit test action', () => {
+  let testingModule: TestingModule
+  let stepExecutionService: WfStepExecutionService
+  let wfExecutionsService: WfExecutionsService
+  let wfExecutionController: WfExecutionsController
 
-  // it("WfStepExecution onComplete action", () => {
-  //   const stepSubmitBody = {
-  //     numberToCheck: 65
-  //   }
-  //   return request(app)
-  //     .put("/wf-executions/step/complete/1")
-  //     .set("Accept", "application/json")
-  //     .send(stepSubmitBody)
-  //     .expect(({ body }) => {
-  //       expect(body.finalState).toBeDefined()
-  //       expect(body.finalStatus).toBe("COMPLETE")
-  //       expect(body.failedActions).toStrictEqual([]) //проверка на строгое равенство
-  //     })
-  // })
+  beforeEach(async () => {
+    testingModule = await Test.createTestingModule({
+      controllers: [WfExecutionsController],
+      providers: [
+        {
+          provide: WfStepExecutionService, useFactory: () => ({
+            startWfStepExecution: jest.fn(() => true),
+            completeWfStepExecution: jest.fn(() => true),
+            submitWfStepExecution: jest.fn(() => true),
+            executeCustomWorkflowStepAction: jest.fn(() => true)
+          })
+        },
+        {
+          provide: WfExecutionsService, useFactory: () => ({
+            createWfExecution: jest.fn((workflowId: number) => ({
+              id: 1,
+              workflow_id: workflowId,
+              name: "WfExecution",
+              description: "Some description",
+              input: {},
+              state: null,
+              status: WorkflowExecutionStatus.NOT_STARTED,
+              created: new Date(),
+              updated: new Date(),
+              wfStepsExecution: [],
+              wfActionsExecution: []
+            })),
+            getWfExecution: jest.fn((id: number) => ({
+              id,
+              workflow_id: 1,
+              name: "name",
+              description: "description",
+              input: {},
+              state: null,
+              status: WorkflowExecutionStatus.NOT_STARTED,
+              created: new Date(),
+              updated: new Date(),
+              wfStepsExecution: [],
+              wfActionsExecution: []
+            })),
+            getAllWfExecution: jest.fn(() => [
+              {
+                id: 1,
+                workflow_id: 1,
+                name: "name",
+                description: "description",
+                input: {},
+                state: null,
+                status: WorkflowExecutionStatus.NOT_STARTED,
+                created: new Date(),
+                updated: new Date(),
+                wfStepsExecution: [],
+                wfActionsExecution: []
+              }
+            ])
+          })
+        },
+        {
+          provide: WfActionExecutionService, useFactory: () => ({})
+        }
+      ]
+    }).compile();
+    wfExecutionController = testingModule.get<WfExecutionsController>(WfExecutionsController);
+    wfExecutionsService = testingModule.get<WfExecutionsService>(WfExecutionsService)
+    stepExecutionService = testingModule.get<WfStepExecutionService>(WfStepExecutionService)
+  })
 
-  // it("WfStepExecution custom action", () => {
-  //   const stepSubmitBody = {
-  //     actionAlias: "action alias 139",
-  //     input: {
-  //       stepInput: { a: 134, b: 23 },
-  //       workflowInput: {},
-  //       submittedData: "submittedData 12345",
-  //       state: null,
-  //       status: "NOT_EXECUTED"
-  //     }
-  //   }
-  //   return request(app)
-  //     .put("/wf-executions/step/complete/1")
-  //     .set("Accept", "application/json")
-  //     .send(stepSubmitBody)
-  //     .expect(({ body }) => {
-  //       // console.log(body, "body?")
-  //       expect(body.finalState).toBeDefined()
-  //       expect(body.finalStatus).toBe("COMPLETE")
-  //       expect(body.failedActions).toStrictEqual([]) //проверка на строгое равенство
-  //     })
-  // })
+  it("getAllWfExecution", () => {
+    const wf = wfExecutionsService.getAllWfExecution()
+    expect(wf).toEqual([
+      {
+        id: 1,
+        workflow_id: 1,
+        name: "name",
+        description: "description",
+        input: {},
+        state: null,
+        status: WorkflowExecutionStatus.NOT_STARTED,
+        created: new Date(),
+        updated: new Date(),
+        wfStepsExecution: [],
+        wfActionsExecution: []
+      }
+    ])
+  })
+  it("getWfExecution", async () => {
+    wfExecutionController.getWfExecution(1123)
+    expect(wfExecutionsService.getWfExecution).toHaveBeenCalledWith(1123)
+    expect(wfExecutionsService.getWfExecution(999)).toStrictEqual({
+      id: 999,
+      workflow_id: 1,
+      name: "name",
+      description: "description",
+      input: {},
+      state: null,
+      status: WorkflowExecutionStatus.NOT_STARTED,
+      created: new Date(),
+      updated: new Date(),
+      wfStepsExecution: [],
+      wfActionsExecution: []
+    })
+  })
+  it("createWfExecution", async () => {
+    const newWorkflow = await wfExecutionController.createWfExecution({ workflowId: 1 })
+    expect(newWorkflow).toBeDefined()
+  })
+  it("stepExecutionService", async () => {
+    const startController = wfExecutionController.startWfStepExecution(1)
+    const startAction = await stepExecutionService.startWfStepExecution(1)
+    // console.log(startController, startAction, "startController???")
+  })
 })

@@ -4,7 +4,7 @@ import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
 // import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
-// import { Length, IsNotEmpty, IsNumber, IsBoolean, IsString } from "class-validator"
+// import { Length, IsNotEmpty, IsNumber, IsBoolean, IsString } from "class-validator" //
 
 // Не работает валидация, если импортировать из папки shared
 // export class ITestDto {
@@ -79,9 +79,9 @@ export class WfExecutionsController {
         return this.wfExecutionsService.executeCustomWfAction(id, body.actionAlias, body.input)
     }
 
-    // STEPS EXECUTIONS
+    // STEPS EXECUTIONS //
     @Put('step/start/:id')
-    startWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
+    startWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body?: any): Promise<any> {
         return this.wfStepExecutionService.startWfStepExecution(id, body)
     }
 

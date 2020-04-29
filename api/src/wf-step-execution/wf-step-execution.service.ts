@@ -261,6 +261,7 @@ export class WfStepExecutionService {
         input: IStepActionExecutionInput,
         action: string
     ): Promise<IStepActionExecutionOutput> {
+        console.log(input, action, "INFO?")
         let output: IStepActionExecutionOutput;
         try {
             const script = new vm.Script(`${action}`);

@@ -1,8 +1,9 @@
 <template>
   <div class="container">
-    executedWorkflow: {{executedWorkflow.wfStepsExecution[0].stepViewJson}}
+    executedWorkflow: {{executedWorkflow.wfStepsExecution[0].status}}
+    renderIndex: {{renderIndex}}
     <div
-      v-for="(el,index) in executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement"
+      v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
       <div v-if="el.component.componentType === 'test'">
@@ -12,14 +13,18 @@
             v-for="(option) in el.component.data.options"
             :key="option.id"
             :label="option.value"
-            :value="`${index+1}:${option.value}`"
+            :value="option"
           ></v-radio>
         </v-radio-group>
         {{radioAnswers}}
       </div>
 
       <div v-if="el.component.componentType === 'button'">
-        <input @click="submit" type="submit" :value="el.component.label" class="button" />
+        <input @click="wrapper" type="submit" :value="el.component.label" class="button" />
+      </div>
+      
+      <div v-if="el.component.componentType === 'json'">
+        <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
       </div>
     </div>
   </div>
@@ -35,9 +40,10 @@ import {
 } from "@stepflow/shared";
 import axios from "axios";
 import Step from "../components/Step.vue";
+import VJsoneditor from "v-jsoneditor";
 
 const Mappers = Vue.extend({
-  components: { Step },
+  components: { Step, VJsoneditor },
   computed: {
     ...workflowMapper.mapGetters([
       "currentWorkflow",
@@ -59,6 +65,9 @@ const Mappers = Vue.extend({
 export default class Workflow extends Mappers {
   @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
+  @Provide() stepJson: any = {"darova": "ku"};
+  @Provide() renderIndex: any = 0;
+
   async submit() {
     if (
       this.executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement[5]
@@ -68,8 +77,22 @@ export default class Workflow extends Mappers {
         submitInfo: this.radioAnswers
       });
     }
+     
+  }
+  changeView(){
+    console.log('changeViewStarted')
+    if (this.executedWorkflow.wfStepsExecution[this.renderIndex].status == "COMPLETE") {
+      console.log(this.renderIndex);
+      this.renderIndex++;
+      console.log(this.renderIndex);
+    }
+    console.log('changeViewFinised, renderIndex = ',this.renderIndex)
   }
 
+  wrapper(){
+    this.submit();
+    this.changeView();
+  }
   // async sendAnswer(answer: any): Promise<void> {
   //   if (answer) {
   //     const response = await this.checkAnswer(answer);

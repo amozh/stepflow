@@ -112,7 +112,7 @@ export class UserGroupService implements OnModuleInit {
             actions: [{
               name: "firstAction",
               description: "action to find the area",
-              body: "function fn(info){return info}; res = fn(submittedData.submitInfo)",
+              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}return workflowInput.mark}; res = fn(submittedData.submitInfo)",
               version: "1.0",
               alias: "action alias 10123",
               actionType: ActionType.ON_SUBMIT
@@ -203,6 +203,43 @@ export class UserGroupService implements OnModuleInit {
                     },
                     onClick: "submit",
                     data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)
+                  }
+                ]
+            }
+          },
+          {
+            name: 'Results',
+            description: 'Show result',
+            actions: [{
+              name: "showResult",
+              description: "action to find the area",
+              body:
+                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+              version: "1.0",
+              alias: "action alias 126"
+            }],
+            input: {
+              a: 5,
+              b: 5,
+              h: 7
+            },
+            stepViewJson: {
+              stepViewElement:
+                [
+                  {
+                    component: {
+                      id: 10,
+                      componentType: "json",
+                    }
+                  },
+                  {
+                    component: {
+                      id: 11,
+                      componentType: "button",
+                      label: "Вийти"
+                    },
+                    onClick: "submit",
+                    data: [{ source: "input" }]
                   }
                 ]
             }

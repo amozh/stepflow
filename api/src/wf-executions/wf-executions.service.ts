@@ -57,13 +57,6 @@ export class WfExecutionsService {
 
     async deleteWfExecution(workflowId: number): Promise<any> {
         try {
-            // const workflow = await this.wfExecutionRepository.findOne({ id: workflowId })
-            // console.log(workflow.wfStepsExecution[0].wfStepActionExecutions[0].id, "IDDD???")
-            // const id = workflow.wfStepsExecution[0].wfStepActionExecutions[0].id
-            // const stepid = workflow.wfStepsExecution[0].id
-            // const action = await this.wfStepActionExecutionRepository.findOne({ id })
-            // return await this.wfStepActionExecutionRepository.delete({ id: action.id })
-            // return await this.wfStepExecutionRepository.delete({ id: stepid })//
             return await this.wfExecutionRepository.delete({ id: workflowId })
         } catch (e) {
             // console.log(e, "errors?")
@@ -278,7 +271,6 @@ export class WfExecutionsService {
     private async executeAction(input: IWorkflowActionExecutionInput, action: string)
         : Promise<IWorkflowActionExecutionOutput> {
         let output: IWorkflowActionExecutionOutput;
-        // console.log(input, "input?")
         try {
             const script = new vm.Script(`${action}`);
             const context = vm.createContext({

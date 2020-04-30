@@ -59,7 +59,6 @@ export class WokrflowExecution {
   @OneToMany(
     () => WfStepExecutionEntity,
     wfStepExecution => wfStepExecution.wfExecution,
-    // { cascade: true, eager: true }
     { eager: true }
   )
   @JoinColumn()
@@ -68,7 +67,6 @@ export class WokrflowExecution {
   @OneToMany(
     () => WfActionExecutionEntity,
     wfActionExecution => wfActionExecution.wfExecution,
-    // { cascade: true, eager: true }
     { eager: true }
   )
   @JoinColumn()

@@ -19,13 +19,6 @@ export class WorkflowService {
 
   async delete(id: number): Promise<any> {
     try {
-      // const workflow = await this.workflowRepository.findOne({ id })
-      // console.log(workflow, "workflow?")
-      // workflow.actions = []
-      // await this.workflowRepository.save(workflow)
-      // await this.workflowRepository.remove(workflow)
-
-      // отфильтровать и сохранить без экшенов
       return await this.workflowRepository.delete({ id })
     } catch (e) {
       throw new InternalServerErrorException(e)
@@ -35,7 +28,6 @@ export class WorkflowService {
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
-      // console.log(steps, "steps?")
       const wokflowSteps = await this.wfStepService.createWfSteps(steps)
       const workflow = new Workflow();
       workflow.name = name;

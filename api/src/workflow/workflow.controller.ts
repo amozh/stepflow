@@ -11,7 +11,6 @@ import {
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
 import { ICreateWorkflowDto } from '@stepflow/shared';
-// import { WorkflowStep } from './../wf-step/wf-step.entity';..
 
 @Controller('workflows')
 export class WorkflowController {

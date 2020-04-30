@@ -25,7 +25,6 @@ export class ActionService {
         newAction.description = description
         newAction.body = body
         return newAction
-        // return await this.actionRepository.save(newAction) //
     }
 
     async executeAction(body: IActionExecutionBodyDto): Promise<any> {

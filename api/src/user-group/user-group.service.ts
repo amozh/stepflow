@@ -1,11 +1,11 @@
 import { IUserGroupDto, IUserGroupBaseDto, IUserGroupEntityDto } from "@stepflow/shared";
-import { Repository, getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
 import { UserEntity } from './../user/user.entity';
 import { Workflow } from "../workflow/workflow.entity";
-import { ActionType } from "api/dist/wf-step-action-execution/wf-step-action-execution.entity";
+// import { ActionType } from "api/dist/wf-step-action-execution/wf-step-action-execution.entity";
 
 @Injectable()
 // export class UserGroupService implements OnModuleInit
@@ -15,7 +15,6 @@ export class UserGroupService implements OnModuleInit {
     @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>,
     @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
   ) { }
-
 
   async onModuleInit() {
     enum ActionType {
@@ -132,9 +131,9 @@ export class UserGroupService implements OnModuleInit {
                       data: {
                         question: "First question",
                         options: [
-                          { value: "First option", isCorrect: true},
-                          { value: "Second option", isCorrect: false},
-                          { value: "Third option", isCorrect: false}
+                          { value: "First option", isCorrect: true },
+                          { value: "Second option", isCorrect: false },
+                          { value: "Third option", isCorrect: false }
                         ]
                       }
                     }
@@ -146,9 +145,9 @@ export class UserGroupService implements OnModuleInit {
                       data: {
                         question: "Second question",
                         options: [
-                          { value: "First option", isCorrect: true},
-                          { value: "Second option", isCorrect: false},
-                          { value: "Third option", isCorrect: false}
+                          { value: "First option", isCorrect: true },
+                          { value: "Second option", isCorrect: false },
+                          { value: "Third option", isCorrect: false }
                         ]
                       }
                     }
@@ -160,9 +159,9 @@ export class UserGroupService implements OnModuleInit {
                       data: {
                         question: "Thirth question",
                         options: [
-                          { value: "First option", isCorrect: true},
-                          { value: "Second option", isCorrect: false},
-                          { value: "Third option", isCorrect: false}
+                          { value: "First option", isCorrect: true },
+                          { value: "Second option", isCorrect: false },
+                          { value: "Third option", isCorrect: false }
                         ]
                       }
                     }
@@ -174,9 +173,9 @@ export class UserGroupService implements OnModuleInit {
                       data: {
                         question: "Fourth question",
                         options: [
-                          { value: "First option", isCorrect: true},
-                          { value: "Second option", isCorrect: false},
-                          { value: "Third option", isCorrect: false}
+                          { value: "First option", isCorrect: true },
+                          { value: "Second option", isCorrect: false },
+                          { value: "Third option", isCorrect: false }
                         ]
                       }
                     }
@@ -188,9 +187,9 @@ export class UserGroupService implements OnModuleInit {
                       data: {
                         question: "Fifth question",
                         options: [
-                          { value: "First option", isCorrect: true},
-                          { value: "Second option", isCorrect: false},
-                          { value: "Third option", isCorrect: false}
+                          { value: "First option", isCorrect: true },
+                          { value: "Second option", isCorrect: false },
+                          { value: "Third option", isCorrect: false }
                         ]
                       }
                     }

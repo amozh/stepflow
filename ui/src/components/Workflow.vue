@@ -9,7 +9,6 @@
       <v-flex class="pa-4 my-4">
         <h3 class="grey--text">{{index+1}} {{workflow.name}}</h3>
         <p>{{workflow.description}}</p>
-        <p>kuuuuuuuuuuuuu</p>
       </v-flex>
     </v-card>
   </v-flex>

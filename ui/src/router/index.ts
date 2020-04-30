@@ -7,7 +7,6 @@ import Workflow from "../views/Workflow.vue";
 import Login from '../views/Login.vue';
 import CreateUser from "../views/CreateUser.vue";
 import Groups from "../views/groups/Groups.vue";
-import Test from "../views/Test.vue";
 
 Vue.use(VueRouter);
 
@@ -43,11 +42,6 @@ const routes: RouteConfig[] = [
     path: "/groups",
     name: "groups",
     component: Groups
-  },
-  {
-    path: "/test",
-    name: "test",
-    component: Test
   }
 ];
 

@@ -6,6 +6,7 @@ import {
   Query,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
@@ -29,5 +30,10 @@ export class WorkflowController {
   @Get('/:id')
   getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
     return this.workflowService.findById(id);
+  }
+
+  @Delete("/:id")
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.workflowService.delete(id)
   }
 }

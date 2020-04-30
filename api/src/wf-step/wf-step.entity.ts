@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
@@ -37,9 +36,13 @@ export class WorkflowStep {
   @Column({ type: "json", default: null })
   input: JSON
 
+  @Column({ type: "json", default: null })
+  stepViewJson: JSON
+
   @ManyToOne(
     () => Workflow,
     wf => wf.steps,
+    { onDelete: "CASCADE" }
   )
   workflow: Workflow;
 

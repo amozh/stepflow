@@ -261,6 +261,7 @@ class RootActions extends Actions<
     this.commit("mutateWorkflowInfo", workflowInfo)
   }
   goToStep(step: ICreateWorkflowStepDto): void {
+    // console.log(this.state.workflow, 'wf')
     if (step.actions && step.actions.length) {
       this.commit("mutateCurrentAction", step.actions[0])
       this.commit("mutateCurrentStep", step)

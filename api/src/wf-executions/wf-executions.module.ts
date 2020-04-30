@@ -9,7 +9,6 @@ import { WokrflowExecution } from './wf-executions.entity';
 import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 import { WfStepActionExecutionEntity } from "../wf-step-action-execution/wf-step-action-execution.entity"
 import { WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
-import { WfStepExecutionModule } from "../wf-step-execution/wf-step-execution.module"
 import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity"
 import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
 

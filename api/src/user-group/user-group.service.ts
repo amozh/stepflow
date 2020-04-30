@@ -1,10 +1,11 @@
 import { IUserGroupDto, IUserGroupBaseDto, IUserGroupEntityDto } from "@stepflow/shared";
-import { Repository, getRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
 import { UserEntity } from './../user/user.entity';
 import { Workflow } from "../workflow/workflow.entity";
+import { ActionType } from "../action/action.entity"
 
 @Injectable()
 // export class UserGroupService implements OnModuleInit
@@ -12,7 +13,7 @@ export class UserGroupService implements OnModuleInit {
     constructor(
         @InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>,
         @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>,
-        @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
+        // @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
     ) { }
 
     async onModuleInit() {
@@ -42,8 +43,7 @@ export class UserGroupService implements OnModuleInit {
                 actions: [{
                     name: "workflowAction",
                     description: "action to find the SUMM",
-                    body:
-                        "function fn(a,b,h){return (a+b+h)}; res = fn(a,b,h)",
+                    body: "function fn(a,b,h){return (a+b+h)}; res = fn(a,b,h)",
                     version: "1.0",
                     alias: "action alias 735"
                 }],
@@ -54,22 +54,41 @@ export class UserGroupService implements OnModuleInit {
                         actions: [{
                             name: "firstAction",
                             description: "action to find the area",
-                            body:
-                                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+                            body: "function fn(a,b){const result ={res:a+b, larger:a+b>100, smaller:a+b>10}; return result};  res = fn(stepInput.a, stepInput.b);",
                             version: "1.0",
                             alias: "action alias 123"
-                        }],
-                        input: {
-                            a: 45,
-                            b: 25,
-                            h: 12
                         },
+                        {
+                            name: "secondAction",
+                            description: "action to find the area",
+                            body: "function fn(a,b,c){return a+b+c};  res = fn(stepInput.a, stepInput.b, submittedData.numberToCheck);",
+                            version: "1.0",
+                            alias: "action alias 125",
+                            actionType: ActionType.ON_SUBMIT
+                        },
+                        {
+                            name: "thirdAction",
+                            description: "action to find the area",
+                            body: "function fn(a,b){return a+b};  res = fn(stepInput.a, stepInput.b);",
+                            version: "1.0",
+                            alias: "action alias 135",
+                            actionType: ActionType.ON_COMPLETE
+                        }, {
+                            name: "fourthAction",
+                            description: "action to find the area",
+                            body: "function fn(a,b){return a+b};  res = fn(submittedData.stepInput.a, submittedData.stepInput.b);",
+                            version: "1.0",
+                            alias: "action alias 139",
+                            actionType: ActionType.ON_COMPLETE
+                        }],
+                        input: { a: 24, b: 41 },
+                        stepViewJson: { componentType: "button" }
                     },
                     {
                         name: 'two',
-                        description: 'second action',
+                        description: 'secondStepAction',
                         actions: [{
-                            name: "firstAction",
+                            name: "workflow two action",
                             description: "action to find the area",
                             body:
                                 "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",

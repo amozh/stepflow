@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    executedWorkflow: {{executedWorkflow.wfStepsExecution[0].stepViewJson}}
-    <div
+    hll
+    executedWorkflow: {{executedWorkflow}}
+    <!-- <div
       v-for="(el,index) in executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
@@ -21,12 +22,11 @@
       <div v-if="el.component.componentType === 'button'">
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide } from "vue-property-decorator";
-// import WorkflowStore from "../store/modules/workflow";
+import { Vue, Component, Provide, Prop } from "vue-property-decorator";
 import { workflowMapper } from "../store/modules/workflow";
 import {
   ICreateWorkflowStepDto,
@@ -48,7 +48,6 @@ const Mappers = Vue.extend({
   methods: {
     ...workflowMapper.mapActions({
       getWorkflowById: "getWorkflowById",
-      // checkAnswer: "checkAnswer",
       executeWorkflow: "executeWorkflow",
       getExecutionWorkflow: "getExecutionWorkflow"
     })
@@ -57,6 +56,7 @@ const Mappers = Vue.extend({
 
 @Component
 export default class Workflow extends Mappers {
+  @Prop() workflowType!: any;
   @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
   async submit() {
@@ -70,20 +70,14 @@ export default class Workflow extends Mappers {
     }
   }
 
-  // async sendAnswer(answer: any): Promise<void> {
-  //   if (answer) {
-  //     const response = await this.checkAnswer(answer);
-  //     this.result = {
-  //       result: response.data,
-  //       stepId: answer.stepId
-  //     };
-  //   }
-  // }
-
   async mounted() {
-    // await this.getWorkflowById(this.$route.params.id);
-    await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
-    await this.getExecutionWorkflow(this.$route.params.id);
+    const { id, type } = this.$route.query;
+    if (type === "default") {
+      await this.executeWorkflow(id.toString());
+      await this.getExecutionWorkflow(id.toString());
+    } else {
+      await this.getExecutionWorkflow(id.toString());
+    }
   }
 }
 </script>

@@ -23,7 +23,9 @@ const routes: RouteConfig[] = [
     component: CreateWf
   },
   {
-    path: "/workflow/:id",
+    // path: "/workflow/:id",
+    path: "/workflow",
+    props: (route) => ({ query: route.query }),
     name: "workflow",
     component: Workflow
   },

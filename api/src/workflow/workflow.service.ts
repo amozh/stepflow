@@ -22,30 +22,6 @@ export class WorkflowService {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
 
       const wokflowSteps = await this.wfStepService.createWfSteps(steps)
-      // console.log(wokflowSteps, "wokflowSteps???")
-      // console.log(wokflowSteps.map(s => {
-      //   return console.log(s.id, s.name)
-      // }))
-      // const a = Promise.all(wokflowSteps);
-      // const wokflowSteps = steps.map(step => {
-      //   // this.wfStepService.createWfStep(step.steps[0])
-      //   return this.wfStepService.createWfStep(step)
-      // });
-      // console.log(steps, "steps")
-      // const allSteps: any[] = [];
-      // const takeArr = (array) => {
-      //   // console.log(array, "array")
-      //   array.forEach(e => {
-      //     console.log(e, "eeeeeeeee?")
-      //     allSteps.push(e.name)
-      //     if (e.steps && e.steps.length > 0) {
-      //       takeArr(e.steps)
-      //     }
-      //   }
-      //   )
-      // }
-      // takeArr(steps)
-      // console.log(allSteps, "allSteps???")
 
       const workflow = new Workflow();
       workflow.name = name;
@@ -61,8 +37,8 @@ export class WorkflowService {
     }
   }
 
-  findAll(): Promise<Workflow[]> {
-    return this.workflowRepository.find();
+  async findAll(): Promise<Workflow[]> {
+    return await this.workflowRepository.find();
   }
 
   async findById(id: number): Promise<Workflow> {

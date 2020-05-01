@@ -76,22 +76,25 @@ export default class Workflow extends Mappers {
       axios.put("http://localhost:4000/wf-executions/step/submit/1", {
         submitInfo: this.radioAnswers
       });
+      console.log('after submit')
     }
      
   }
   changeView(){
     console.log('changeViewStarted')
-    if (this.executedWorkflow.wfStepsExecution[this.renderIndex].status == "COMPLETE") {
-      console.log(this.renderIndex);
-      this.renderIndex++;
-      console.log(this.renderIndex);
-    }
+    // if (this.executedWorkflow.wfStepsExecution[this.renderIndex].status == "COMPLETE") {
+    //   console.log(this.renderIndex);
+    //   this.renderIndex = this.renderIndex+1;
+    //   console.log(this.renderIndex);
+    // }
+    this.renderIndex = this.renderIndex+1;
     console.log('changeViewFinised, renderIndex = ',this.renderIndex)
   }
 
-  wrapper(){
-    this.submit();
-    this.changeView();
+  async wrapper(){
+    console.log('before wrapper')
+    this.submit().then(()=>this.changeView());
+    console.log('after wrapper')
   }
   // async sendAnswer(answer: any): Promise<void> {
   //   if (answer) {

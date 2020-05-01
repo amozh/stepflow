@@ -112,7 +112,7 @@ export class UserGroupService implements OnModuleInit {
             actions: [{
               name: "firstAction",
               description: "action to find the area",
-              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}return workflowInput.mark}; res = fn(submittedData.submitInfo)",
+              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}return {mark: workflowInput.mark, answers:info}};res = fn(submittedData.submitInfo)",
               version: "1.0",
               alias: "action alias 10123",
               actionType: ActionType.ON_SUBMIT

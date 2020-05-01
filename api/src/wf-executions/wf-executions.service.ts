@@ -49,7 +49,8 @@ export class WfExecutionsService {
     }
     async getWfExecution(id: number): Promise<IWorkflowExecutionDto> {
         try {
-            return await this.wfExecutionRepository.findOne(id)
+            const wfExecution = await this.wfExecutionRepository.findOne(id)
+            return wfExecution
         } catch (e) {
             throw new InternalServerErrorException()
         }

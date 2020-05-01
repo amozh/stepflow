@@ -1,10 +1,10 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "./wf-step-execution.entity"
 import { WfExecutionsService } from "../wf-executions/wf-executions.service"
 import { ActionType } from "../wf-step-action-execution/wf-step-action-execution.entity"
+import { WorkflowStep } from "../wf-step/wf-step.entity"
 import * as vm from "vm"
 // const vm = require("vm")
 
@@ -30,7 +30,8 @@ export class WfStepExecutionService {
     constructor(
         @InjectRepository(WfStepExecutionEntity)
         private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
-        private readonly wfExecutionsService: WfExecutionsService
+        // private readonly workflowStepRepository: Repository<WorkflowStep>, //достучаться до парента
+        private readonly wfExecutionsService: WfExecutionsService,
     ) { }
 
     createWfStepExecution(
@@ -46,6 +47,12 @@ export class WfStepExecutionService {
         wfStepExecution.input = step.input
         wfStepExecution.wfStepActionExecutions = createdStepActions
         return wfStepExecution
+    }
+
+    async findSubStepsExecution(stepId: number): Promise<WfStepExecutionEntity[]> {
+        // await this.workflowStepRepository.find()
+        return
+        // return await this.wfStepExecutionRepository.findOneOrFail({ parent: stepId })
     }
 
     async startWfStepExecution(id: number, body?: any): Promise<any> {

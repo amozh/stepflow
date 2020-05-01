@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes, Get, Delete } from '@nestjs/common';
 import { WfExecutionsService, IWorkflowActionExecutionInput } from "./wf-executions.service"
-import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
+import { IWorkflowExecutionDto, ITestDto2, } from '@stepflow/shared';
+import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 // import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
@@ -53,6 +54,11 @@ export class WfExecutionsController {
         //     throw new Error("workflowId should be a positive number");
         // }
         return this.wfExecutionsService.createWfExecution(body.workflowId); /*3, 4*/
+    }
+
+    @Get("sub/:id")
+    findSubStepsExecution(@Param('id', ParseIntPipe) id: number): Promise<WfStepExecutionEntity[]> {
+        return this.wfStepExecutionService.findSubStepsExecution(id);
     }
 
     // WORKFLOWS EXECUTIONS

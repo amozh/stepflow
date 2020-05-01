@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
+import { WorkflowStep } from '../wf-step/wf-step.entity';
 import { ICreateWorkflowDto } from '@stepflow/shared';
 
 @Controller('workflows')
@@ -29,6 +30,11 @@ export class WorkflowController {
   @Get('/:id')
   getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
     return this.workflowService.findById(id);
+  }
+
+  @Get("/sub/:id")
+  findSubSteps(@Param('id', ParseIntPipe) id: number): Promise<WorkflowStep> {
+    return this.workflowService.findSubSteps(id);
   }
 
   @Delete("/:id")

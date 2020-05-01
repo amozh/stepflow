@@ -17,12 +17,21 @@ export class WorkflowService {
     private readonly wfStepService: WfStepService
   ) { }
 
-  async delete(id: number): Promise<any> {
-    try {
-      return await this.workflowRepository.delete({ id })
-    } catch (e) {
-      throw new InternalServerErrorException(e)
+  async findAll(): Promise<Workflow[]> {
+    return await this.workflowRepository.find();
+  }
+
+  async findById(id: number): Promise<Workflow> {
+    const workflow = await this.workflowRepository.findOne({ id })
+    if (!workflow) {
+      throw new NotFoundException(`Workflow with id ${id} is not found`);
+    } else {
+      return workflow
     }
+  }
+
+  async findSubSteps(stepId: number): Promise<WorkflowStep[]> {
+    return await this.wfStepService.findSubSteps(stepId)
   }
 
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
@@ -43,16 +52,11 @@ export class WorkflowService {
     }
   }
 
-  async findAll(): Promise<Workflow[]> {
-    return await this.workflowRepository.find();
-  }
-
-  async findById(id: number): Promise<Workflow> {
-    const workflow = await this.workflowRepository.findOne({ id })
-    if (!workflow) {
-      throw new NotFoundException(`Workflow with id ${id} is not found`);
-    } else {
-      return workflow
+  async delete(id: number): Promise<any> {
+    try {
+      return await this.workflowRepository.delete({ id })
+    } catch (e) {
+      throw new InternalServerErrorException(e)
     }
   }
 }

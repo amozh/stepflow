@@ -6,11 +6,12 @@ import {
   Query,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { Workflow } from './workflow.entity';
+import { WorkflowStep } from '../wf-step/wf-step.entity';
 import { ICreateWorkflowDto } from '@stepflow/shared';
-import { WorkflowStep } from './../wf-step/wf-step.entity';
 
 @Controller('workflows')
 export class WorkflowController {
@@ -29,5 +30,15 @@ export class WorkflowController {
   @Get('/:id')
   getWorkflowById(@Param('id', ParseIntPipe) id: number): Promise<Workflow> {
     return this.workflowService.findById(id);
+  }
+
+  @Get("/sub/:id")
+  findSubSteps(@Param('id', ParseIntPipe) id: number): Promise<WorkflowStep> {
+    return this.workflowService.findSubSteps(id);
+  }
+
+  @Delete("/:id")
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.workflowService.delete(id)
   }
 }

@@ -3,7 +3,6 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
@@ -53,13 +52,14 @@ export class WokrflowExecution {
   @ManyToOne(
     () => Workflow,
     wf => wf.wfExecutions,
+    { onDelete: "CASCADE" }
   )
   workflow: Workflow;
 
   @OneToMany(
     () => WfStepExecutionEntity,
     wfStepExecution => wfStepExecution.wfExecution,
-    { cascade: true, eager: true }
+    { eager: true }
   )
   @JoinColumn()
   wfStepsExecution: WfStepExecutionEntity[]
@@ -67,7 +67,7 @@ export class WokrflowExecution {
   @OneToMany(
     () => WfActionExecutionEntity,
     wfActionExecution => wfActionExecution.wfExecution,
-    { cascade: true, eager: true }
+    { eager: true }
   )
   @JoinColumn()
   wfActionsExecution: WfActionExecutionEntity[]

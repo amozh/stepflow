@@ -3,7 +3,7 @@ import { UserEntity } from './user.entity';
 import { AdminGuard } from './../guards/admin.guard';
 import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
 
-import { UserDto, IUserGroupDto } from '@stepflow/shared';
+import { UserDto } from '@stepflow/shared';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -11,9 +11,9 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get("secure")
-    @UseGuards(AdminGuard)
-    get(): string {
-        return this.userService.get()
+    // @UseGuards(AdminGuard)
+    getSecure(): string {
+        return this.userService.getSecure()
     }
 
     @Get()
@@ -28,7 +28,7 @@ export class UserController {
 
     @Post()
     // @UseGuards(AdminGuard)
-    createUser(@Body() userDto: UserDto): Promise<UserEntity | string> {
+    createUser(@Body() userDto: UserDto): Promise<UserEntity> {
         return this.userService.createUser(userDto)
     }
 

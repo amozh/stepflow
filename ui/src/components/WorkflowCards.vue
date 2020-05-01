@@ -13,7 +13,7 @@
             large
             color="success"
             outlined
-            :to="'/workflow/'+workflow.id"
+            :to="`/workflow/?type=${workflowType}&id=${workflow.id}`"
           >Start</v-btn>
           <v-btn
             large
@@ -21,7 +21,13 @@
             outlined
             v-else-if="!workflow.status || workflow.status==='COMPLETE'"
           >Completed</v-btn>
-          <v-btn v-else large color="primary" outlined :to="'/workflow/'+workflow.id">Open</v-btn>
+          <v-btn
+            v-else
+            large
+            color="primary"
+            outlined
+            :to="`/workflow/?type=${workflowType}&id=${workflow.id}`"
+          >Open</v-btn>
         </v-flex>
         <h4 class="pa-5 primary--text">Progress: {{workflow.state}}</h4>
       </v-card>
@@ -44,5 +50,6 @@ import {
 export default class WorkflowCards extends Vue {
   @Prop() workflows!: any;
   @Prop() title!: string;
+  @Prop() workflowType!: string;
 }
 </script>

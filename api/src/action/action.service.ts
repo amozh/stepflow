@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ActionEntity } from './action.entity';
 import { IActionDto, IActionExecutionBodyDto } from '@stepflow/shared';
 const vm = require("vm")
+// import * as vm from "vm"
 
 @Injectable()
 export class ActionService {
@@ -17,13 +18,13 @@ export class ActionService {
         return action
     }
 
-    async createAction(actionDto: IActionDto): Promise<IActionDto> {
+    createAction(actionDto: IActionDto): IActionDto {
         const { name, description, body } = actionDto
         const newAction = new ActionEntity()
         newAction.name = name
         newAction.description = description
         newAction.body = body
-        return await this.actionRepository.save(newAction)
+        return newAction
     }
 
     async executeAction(body: IActionExecutionBodyDto): Promise<any> {

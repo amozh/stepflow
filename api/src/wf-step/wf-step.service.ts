@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Connection, getRepository, getConnection } from 'typeorm';
 import { WorkflowStep } from "./wf-step.entity";
-import { ICreateWorkflowDto, ICreateWorkflowStepDto } from '@stepflow/shared';
+import { ICreateWorkflowStepDto } from '@stepflow/shared';
 
 @Injectable()
 export class WfStepService {
@@ -11,9 +11,10 @@ export class WfStepService {
   ) { }
 
   async createWfSteps(workflowSteps: ICreateWorkflowStepDto[]): Promise<WorkflowStep[]> {
-    const allSteps: WorkflowStep[] = [];
+    const allSteps: any[] = [];
     const takeAllSteps = async (steps: ICreateWorkflowStepDto[], parentId?: number) => {
-      steps.forEach(async step => {
+
+      for (const step of steps) {
         delete step.id //удаление id, сгенерированного на стороне клиента
         step.parent = parentId
         if (step.steps && step.steps.length > 0) {
@@ -26,9 +27,21 @@ export class WfStepService {
           allSteps.push(wfStep)
         }
       }
-      )
     }
-    takeAllSteps(workflowSteps)
-    return allSteps
+    await takeAllSteps(workflowSteps)
+    const wfSteps: WorkflowStep[] = allSteps.filter(step => step.depth === 1)
+    return wfSteps
   }
+
+  async findSubSteps(stepId: number): Promise<WorkflowStep[]> {
+    return await this.workflowStepRepository.find({ parent: stepId })
+  }
+
+  // async findSubSteps(stepsIds: number[]) { //example with queryBuilder
+  //   const subSteps = await getRepository(WorkflowStep)
+  //     .createQueryBuilder("step")
+  //     .where("step.parent IN (:stepsIds)", { stepsIds })
+  //     .getMany()
+  //   return subSteps
+  // }
 }

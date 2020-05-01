@@ -1,11 +1,12 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "./wf-step-execution.entity"
 import { WfExecutionsService } from "../wf-executions/wf-executions.service"
 import { ActionType } from "../wf-step-action-execution/wf-step-action-execution.entity"
-const vm = require("vm")
+import { WorkflowStep } from "../wf-step/wf-step.entity"
+import * as vm from "vm"
+// const vm = require("vm")
 
 export interface IStepActionExecutionInput {
     stepInput: any,
@@ -29,7 +30,8 @@ export class WfStepExecutionService {
     constructor(
         @InjectRepository(WfStepExecutionEntity)
         private readonly wfStepExecutionRepository: Repository<WfStepExecutionEntity>,
-        private readonly wfExecutionsService: WfExecutionsService
+        // private readonly workflowStepRepository: Repository<WorkflowStep>, //достучаться до парента
+        private readonly wfExecutionsService: WfExecutionsService,
     ) { }
 
     createWfStepExecution(
@@ -47,7 +49,13 @@ export class WfStepExecutionService {
         return wfStepExecution
     }
 
-    async startWfStepExecution(id: number, body: any): Promise<any> {
+    async findSubStepsExecution(stepId: number): Promise<WfStepExecutionEntity[]> {
+        // await this.workflowStepRepository.find()
+        return
+        // return await this.wfStepExecutionRepository.findOneOrFail({ parent: stepId })
+    }
+
+    async startWfStepExecution(id: number, body?: any): Promise<any> {
         const stepExecution = await this.wfStepExecutionRepository.findOne(id)
         const workflowExecution = await this.wfExecutionsService.getWfExecution(stepExecution.workflow_execution_id)
         const stepInput = stepExecution.input;
@@ -78,7 +86,6 @@ export class WfStepExecutionService {
                     status: prevStatus
                 }
             }
-
             const output = await this.executeAction(actionInput, a.body);
             return [...existingOutputs, output];
         }, Promise.resolve([] as IStepActionExecutionOutput[]));
@@ -116,7 +123,7 @@ export class WfStepExecutionService {
                 actionInput = {
                     stepInput,
                     workflowInput,
-                    submittedData,
+                    submittedData, //
                     state,
                     status
                 }
@@ -138,7 +145,7 @@ export class WfStepExecutionService {
 
         const failedActions: IStepActionExecutionOutput[] = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
-            //do something with failed action
+            //do something with failed action//
         })
 
         const finalState = outputs[outputs.length - 1].state;
@@ -189,7 +196,7 @@ export class WfStepExecutionService {
 
         const failedActions: IStepActionExecutionOutput[] | string = outputs.filter(o => !o.result.isSuccess);
         failedActions.forEach(a => {
-            //do something with failed action
+            //do something with failed action //////
         })
 
         const finalState = outputs[outputs.length - 1].state;
@@ -209,9 +216,9 @@ export class WfStepExecutionService {
         const actions = stepExecution.wfStepActionExecutions;
         const status = stepExecution.status;
         const submittedData = actionsInput;
+        // const submittedData = {}. //
 
         const onSubmitActions = actions.filter(a => a.alias === actionAlias);
-
         const outputs: IStepActionExecutionOutput[] = await onSubmitActions.reduce(async (actionOutputs, a) => {
             const existingOutputs: IStepActionExecutionOutput[] = await actionOutputs;
             let actionInput: IStepActionExecutionInput;
@@ -221,7 +228,7 @@ export class WfStepExecutionService {
                     workflowInput,
                     submittedData,
                     state,
-                    status
+                    status //
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
@@ -269,7 +276,9 @@ export class WfStepExecutionService {
                 currentState: input.state,
                 stepInput: input.stepInput,
                 workflowInput: input.workflowInput,
-                submittedData: input.submittedData
+                submittedData: input.submittedData,
+                // libs
+                lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
             output = {

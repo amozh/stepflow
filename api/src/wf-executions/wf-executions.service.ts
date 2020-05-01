@@ -1,15 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { WokrflowExecution, WorkflowExecutionStatus } from "./wf-executions.entity"
+import { WokrflowExecution } from "./wf-executions.entity"
 import { Workflow } from "../workflow/workflow.entity"
-import { WfStepExecutionEntity, WorkflowStepExecutionStatus } from "../wf-step-execution/wf-step-execution.entity"
+import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 import { WfStepActionExecutionEntity as WfStepActionExecution } from "../wf-step-action-execution/wf-step-action-execution.entity"
 import { WfActionExecutionEntity, WfActionType } from "../wf-action-execution/wf-action-execution.entity"
 import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
-// import { WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service"
-import { IWorkflowExecutionDto } from '@stepflow/shared';
-const vm = require("vm")
+import { IWorkflowExecutionDto } from '@stepflow/shared'; ////
+import * as vm from "vm"
+// const lodash = require('lodash')
+// const vm = require("vm")
 
 export interface IWorkflowActionExecutionInput {
     workflowInput: any
@@ -48,15 +49,25 @@ export class WfExecutionsService {
     }
     async getWfExecution(id: number): Promise<IWorkflowExecutionDto> {
         try {
-            return await this.wfExecutionRepository.findOne(id)
+            const wfExecution = await this.wfExecutionRepository.findOne(id)
+            return wfExecution
         } catch (e) {
             throw new InternalServerErrorException()
         }
     }
 
+    async deleteWfExecution(workflowId: number): Promise<any> {
+        try {
+            return await this.wfExecutionRepository.delete({ id: workflowId })
+        } catch (e) {
+            // console.log(e, "errors?")
+            throw new InternalServerErrorException(e)
+        }
+    }
+
     async createWfExecution(workflowId: number): Promise<IWorkflowExecutionDto> {
         const workflow = await this.workflowRepository.findOne({ id: workflowId })
-
+        // console.log(workflow.steps, "workflow.steps???") //
         const workflowExecution = new WokrflowExecution()
         const preWorkflowExecution = await this.wfExecutionRepository.save(workflowExecution)
 
@@ -69,11 +80,6 @@ export class WfExecutionsService {
             })
             const createdStepActions: WfStepActionExecution[] = await this.wfStepActionExecutionRepository
                 .save(stepActionExecutions)
-            // return this.wfStepExecutionService.createWfStepExecution(
-            //     wfStepExecution,
-            //     createdStepActions,
-            //     step,
-            //     preWorkflowExecution.id)
             wfStepExecution.workflow_execution_id = preWorkflowExecution.id
             wfStepExecution.workflow_step_id = step.id
             wfStepExecution.name = step.name
@@ -271,7 +277,9 @@ export class WfExecutionsService {
             const context = vm.createContext({
                 currentState: input.state,
                 workflowInput: input.workflowInput,
-                submittedData: input.submittedData
+                submittedData: input.submittedData,
+                // libs
+                lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
             output = {

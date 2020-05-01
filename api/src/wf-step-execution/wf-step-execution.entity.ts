@@ -3,10 +3,7 @@ import {
     Column,
     Entity,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
-    ManyToMany,
-    JoinTable,
     OneToMany,
     JoinColumn
 } from 'typeorm';
@@ -58,20 +55,23 @@ export class WfStepExecutionEntity {
 
     @ManyToOne(
         () => WokrflowExecution,
-        wfExecution => wfExecution.wfStepsExecution
+        wfExecution => wfExecution.wfStepsExecution,
+        { onDelete: "CASCADE" }
     )
     wfExecution: WokrflowExecution
 
     @ManyToOne(
         () => WorkflowStepEntity,
         wfStep => wfStep.stepExecutions,
+        { onDelete: "CASCADE" }
     )
     workFlowStep: WorkflowStepEntity;
 
     @OneToMany(
         () => WfStepActionExecutionEntity,
         wfStepActionExecution => wfStepActionExecution.wfStepExecution,
-        { cascade: true, eager: true }
+        { eager: true }
+        // { eager: true }
     )
     @JoinColumn()
     wfStepActionExecutions: WfStepActionExecutionEntity[]

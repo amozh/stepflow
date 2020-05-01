@@ -24,7 +24,7 @@ describe('AppController (e2e)', () => {
 
     it("VovaUser", () => {
         const user = {
-            name: "Putin",
+            name: "Gena",
             surname: "Vova"
         }
         return request(app)
@@ -69,7 +69,7 @@ beforeEach(async () => {
 
     // it("newUser", () => {
     //     const user = {
-    //         name: "Putin",
+    //         name: "Gena",
     //         surname: "Vova",
     //         userRole: UserRole.STUDENT,
     //         userGroups: [

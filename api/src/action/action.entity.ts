@@ -3,15 +3,11 @@ import {
     BeforeUpdate,
     Column,
     Entity,
-    OneToOne,
     PrimaryGeneratedColumn,
     JoinColumn,
     ManyToMany,
     Unique,
-    Index,
     OneToMany,
-    PrimaryColumn,
-    Generated
 } from 'typeorm';
 
 import { WorkflowStep } from '../wf-step/wf-step.entity';
@@ -61,12 +57,14 @@ export class ActionEntity {
     @ManyToMany(
         () => WorkflowEntity,
         workflow => workflow.actions,
+        { onDelete: "CASCADE" }
     )
     workflows: WorkflowEntity[]
 
     @ManyToMany(
         () => WorkflowStep,
         workFlowStep => workFlowStep.actions,
+        { onDelete: "CASCADE" }
     )
     workFlowSteps: WorkflowStep[]
 

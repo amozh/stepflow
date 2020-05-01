@@ -90,8 +90,10 @@ class RootActions extends Actions<
   async executeWorkflow(id: string): Promise<any> {
     try {
       this.commit("mutateLoading", true);
-      await workflowApi.executeWorkflow(id)
+      const wfExecution = await workflowApi.executeWorkflow(id)
+      console.log(wfExecution);
       this.commit("mutateLoading", false);
+      return wfExecution.data.id;
     } catch (e) {
       this.commit("mutateLoading", false);
       throw new Error(e);

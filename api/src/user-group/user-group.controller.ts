@@ -1,8 +1,8 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Body, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Body, Delete, Put } from '@nestjs/common';
 
 import { UserGroupService } from './user-group.service';
 import { IUserGroupDto, IUserGroupBaseDto } from '@stepflow/shared';
-import { AdminGuard } from './../guards/admin.guard';
+// import { AdminGuard } from './../guards/admin.guard';
 import { UserGroupEntity } from './user-group.entity';
 
 @Controller('group')

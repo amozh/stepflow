@@ -3,10 +3,7 @@ import {
     Column,
     Entity,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
-    ManyToMany,
-    JoinTable,
     Unique
 } from 'typeorm';
 import { ActionEntity } from "../action/action.entity"
@@ -62,13 +59,15 @@ export class WfStepActionExecutionEntity {
 
     @ManyToOne(
         () => ActionEntity,
-        action => action.wfStepActionExecutions
+        action => action.wfStepActionExecutions,
+        { onDelete: "CASCADE" }
     )
     action: ActionEntity
 
     @ManyToOne(
         () => WfStepExecutionEntity,
-        wfStepExecution => wfStepExecution.wfStepActionExecutions
+        wfStepExecution => wfStepExecution.wfStepActionExecutions,
+        { onDelete: "CASCADE" } //
     )
     wfStepExecution: WfStepExecutionEntity
 

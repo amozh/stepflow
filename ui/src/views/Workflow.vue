@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    executedWorkflow: {{executedWorkflow.wfStepsExecution[0].status}}
+
+    executedWorkflow: {{executedWorkflow}}
+    <!-- executedWorkflow: {{executedWorkflow.wfStepsExecution[0].status}}
     renderIndex: {{renderIndex}}
     <div
       v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
@@ -26,12 +28,11 @@
       <div v-if="el.component.componentType === 'json'">
         <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
       </div>
-    </div>
+    </div>-->
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide } from "vue-property-decorator";
-// import WorkflowStore from "../store/modules/workflow";
+import { Vue, Component, Provide, Prop } from "vue-property-decorator";
 import { workflowMapper } from "../store/modules/workflow";
 import {
   ICreateWorkflowStepDto,
@@ -54,7 +55,6 @@ const Mappers = Vue.extend({
   methods: {
     ...workflowMapper.mapActions({
       getWorkflowById: "getWorkflowById",
-      // checkAnswer: "checkAnswer",
       executeWorkflow: "executeWorkflow",
       getExecutionWorkflow: "getExecutionWorkflow"
     })
@@ -63,6 +63,7 @@ const Mappers = Vue.extend({
 
 @Component
 export default class Workflow extends Mappers {
+  @Prop() workflowType!: any;
   @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
   @Provide() stepJson: any = {"darova": "ku"};
@@ -107,9 +108,15 @@ export default class Workflow extends Mappers {
   // }
 
   async mounted() {
-    // await this.getWorkflowById(this.$route.params.id);
-    await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
-    await this.getExecutionWorkflow(this.$route.params.id);
+    const { id, type } = this.$route.query;
+    console.log("id, type:", id, type);
+    if (type === "default") {
+      const wfId = await this.executeWorkflow(id.toString());
+      console.log('wfExecution:',wfId);
+      await this.getExecutionWorkflow(wfId);
+    } else {
+      await this.getExecutionWorkflow(id.toString());
+    }
   }
 }
 </script>

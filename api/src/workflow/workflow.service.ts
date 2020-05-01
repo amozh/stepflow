@@ -17,36 +17,27 @@ export class WorkflowService {
     private readonly wfStepService: WfStepService
   ) { }
 
+  async findAll(): Promise<Workflow[]> {
+    return await this.workflowRepository.find();
+  }
+
+  async findById(id: number): Promise<Workflow> {
+    const workflow = await this.workflowRepository.findOne({ id })
+    if (!workflow) {
+      throw new NotFoundException(`Workflow with id ${id} is not found`);
+    } else {
+      return workflow
+    }
+  }
+
+  async findSubSteps(stepId: number): Promise<WorkflowStep[]> {
+    return await this.wfStepService.findSubSteps(stepId)
+  }
+
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
-
       const wokflowSteps = await this.wfStepService.createWfSteps(steps)
-      // console.log(wokflowSteps, "wokflowSteps???")
-      // console.log(wokflowSteps.map(s => {
-      //   return console.log(s.id, s.name)
-      // }))
-      // const a = Promise.all(wokflowSteps);
-      // const wokflowSteps = steps.map(step => {
-      //   // this.wfStepService.createWfStep(step.steps[0])
-      //   return this.wfStepService.createWfStep(step)
-      // });
-      // console.log(steps, "steps")
-      // const allSteps: any[] = [];
-      // const takeArr = (array) => {
-      //   // console.log(array, "array")
-      //   array.forEach(e => {
-      //     console.log(e, "eeeeeeeee?")
-      //     allSteps.push(e.name)
-      //     if (e.steps && e.steps.length > 0) {
-      //       takeArr(e.steps)
-      //     }
-      //   }
-      //   )
-      // }
-      // takeArr(steps)
-      // console.log(allSteps, "allSteps???")
-
       const workflow = new Workflow();
       workflow.name = name;
       workflow.description = description;
@@ -61,16 +52,11 @@ export class WorkflowService {
     }
   }
 
-  findAll(): Promise<Workflow[]> {
-    return this.workflowRepository.find();
-  }
-
-  async findById(id: number): Promise<Workflow> {
-    const workflow = await this.workflowRepository.findOne({ id })
-    if (!workflow) {
-      throw new NotFoundException(`Workflow with id ${id} is not found`);
-    } else {
-      return workflow
+  async delete(id: number): Promise<any> {
+    try {
+      return await this.workflowRepository.delete({ id })
+    } catch (e) {
+      throw new InternalServerErrorException(e)
     }
   }
 }

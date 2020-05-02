@@ -18,7 +18,7 @@ export interface IStepActionExecutionInput {
 
 export interface IStepActionExecutionOutput {
     state: JSON
-    status: WorkflowStepExecutionStatus
+    status?: WorkflowStepExecutionStatus
     result: {
         isSuccess: boolean
         message: string
@@ -50,7 +50,7 @@ export class WfStepExecutionService {
     }
 
     async findSubStepsExecution(stepId: number): Promise<WfStepExecutionEntity[]> {
-        // await this.workflowStepRepository.find()
+        // await this.workflowStepRepository.find() ..
         return
         // return await this.wfStepExecutionRepository.findOneOrFail({ parent: stepId })
     }
@@ -228,7 +228,7 @@ export class WfStepExecutionService {
                     workflowInput,
                     submittedData,
                     state,
-                    status //
+                    status
                 }
             } else {
                 const prevState = existingOutputs[existingOutputs.length - 1].state;
@@ -268,7 +268,7 @@ export class WfStepExecutionService {
         input: IStepActionExecutionInput,
         action: string
     ): Promise<IStepActionExecutionOutput> {
-        console.log(input, action, "INFO?")
+        // console.log(input, action, "INFO?")
         let output: IStepActionExecutionOutput;
         try {
             const script = new vm.Script(`${action}`);
@@ -281,9 +281,22 @@ export class WfStepExecutionService {
                 lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
+            // console.log(result, "result???") ///
+            let status: WorkflowStepExecutionStatus = WorkflowStepExecutionStatus.NOT_STARTED;
+            switch (result.status || result) {
+                case "STARTED":
+                    status = WorkflowStepExecutionStatus.STARTED
+                    break;
+                case "COMPLETE":
+                    status = WorkflowStepExecutionStatus.COMPLETE
+                    break;
+                default:
+                    status = WorkflowStepExecutionStatus.NOT_STARTED
+                    break;
+            }
             output = {
                 state: result,
-                status: WorkflowStepExecutionStatus.COMPLETE,
+                status,
                 result: {
                     isSuccess: true,
                     message: "You gave an answer"
@@ -292,7 +305,7 @@ export class WfStepExecutionService {
         } catch (e) {
             output = {
                 state: input.state,
-                status: input.status,
+                status,
                 result: {
                     isSuccess: false,
                     message: e.message || e

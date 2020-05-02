@@ -67,7 +67,7 @@ export const groupApi = {
     return api.post("group", group)
   },
   updateGroup(newGroupInfo: { group: IUserGroupDto, id: string }) {
-    console.log(newGroupInfo);
+    // console.log(newGroupInfo);
     return api.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
   },
   deleteGroup(id: string) {

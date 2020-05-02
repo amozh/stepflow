@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-
-    executedWorkflow: {{executedWorkflow}}
-    <!-- executedWorkflow: {{executedWorkflow.wfStepsExecution[0].status}}
-    renderIndex: {{renderIndex}}
+    <div v-if="!executedWorkflow.wfStepsExecution" class="text-center mt-10">
+      <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
+    </div>
     <div
+      v-else
       v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
@@ -18,17 +18,15 @@
             :value="option"
           ></v-radio>
         </v-radio-group>
-        {{radioAnswers}}
       </div>
 
       <div v-if="el.component.componentType === 'button'">
-        <input @click="wrapper" type="submit" :value="el.component.label" class="button" />
+        <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
-      
       <div v-if="el.component.componentType === 'json'">
         <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
       </div>
-    </div>-->
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -66,53 +64,34 @@ export default class Workflow extends Mappers {
   @Prop() workflowType!: any;
   @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
-  @Provide() stepJson: any = {"darova": "ku"};
+  @Provide() stepJson: any = {};
   @Provide() renderIndex: any = 0;
 
   async submit() {
+    let res;
     if (
-      this.executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement[5]
-        .onClick === "submit"
+      this.executedWorkflow.wfStepsExecution[this.renderIndex].stepViewJson
+        .stepViewElement[5].onClick === "submit"
     ) {
-      axios.put("http://localhost:4000/wf-executions/step/submit/1", {
-        submitInfo: this.radioAnswers
-      });
-      console.log('after submit')
+      res = await axios.put(
+        "http://localhost:4000/wf-executions/step/submit/1",
+        {
+          submitInfo: this.radioAnswers
+        }
+      );
+      if (res.data.finalStatus === "COMPLETE") {
+        this.renderIndex = this.renderIndex + 1;
+        this.stepJson = {
+          ...res.data.finalState
+        };
+      }
     }
-     
   }
-  changeView(){
-    console.log('changeViewStarted')
-    // if (this.executedWorkflow.wfStepsExecution[this.renderIndex].status == "COMPLETE") {
-    //   console.log(this.renderIndex);
-    //   this.renderIndex = this.renderIndex+1;
-    //   console.log(this.renderIndex);
-    // }
-    this.renderIndex = this.renderIndex+1;
-    console.log('changeViewFinised, renderIndex = ',this.renderIndex)
-  }
-
-  async wrapper(){
-    console.log('before wrapper')
-    this.submit().then(()=>this.changeView());
-    console.log('after wrapper')
-  }
-  // async sendAnswer(answer: any): Promise<void> {
-  //   if (answer) {
-  //     const response = await this.checkAnswer(answer);
-  //     this.result = {
-  //       result: response.data,
-  //       stepId: answer.stepId
-  //     };
-  //   }
-  // }
 
   async mounted() {
     const { id, type } = this.$route.query;
-    console.log("id, type:", id, type);
     if (type === "default") {
       const wfId = await this.executeWorkflow(id.toString());
-      console.log('wfExecution:',wfId);
       await this.getExecutionWorkflow(wfId);
     } else {
       await this.getExecutionWorkflow(id.toString());

@@ -47,14 +47,7 @@ export class UserGroupService implements OnModuleInit {
         input: {
           someInput: "someInput data"
         },
-        actions: [{
-          name: "workflowAction",
-          description: "action to find the SUMM",
-          body:
-            "function fn(a,b,h){return (a+b+h)}; res = fn(a,b,h)",
-          version: "1.0",
-          alias: "action alias 735"
-        }],
+        actions: [],
         steps: [
           {
             name: 'one',
@@ -63,9 +56,10 @@ export class UserGroupService implements OnModuleInit {
               name: "firstAction",
               description: "action to find the area",
               body:
-                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
+                "function fn(){return {status:'COMPLETE'}}; res = fn()",
               version: "1.0",
-              alias: "action alias 123"
+              alias: "action alias 123",
+              actionType: ActionType.ON_START
             }],
             input: {
               a: 45,
@@ -74,24 +68,6 @@ export class UserGroupService implements OnModuleInit {
             },
             stepViewJson: { componentType: "button" }
           },
-          {
-            name: 'two',
-            description: 'second action',
-            actions: [{
-              name: "firstAction",
-              description: "action to find the area",
-              body:
-                "function fn(a,b,h){return (a+b)*h/2}; function checkAnswer(res, answer){if(res===submittedAnswer){return 'correct'}else{return 'wrong'}}; res = fn(a,b,h); answerIs = checkAnswer(res, submittedAnswer)",
-              version: "1.0",
-              alias: "action alias 531"
-            }],
-            input: {
-              a: 5,
-              b: 5,
-              h: 7
-            },
-            stepViewJson: { componentType: "button" }
-          }
         ],
         userGroups: [group]
       }
@@ -111,7 +87,7 @@ export class UserGroupService implements OnModuleInit {
             actions: [{
               name: "firstAction",
               description: "action to find the area",
-              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}return {mark: workflowInput.mark, answers:info}};res = fn(submittedData.submitInfo)",
+              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}; return {status:'COMPLETE', mark: workflowInput.mark, answers:info}}; res = fn(submittedData.submitInfo)",
               version: "1.0",
               alias: "action alias 10123",
               actionType: ActionType.ON_SUBMIT

@@ -281,7 +281,7 @@ export class WfStepExecutionService {
                 lodash: require("lodash"),
             });
             const result = await script.runInContext(context);
-            // console.log(result, "result???") ///
+
             let status: WorkflowStepExecutionStatus = WorkflowStepExecutionStatus.NOT_STARTED;
             switch (result.status || result) {
                 case "STARTED":

@@ -3,6 +3,7 @@
     <div v-if="!executedWorkflow.wfStepsExecution" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
+
     <div
       v-else
       v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
@@ -19,7 +20,7 @@
           ></v-radio>
         </v-radio-group>
       </div>
-
+      {{executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement}}
       <div v-if="el.component.componentType === 'button'">
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
@@ -69,10 +70,12 @@ export default class Workflow extends Mappers {
 
   async submit() {
     let res;
-    if (
-      this.executedWorkflow.wfStepsExecution[this.renderIndex].stepViewJson
-        .stepViewElement[5].onClick === "submit"
-    ) {
+    const submitButton = this.executedWorkflow.wfStepsExecution[
+      this.renderIndex
+    ].stepViewJson.stepViewElement.find(
+      e => e.onClick && e.onClick === "submit"
+    );
+    if (submitButton) {
       res = await axios.put(
         "http://localhost:4000/wf-executions/step/submit/1",
         {

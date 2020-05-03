@@ -90,7 +90,6 @@ export default class Workflow extends Mappers {
     }
   }
 
-
   async mounted() {
     const { id, type } = this.$route.query;
     if (type === "default") {
@@ -99,11 +98,15 @@ export default class Workflow extends Mappers {
     } else {
       await this.getExecutionWorkflow(id.toString());
     }
-    // if (this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions[1].actionType === "ON_START"){
-    //   let res = await axios.put(
-    //     `http://localhost:4000/wf-executions/step/start/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
-    //     .workflow_execution_id}`)
-    // }
+    
+    for( let i = 0; i <=this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions.length; i++){
+       if (this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions[i].actionType === "ON_START"){
+        let res = await axios.put(
+          `http://localhost:4000/wf-executions/step/start/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
+          .workflow_execution_id}`)
+      }
+    }
+   
   } 
 }
 </script>

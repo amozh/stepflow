@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
     ManyToMany,
     JoinTable,
-} from 'typeorm';
+} from 'typeorm'; //
 
 @Entity('user-group')
 export class UserGroupEntity {

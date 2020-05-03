@@ -294,6 +294,7 @@ export class WfStepExecutionService {
                     status = WorkflowStepExecutionStatus.NOT_STARTED
                     break;
             }
+            console.log(status, "status?")
             output = {
                 state: result,
                 status,
@@ -302,6 +303,7 @@ export class WfStepExecutionService {
                     message: "You gave an answer"
                 }
             }
+            console.log(output, "out") //
         } catch (e) {
             output = {
                 state: input.state,

@@ -22,6 +22,7 @@ export interface ICreateWorkflowStepDto {
   name: string,
   description: string,
   input: JSON | any,
+  stepViewJson: JSON | any,
   depth: number,
   actions: IActionDto[],
   steps?: ICreateWorkflowStepDto[]
@@ -75,8 +76,8 @@ export interface IStepViewElement Array<{
         isCorrect: boolean;
       }>
     } | Array<{
-        type: string;
-        label: string;
+      type: string;
+      label: string;
     }>
   };
 }>

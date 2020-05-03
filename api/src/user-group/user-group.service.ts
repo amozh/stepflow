@@ -9,12 +9,12 @@ import { Workflow } from "../workflow/workflow.entity";
 
 @Injectable()
 // export class UserGroupService implements OnModuleInit
-export class UserGroupService implements OnModuleInit { 
+export class UserGroupService implements OnModuleInit {
   constructor(
     @InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>,
     @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>,
-    @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity> 
-  ) { } 
+    @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
+  ) { }
 
   async onModuleInit() {
     enum ActionType {
@@ -43,7 +43,7 @@ export class UserGroupService implements OnModuleInit {
     await this.workflowRepo.save(
       {
         name: "workflow 1",
-        description: 'описание 111', 
+        description: 'описание 111',
         input: {
           someInput: "someInput data"
         },
@@ -89,9 +89,9 @@ export class UserGroupService implements OnModuleInit {
               {
                 name: "firsstAction",
                 description: "action to find the area",
-                body: "function fn(){ return {status:'STARTED',action:'onstart!!!'}} res = fn()",
+                body: "function fn(){ return {status:'STARTED'}} res = fn()",
                 version: "1.0",
-                alias: "action alias 10223123",
+                alias: "action alias 10223123", //
                 actionType: ActionType.ON_START
               },
               {
@@ -188,7 +188,7 @@ export class UserGroupService implements OnModuleInit {
                       label: "Завершити тест"
                     },
                     onClick: "submit",
-                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер) 
+                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)//
                   }
                 ]
             }
@@ -200,7 +200,7 @@ export class UserGroupService implements OnModuleInit {
               name: "showResult",
               description: "action show result",
               body:
-              "function fn(){if (currentState.mark >= workflowInput.minMark){workflowInput.isTestSuccessful = true};return {status:'STARTED', isTestSuccessful:true}; res = fn()",
+                "function fn(){workflowInput.isTestSuccessful = true; return {status:'STARTED', wfStatus:workflowInput.isTestSuccessful}}; res = fn()", ///if (currentState.mark >= workflowInput.minMark){workflowInput.isTestSuccessful = true};
               version: "1.0",
               alias: "action alias 126",
               actionType: ActionType.ON_START
@@ -227,7 +227,7 @@ export class UserGroupService implements OnModuleInit {
                     },
                     onClick: "submit",
                     data: [{ source: "input" }]
-                  } 
+                  }
                 ]
             }
           }
@@ -241,7 +241,7 @@ export class UserGroupService implements OnModuleInit {
       return group
     } catch (e) {
       throw new NotFoundException(`User group with id ${id} is not found`)
-    } 
+    }
   }
 
   async createGroup(groupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {

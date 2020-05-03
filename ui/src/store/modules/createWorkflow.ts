@@ -16,31 +16,31 @@ import {
 class RootState {
   StepViewElement: IStepViewElement[] = [
     {
-    component: {
-      id: 1,
-      componentType: "test",
-      data: {
-        question: "First question",
-        options: [
-          { value: "First option", isCorrect: true},
-          { value: "Second option", isCorrect: false},
-          { value: "Third option", isCorrect: false}
+      component: {
+        id: 1,
+        componentType: "test",
+        data: {
+          question: "First question",
+          options: [
+            { value: "First option", isCorrect: true },
+            { value: "Second option", isCorrect: false },
+            { value: "Third option", isCorrect: false }
+          ]
+        }
+      }
+    },
+    {
+      component: {
+        id: 2,
+        componentType: "input-set",
+        data: [
+          { type: "submit", label: "Button input" },
+          { type: "submit", label: "Button input" },
+          { type: "text", label: "Text input" }
         ]
       }
     }
-  },
-  {
-    component:{
-      id: 2,
-      componentType: "input-set",
-      data: [
-        { type: "submit", label: "Button input" },
-        { type: "submit", label: "Button input" },
-        { type: "text", label: "Text input"}
-      ]
-    }
-  }
-]
+  ]
   StepViewJson: IStepViewJson = {
     elements: this.StepViewElement
   }
@@ -58,6 +58,9 @@ class RootState {
         id: uuidv4(),
         name: "depth_2",
         description: "step with depth 2 some description",
+        stepViewJson: {
+          json: "json"
+        },
         input: {
           a: 51,
           b: 14
@@ -79,6 +82,7 @@ class RootState {
         id: uuidv4(),
         name: "depth_3",
         description: "some description of step with  with the greatest depth",
+        stepViewJson: {},
         input: {
           a: 61,
           b: 10
@@ -111,7 +115,7 @@ class RootState {
     depth: 0,
     text: this.workflow.name
   }]
-  
+
 }
 
 class RootGetters extends Getters<RootState> {
@@ -209,6 +213,7 @@ class RootMutations extends Mutations<RootState> {
       name: "New step",
       description: "some description",
       input: {},
+      stepViewJson: {},
       actions: [],
       steps: []
     }

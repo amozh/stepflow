@@ -8,7 +8,7 @@
       v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
-      <div v-if="el.component.componentType === 'test'"> 
+      <div v-if="el.component.componentType === 'test'">
         <p>{{el.component.data.question}}</p>
         <v-radio-group v-model="radioAnswers[index]">
           <v-radio
@@ -19,7 +19,7 @@
           ></v-radio>
         </v-radio-group>
       </div>
-      
+
       <div v-if="el.component.componentType === 'button'">
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
@@ -30,7 +30,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide, Prop } from "vue-property-decorator";
+import { Vue, Component, Provide, Prop, Watch } from "vue-property-decorator";
 import { workflowMapper } from "../store/modules/workflow";
 import {
   ICreateWorkflowStepDto,
@@ -67,16 +67,48 @@ export default class Workflow extends Mappers {
   @Provide() stepJson: any = {};
   @Provide() renderIndex: number = 0;
 
+  @Watch("renderIndex")
+  async changeCode(index: number, newIndex: number) {
+    console.log("WORKS?");
+    console.log(
+      this.executedWorkflow.wfStepsExecution[this.renderIndex].id,
+      " this.executedWorkflow.wfStepsExecution[this.renderIndex].id"
+    );
+    for (
+      let i = 0;
+      i <=
+      this.executedWorkflow.wfStepsExecution[this.renderIndex]
+        .wfStepActionExecutions.length -
+        1;
+      i++
+    ) {
+      if (
+        this.executedWorkflow.wfStepsExecution[this.renderIndex]
+          .wfStepActionExecutions[i].actionType === "ON_START"
+      ) {
+        let res = await axios.put(
+          `http://localhost:4000/wf-executions/step/start/${
+            this.executedWorkflow.wfStepsExecution[this.renderIndex].id
+          }`
+        );
+        console.log(res, "res????");
+      }
+    }
+  }
+
   async submit() {
     let res;
-    const submitButton = this.executedWorkflow.wfStepsExecution[this.renderIndex]
-    .stepViewJson.stepViewElement.find(
+    const submitButton = this.executedWorkflow.wfStepsExecution[
+      this.renderIndex
+    ].stepViewJson.stepViewElement.find(
       e => e.onClick && e.onClick === "submit"
     );
+
     if (submitButton) {
       res = await axios.put(
-        `http://localhost:4000/wf-executions/step/submit/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
-        .workflow_execution_id}`,
+        `http://localhost:4000/wf-executions/step/submit/${
+          this.executedWorkflow.wfStepsExecution[this.renderIndex].id
+        }`,
         {
           submitInfo: this.radioAnswers
         }
@@ -98,16 +130,27 @@ export default class Workflow extends Mappers {
     } else {
       await this.getExecutionWorkflow(id.toString());
     }
-    
-    for( let i = 0; i <=this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions.length; i++){
-       if (this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions[i].actionType === "ON_START"){
+
+    for (
+      let i = 0;
+      i <=
+      this.executedWorkflow.wfStepsExecution[this.renderIndex]
+        .wfStepActionExecutions.length -
+        1;
+      i++
+    ) {
+      if (
+        this.executedWorkflow.wfStepsExecution[this.renderIndex]
+          .wfStepActionExecutions[i].actionType === "ON_START"
+      ) {
         let res = await axios.put(
-          `http://localhost:4000/wf-executions/step/start/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
-          .workflow_execution_id}`)
+          `http://localhost:4000/wf-executions/step/start/${
+            this.executedWorkflow.wfStepsExecution[this.renderIndex].id
+          }`
+        );
       }
     }
-   
-  } 
+  }
 }
 </script>
 

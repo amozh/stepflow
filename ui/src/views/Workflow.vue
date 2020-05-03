@@ -3,13 +3,12 @@
     <div v-if="!executedWorkflow.wfStepsExecution" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
-
     <div
       v-else
       v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
       :key="el.component.id"
     >
-      <div v-if="el.component.componentType === 'test'">
+      <div v-if="el.component.componentType === 'test'"> 
         <p>{{el.component.data.question}}</p>
         <v-radio-group v-model="radioAnswers[index]">
           <v-radio
@@ -20,7 +19,7 @@
           ></v-radio>
         </v-radio-group>
       </div>
-      {{executedWorkflow.wfStepsExecution[0].stepViewJson.stepViewElement}}
+      
       <div v-if="el.component.componentType === 'button'">
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
@@ -66,18 +65,18 @@ export default class Workflow extends Mappers {
   @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
   @Provide() stepJson: any = {};
-  @Provide() renderIndex: any = 0;
+  @Provide() renderIndex: number = 0;
 
   async submit() {
     let res;
-    const submitButton = this.executedWorkflow.wfStepsExecution[
-      this.renderIndex
-    ].stepViewJson.stepViewElement.find(
+    const submitButton = this.executedWorkflow.wfStepsExecution[this.renderIndex]
+    .stepViewJson.stepViewElement.find(
       e => e.onClick && e.onClick === "submit"
     );
     if (submitButton) {
       res = await axios.put(
-        "http://localhost:4000/wf-executions/step/submit/1",
+        `http://localhost:4000/wf-executions/step/submit/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
+        .workflow_execution_id}`,
         {
           submitInfo: this.radioAnswers
         }
@@ -91,6 +90,7 @@ export default class Workflow extends Mappers {
     }
   }
 
+
   async mounted() {
     const { id, type } = this.$route.query;
     if (type === "default") {
@@ -99,7 +99,12 @@ export default class Workflow extends Mappers {
     } else {
       await this.getExecutionWorkflow(id.toString());
     }
-  }
+    // if (this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions[1].actionType === "ON_START"){
+    //   let res = await axios.put(
+    //     `http://localhost:4000/wf-executions/step/start/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
+    //     .workflow_execution_id}`)
+    // }
+  } 
 }
 </script>
 

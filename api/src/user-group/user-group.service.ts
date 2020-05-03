@@ -13,8 +13,8 @@ export class UserGroupService implements OnModuleInit {
   constructor(
     @InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>,
     @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>,
-    @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
-  ) { }
+    @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity> 
+  ) { }  
 
   async onModuleInit() {
     enum ActionType {
@@ -43,7 +43,7 @@ export class UserGroupService implements OnModuleInit {
     await this.workflowRepo.save(
       {
         name: "workflow 1",
-        description: 'описание 111',
+        description: 'описание 111', 
         input: {
           someInput: "someInput data"
         },
@@ -78,20 +78,31 @@ export class UserGroupService implements OnModuleInit {
         description: "Test consist of five question. You should score three or more points to pass the test", //
         input: {
           minMark: 3,
-          mark: 0
+          mark: 0,
+          isTestSuccessful: false
         },
         steps: [
           {
             name: "test",
             description: "test for students",
-            actions: [{
-              name: "firstAction",
-              description: "action to find the area",
-              body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}; return {status:'COMPLETE', mark: workflowInput.mark, answers:info}}; res = fn(submittedData.submitInfo)",
-              version: "1.0",
-              alias: "action alias 10123",
-              actionType: ActionType.ON_SUBMIT
-            }],
+            actions: [
+              {
+                name: "firsstAction",
+                description: "action to find the area",
+                body: "function fn(){ return {status:'COMPLETE',action:'onstart!!!'}} res = fn()",
+                version: "1.0",
+                alias: "action alias 10223123",
+                actionType: ActionType.ON_START
+              },
+              {
+                name: "firstAction",
+                description: "action to find the area",
+                body: "function fn(info){for (var i = 0; i < info.length; i++) { if (info[i].isCorrect){ workflowInput.mark++}}; return {status:'COMPLETE', mark: workflowInput.mark, answers:info}}; res = fn(submittedData.submitInfo)",
+                version: "1.0",
+                alias: "action alias 10123",
+                actionType: ActionType.ON_SUBMIT
+              }
+            ],
             input: {
               a: 45,
               b: 25,
@@ -105,11 +116,11 @@ export class UserGroupService implements OnModuleInit {
                       id: 1,
                       componentType: "test",
                       data: {
-                        question: "First question",
+                        question: "Протяжність України із заходу на схід?",
                         options: [
-                          { value: "First option", isCorrect: true },
-                          { value: "Second option", isCorrect: false },
-                          { value: "Third option", isCorrect: false }
+                          { value: "928,45 км", isCorrect: false },
+                          { value: "1634,82 км", isCorrect: false },
+                          { value: "1316,92 км", isCorrect: true }
                         ]
                       }
                     }
@@ -119,11 +130,11 @@ export class UserGroupService implements OnModuleInit {
                       id: 2,
                       componentType: "test",
                       data: {
-                        question: "Second question",
+                        question: "Висота найвищої гори України?",
                         options: [
-                          { value: "First option", isCorrect: true },
-                          { value: "Second option", isCorrect: false },
-                          { value: "Third option", isCorrect: false }
+                          { value: "2 061 м", isCorrect: true },
+                          { value: "2 244 м", isCorrect: false },
+                          { value: "1 925 м", isCorrect: false }
                         ]
                       }
                     }
@@ -133,11 +144,11 @@ export class UserGroupService implements OnModuleInit {
                       id: 3,
                       componentType: "test",
                       data: {
-                        question: "Thirth question",
+                        question: "Населення міста Київ?",
                         options: [
-                          { value: "First option", isCorrect: true },
-                          { value: "Second option", isCorrect: false },
-                          { value: "Third option", isCorrect: false }
+                          { value: "3,356 мільйона", isCorrect: false },
+                          { value: "2,884 мільйона", isCorrect: true },
+                          { value: "1,945 мільйона", isCorrect: false }
                         ]
                       }
                     }
@@ -147,11 +158,11 @@ export class UserGroupService implements OnModuleInit {
                       id: 4,
                       componentType: "test",
                       data: {
-                        question: "Fourth question",
+                        question: "Найдовша річка України?",
                         options: [
-                          { value: "First option", isCorrect: true },
-                          { value: "Second option", isCorrect: false },
-                          { value: "Third option", isCorrect: false }
+                          { value: "Дніпро", isCorrect: true },
+                          { value: "Дністер", isCorrect: false },
+                          { value: "Південний Буг", isCorrect: false }
                         ]
                       }
                     }
@@ -161,11 +172,11 @@ export class UserGroupService implements OnModuleInit {
                       id: 5,
                       componentType: "test",
                       data: {
-                        question: "Fifth question",
+                        question: "Вгадай число від 1 до 3",
                         options: [
-                          { value: "First option", isCorrect: true },
-                          { value: "Second option", isCorrect: false },
-                          { value: "Third option", isCorrect: false }
+                          { value: "1", isCorrect: false },
+                          { value: "2", isCorrect: false },
+                          { value: "3", isCorrect: true }
                         ]
                       }
                     }
@@ -173,11 +184,11 @@ export class UserGroupService implements OnModuleInit {
                   {
                     component: {
                       id: 6,
-                      componentType: "button",
+                      componentType: "button", 
                       label: "Кнопка"
                     },
                     onClick: "submit",
-                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)
+                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер) 
                   }
                 ]
             }
@@ -215,7 +226,7 @@ export class UserGroupService implements OnModuleInit {
                     },
                     onClick: "submit",
                     data: [{ source: "input" }]
-                  }
+                  } 
                 ]
             }
           }
@@ -229,7 +240,7 @@ export class UserGroupService implements OnModuleInit {
       return group
     } catch (e) {
       throw new NotFoundException(`User group with id ${id} is not found`)
-    }
+    } 
   }
 
   async createGroup(groupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {

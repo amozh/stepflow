@@ -37,7 +37,7 @@ export class WfStepService {
     return await this.workflowStepRepository.find({ parent: stepId })
   }
 
-  // async findSubSteps(stepsIds: number[]) { //example with queryBuilder
+  // async findSubSteps(stepsIds: number[]) { //example of request with working queryBuilder
   //   const subSteps = await getRepository(WorkflowStep)
   //     .createQueryBuilder("step")
   //     .where("step.parent IN (:stepsIds)", { stepsIds })

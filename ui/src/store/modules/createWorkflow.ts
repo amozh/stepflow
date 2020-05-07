@@ -46,7 +46,7 @@ class RootState {
   }
   workflow: ICreateWorkflowDto = {
     id: null,
-    name: "Workflow_1",
+    name: "Workflow_123",
     depth: 0,
     description:
       "Using display utilities you can turn any element into a flexbox container transforming direct children elements into flex items. Using additional flex property utilities, you can customize their interaction even further.",
@@ -73,7 +73,7 @@ class RootState {
             name: "first_ACTION",
             actionType: ActionType.ON_START,
             description: "first ACTION description",
-            alias: "action alias 999",
+            alias: "action alias 999123",
             body: "function fn(a,b){return a+b};  res = fn(a,b);"
           }
         ]
@@ -95,7 +95,7 @@ class RootState {
             name: "first_ACTION",
             actionType: ActionType.ON_START,
             description: "first ACTION description",
-            alias: "action alias 12415",
+            alias: "action alias 12415654",
             body: "function fn(a,b){return a+b};  res = fn(a,b);"
           }
         ]

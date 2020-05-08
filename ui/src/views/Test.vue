@@ -1,17 +1,18 @@
 <template>
   <div class="container">
-    <GenerateContent />
+    <h1>First test</h1>
+    <p>Second test</p>
+    <button>Thirth test</button>
+
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import GenerateContent from "../components/GenerateContent.vue"
+
 
 const Mappers = Vue.extend({
-  components: {
-    GenerateContent
-  }
+
 });
 
 @Component

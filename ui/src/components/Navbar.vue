@@ -17,7 +17,7 @@
       <v-btn class="white--text ma-2" text route to="/create">
         <v-icon class="mr-2">mdi-file-document-box-plus-outline</v-icon>New workflow
       </v-btn>
-      <v-btn class="white--text ma-2" text route to="/">
+      <v-btn class="white--text ma-2" data-cy="nav-all-wf" text route to="/">
         <v-icon class="mr-2">mdi-collapse-all</v-icon>All workflows
       </v-btn>
       <v-btn v-if="loggedIn" class="white--text ma-2" width="120" text @click="dialog = true">

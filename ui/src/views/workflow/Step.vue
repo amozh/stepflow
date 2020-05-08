@@ -5,15 +5,17 @@
         label="Step name"
         v-model="stepName"
         prepend-icon="format_color_text"
+        data-cy="create-wf-step-name"
         :rules="inputRules"
       ></v-text-field>
       <v-text-field
         label="Step description"
         v-model="stepDescription"
         prepend-icon="description"
+        data-cy="create-wf-step-description"
         :rules="inputRules"
       ></v-text-field>
-      <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
+      <VJsoneditor class="mt-5" data-cy="create-wf-step-json" v-model="stepJson"></VJsoneditor>
       <v-flex class="d-flex flex-row mt-10">
         <Slider
           orientation="vertical"
@@ -35,11 +37,11 @@
       </v-flex>
       <GenerateContent />
       <v-container class="d-flex flex-row btns">
-        <v-btn color="error" class="btn" @click="removeStep(currentStep.id, currentStep.depth)">
+        <v-btn color="error" class="btn" data-cy="delete-step-btn" @click="removeStep(currentStep.id, currentStep.depth)">
           Delete step
           <v-icon class="ml-2">delete_forever</v-icon>
         </v-btn>
-        <v-btn text class="success btn" @click="saveCurrentStep">
+        <v-btn text class="success btn" data-cy="save-step-btn" @click="saveCurrentStep">
           Save step
           <v-icon class="ml-2">save</v-icon>
         </v-btn>

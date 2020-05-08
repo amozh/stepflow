@@ -54,48 +54,48 @@ class RootState {
       // wfInput: "someJson"
     },
     steps: [
-      {
-        id: uuidv4(),
-        name: "depth_2",
-        description: "step with depth 2 some description",
-        input: {
-          a: 51,
-          b: 14
-        },
-        steps: [],
-        depth: 1,
-        actions: [
-          {
-            id: "93adw12adwad",
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 999",
-            body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          }
-        ]
-      },
-      {
-        id: uuidv4(),
-        name: "depth_3",
-        description: "some description of step with  with the greatest depth",
-        input: {
-          a: 61,
-          b: 10
-        },
-        steps: [],
-        depth: 1,
-        actions: [
-          {
-            id: "u8qaowajdawd",
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 12415",
-            body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          }
-        ]
-      }
+      // {
+      //   id: uuidv4(),
+      //   name: "depth_2",
+      //   description: "step with depth 2 some description",
+      //   input: {
+      //     a: 51,
+      //     b: 14
+      //   },
+      //   steps: [],
+      //   depth: 1,
+      //   actions: [
+      //     {
+      //       id: "93adw12adwad",
+      //       name: "first_ACTION",
+      //       actionType: ActionType.ON_START,
+      //       description: "first ACTION description",
+      //       alias: "action alias 999",
+      //       body: "function fn(a,b){return a+b};  res = fn(a,b);"
+      //     }
+      //   ]
+      // },
+      // {
+      //   id: uuidv4(),
+      //   name: "depth_3",
+      //   description: "some description of step with  with the greatest depth",
+      //   input: {
+      //     a: 61,
+      //     b: 10
+      //   },
+      //   steps: [],
+      //   depth: 1,
+      //   actions: [
+      //     {
+      //       id: "u8qaowajdawd",
+      //       name: "first_ACTION",
+      //       actionType: ActionType.ON_START,
+      //       description: "first ACTION description",
+      //       alias: "action alias 12415",
+      //       body: "function fn(a,b){return a+b};  res = fn(a,b);"
+      //     }
+      //   ]
+      // }
     ]
   }
   currentStep: ICreateWorkflowStepDto | null = null

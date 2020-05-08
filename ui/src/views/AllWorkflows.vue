@@ -4,7 +4,7 @@
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
     <div v-else>
-      <WorkflowCards workflowType="default" :workflows="allWorkflows" title="Workflows" />
+      <WorkflowCards data-cy="wf-card" workflowType="default" :workflows="allWorkflows" title="Workflows" />
       <WorkflowCards
         workflowType="execution"
         :workflows="allExecutionWorkflows"

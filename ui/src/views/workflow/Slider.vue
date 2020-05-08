@@ -1,5 +1,5 @@
 <template>
-<div :class="orientation==='vertical'? 'd-flex flex-column':'d-flex flex-row'">
+<div :class="orientation==='vertical'? 'd-flex flex-column':'d-flex flex-row'" :data-cy="orientation==='vertical'?'vertical-slider':'horizontal-slider'">
   <div :class="orientation==='vertical'? 'd-flex flex-column':'d-flex flex-row scroll-x-wrapper'">
     <v-card
       v-for="step in steps"
@@ -7,13 +7,20 @@
       @click="openStep(step)"
       :class="step===currentStep?'current-step ma-2 pointer':'ma-2 pointer'"
       class="scroll-x"
+      :data-cy="orientation==='vertical'?'open-action-btn':'open-step-btn'"
       hover
     >
-      <v-card-title :class="orientation==='vertical'?'card-title-y':'card-title-x'">{{step.name}}</v-card-title>
+      <v-card-title data-cy="slider-card" :class="orientation==='vertical'?'card-title-y':'card-title-x'">{{step.name}}</v-card-title>
     </v-card>
   </div>
   <div class="plus-icon">
-    <v-icon x-large class="pointer" @click="addNewStep(maxDepth)">mdi-plus</v-icon>
+    <v-icon 
+      x-large 
+      class="pointer"
+      data-cy="plus-btn"
+      @click="addNewStep(maxDepth)"
+    >
+    mdi-plus</v-icon>
   </div>
  
 </div>

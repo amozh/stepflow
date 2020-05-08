@@ -3,18 +3,20 @@ import { Repository } from 'typeorm';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserGroupEntity } from './user-group.entity';
-import { UserEntity } from './../user/user.entity';
+// import { UserEntity } from './../user/user.entity';
 import { Workflow } from "../workflow/workflow.entity";
+import { ActionEntity } from "../action/action.entity";
 // import { ActionType } from "api/dist/wf-step-action-execution/wf-step-action-execution.entity";
 
 @Injectable()
 // export class UserGroupService implements OnModuleInit
-export class UserGroupService implements OnModuleInit { 
+export class UserGroupService implements OnModuleInit {
   constructor(
     @InjectRepository(UserGroupEntity) private readonly userGroupRepo: Repository<UserGroupEntity>,
     @InjectRepository(Workflow) private readonly workflowRepo: Repository<Workflow>,
-    @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity> 
-  ) { } 
+    @InjectRepository(ActionEntity) private readonly actionRepo: Repository<ActionEntity>
+    // @InjectRepository(UserEntity) private readonly usersRepo: Repository<UserEntity>
+  ) { }
 
   async onModuleInit() {
     enum ActionType {
@@ -23,7 +25,16 @@ export class UserGroupService implements OnModuleInit {
       ON_COMPLETE = "ON_COMPLETE",
       CUSTOM = "CUSTOM"
     }
-
+    const actions = await this.actionRepo.save([
+      {
+        name: "WF_ACTION",
+        description: "WORKFLOW_ACTION",
+        body:
+          "function fn(){return {status:'COMPLETE'}}; res = fn()",
+        alias: "action alias 501",
+        // actionType: ActionType.ON_START/
+      }
+    ])
     //generate default user group
     const group = await this.userGroupRepo.save({
       groupName: "Какая-то группа 123",
@@ -31,30 +42,28 @@ export class UserGroupService implements OnModuleInit {
         {
           username: "2",
           password: "2",
-          // userRole: UserRole.STUDENT,
         },
         {
           username: "3",
           password: "3",
-          // userRole: UserRole.STUDENT,
         }
       ]
     });
     await this.workflowRepo.save(
       {
         name: "workflow 1",
-        description: 'описание 111', 
+        description: 'описание 111',
         input: {
           someInput: "someInput data"
         },
-        actions: [],
+        actions,
         steps: [
           {
-            name: 'one',
-            description: '000',
+            name: 'первый',
+            description: 'тест_1',
             actions: [{
-              name: "firstAction",
-              description: "action to find the area",
+              name: "FIRST_ACTION",
+              description: "action to smt_1",
               body:
                 "function fn(){return {status:'COMPLETE'}}; res = fn()",
               version: "1.0",
@@ -68,6 +77,52 @@ export class UserGroupService implements OnModuleInit {
             },
             stepViewJson: { componentType: "button" }
           },
+          {
+            name: 'второй',
+            description: 'тест_2',
+            actions: [{
+              name: "SECOND_ACTION",
+              description: "action to smt_2",
+              body:
+                "function fn(){return {status:'STARTED'}}; res = fn()",
+              version: "1.0",
+              alias: "action alias 5842",
+              actionType: ActionType.ON_START
+            }, {
+              name: "SECOND_SUB_ACTION",
+              description: "action to smt_2.1",
+              body:
+                "function fn(){return {status:'COMPLETE'}}; res = fn()",
+              version: "1.0",
+              alias: "action alias 58422",
+              actionType: ActionType.ON_SUBMIT
+            }],
+            input: {
+              a: 45,
+              b: 25,
+              h: 12
+            },
+            stepViewJson: { componentType: "button" }
+          },
+          {
+            name: 'третий',
+            description: 'тест_3',
+            actions: [{
+              name: "THIRD_ACTION",
+              description: "action to smt_3",
+              body:
+                "function fn(){return {status:'COMPLETE'}}; res = fn()",
+              version: "1.0",
+              alias: "action alias 764",
+              actionType: ActionType.ON_START
+            }],
+            input: {
+              a: 45,
+              b: 25,
+              h: 12
+            },
+            stepViewJson: { componentType: "button" }
+          }
         ],
         userGroups: [group]
       }
@@ -89,9 +144,9 @@ export class UserGroupService implements OnModuleInit {
               {
                 name: "firsstAction",
                 description: "action to find the area",
-                body: "function fn(){ return {status:'STARTED',action:'onstart!!!'}} res = fn()",
+                body: "function fn(){ return {status:'STARTED'}} res = fn()",
                 version: "1.0",
-                alias: "action alias 10223123",
+                alias: "action alias 10223123", //
                 actionType: ActionType.ON_START
               },
               {
@@ -109,7 +164,7 @@ export class UserGroupService implements OnModuleInit {
               h: 12
             },
             stepViewJson: {
-              stepViewElement:
+              stepViewElements:
                 [
                   {
                     component: {
@@ -187,8 +242,8 @@ export class UserGroupService implements OnModuleInit {
                       componentType: "button",
                       label: "Завершити тест"
                     },
-                    onClick: "submit",
-                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер) 
+                    onClick: "submit", // тип экшена ..
+                    data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)//
                   }
                 ]
             }
@@ -200,7 +255,7 @@ export class UserGroupService implements OnModuleInit {
               name: "showResult",
               description: "action show result",
               body:
-              "function fn(){if (currentState.mark >= workflowInput.minMark){workflowInput.isTestSuccessful = true};return {status:'STARTED', isTestSuccessful:true}; res = fn()",
+                "function fn(){workflowInput.isTestSuccessful = true; return {status:'STARTED', wfStatus:workflowInput.isTestSuccessful}}; res = fn()", ///if (currentState.mark >= workflowInput.minMark){workflowInput.isTestSuccessful = true};
               version: "1.0",
               alias: "action alias 126",
               actionType: ActionType.ON_START
@@ -211,7 +266,7 @@ export class UserGroupService implements OnModuleInit {
               h: 7
             },
             stepViewJson: {
-              stepViewElement:
+              stepViewElements:
                 [
                   {
                     component: {
@@ -227,7 +282,7 @@ export class UserGroupService implements OnModuleInit {
                     },
                     onClick: "submit",
                     data: [{ source: "input" }]
-                  } 
+                  }
                 ]
             }
           }
@@ -241,7 +296,7 @@ export class UserGroupService implements OnModuleInit {
       return group
     } catch (e) {
       throw new NotFoundException(`User group with id ${id} is not found`)
-    } 
+    }
   }
 
   async createGroup(groupDto: IUserGroupBaseDto): Promise<UserGroupEntity> {

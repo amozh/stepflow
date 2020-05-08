@@ -9,12 +9,14 @@ import { Repository } from 'typeorm';
 import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 import { WfStepService } from "../wf-step/wf-step.service"
+import { ActionService } from './../action/action.service';
 
 @Injectable()
 export class WorkflowService {
   constructor(
     @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>,
-    private readonly wfStepService: WfStepService
+    private readonly wfStepService: WfStepService,
+    private readonly actionService: ActionService
   ) { }
 
   async findAll(): Promise<Workflow[]> {
@@ -36,18 +38,22 @@ export class WorkflowService {
 
   async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
     try {
+      // console.log("WORKS?")
       const { name, description, steps, actions, wfExecutions, input } = workflowDto;
       const wokflowSteps = await this.wfStepService.createWfSteps(steps)
+      const wfActions = await this.actionService.createNewActions(actions)
+
       const workflow = new Workflow();
       workflow.name = name;
       workflow.description = description;
       workflow.input = input;
       workflow.steps = wokflowSteps
-      workflow.actions = actions;
+      workflow.actions = wfActions;
       workflow.wfExecutions = wfExecutions;
 
       return this.workflowRepository.save(workflow);
     } catch (error) {
+      console.log(error)
       throw new InternalServerErrorException();
     }
   }

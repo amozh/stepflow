@@ -24,6 +24,7 @@ export class WorkflowController {
 
   @Post()
   create(@Body() workflow: ICreateWorkflowDto): Promise<Workflow> {
+    // console.log(workflow, "workflow")
     return this.workflowService.create(workflow);
   }
 

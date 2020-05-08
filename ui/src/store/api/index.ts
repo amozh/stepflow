@@ -21,15 +21,9 @@ export const workflowApi = {
   executeWorkflow(id: string) {
     return api.post("wf-executions", { workflowId: id })
   },
-  // getExecutionWorkflow(id: string) {
-  //   return api.get(`wf-executions/${id}`);
-  // },
-  // checkAnswer(answer: any) { //--fix
-  //   return api.post("answer", answer);
-  // },
   createWorkflow(workflow: ICreateWorkflowDto) {
     return api.post("workflows", workflow);
-  }
+  },
 };
 
 export const userApi = {
@@ -67,10 +61,28 @@ export const groupApi = {
     return api.post("group", group)
   },
   updateGroup(newGroupInfo: { group: IUserGroupDto, id: string }) {
-    // console.log(newGroupInfo);
     return api.put(`group/${newGroupInfo.id}`, newGroupInfo.group)
   },
   deleteGroup(id: string) {
     return api.delete(`group/${id}`)
   },
+}
+
+export const actionsApi = {
+  workflowOnLoad(id: string) {
+    return api.get(`/wf-executions/load/${id}`)
+  },
+  workflowOnStart(id: string) {
+    return api.put(`wf-executions/step/start/${id}`)
+  },
+  workflowOnSubmit(submitInfo: { id: number, submitInfo: any }):
+    Promise<{ renderStepId: string, wfExecutionState: JSON }> {
+    return api.put(`wf-executions/step/submit/${submitInfo.id}`, { submitInfo: submitInfo.submitInfo })
+  },
+  // workflowOnComplete(completeInfo: { id: string, completeInfo: any }) {
+  //   return api.put(`wf-executions/step/submit/${completeInfo.id}`, completeInfo.completeInfo)
+  // },
+  // workflowOnCustom() {
+  //   return
+  // }
 }

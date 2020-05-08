@@ -11,6 +11,8 @@ import { WfStepActionExecutionEntity } from "../wf-step-action-execution/wf-step
 import { WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 import { WfActionExecutionEntity } from "../wf-action-execution/wf-action-execution.entity"
 import { WfActionExecutionService } from "../wf-action-execution/wf-action-execution.service"
+import { WfStepService } from "../wf-step/wf-step.service";
+import { WorkflowStep } from "../wf-step/wf-step.entity"
 
 @Module({
   imports: [TypeOrmModule.forFeature([
@@ -18,10 +20,11 @@ import { WfActionExecutionService } from "../wf-action-execution/wf-action-execu
     Workflow,
     WfStepExecutionEntity,
     WfStepActionExecutionEntity,
-    WfActionExecutionEntity
+    WfActionExecutionEntity,
+    WorkflowStep
   ])],
   controllers: [WfExecutionsController],
-  providers: [WfExecutionsService, WfActionExecutionService, WfStepExecutionService],
+  providers: [WfExecutionsService, WfActionExecutionService, WfStepExecutionService, WfStepService],
   exports: [WfExecutionsService]
 })
 export class WfExecutionsModule { }

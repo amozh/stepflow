@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <div v-if="!executedWorkflow.wfStepsExecution" class="text-center mt-10">
+    <div v-if="isLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
     <div
       v-else
-      v-for="(el,index) in executedWorkflow.wfStepsExecution[renderIndex].stepViewJson.stepViewElement"
+      v-for="(el,index) in currentStep.stepViewJson.stepViewElements"
       :key="el.component.id"
     >
-      <div v-if="el.component.componentType === 'test'"> 
+      <div v-if="el.component.componentType === 'test'">
         <p>{{el.component.data.question}}</p>
         <v-radio-group v-model="radioAnswers[index]">
           <v-radio
@@ -19,18 +19,18 @@
           ></v-radio>
         </v-radio-group>
       </div>
-      
+
       <div v-if="el.component.componentType === 'button'">
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
       <div v-if="el.component.componentType === 'json'">
-        <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
+        <VJsoneditor height="500px" class="mt-5" v-model="stepJson"></VJsoneditor>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide, Prop } from "vue-property-decorator";
+import { Vue, Component, Provide, Prop, Watch } from "vue-property-decorator";
 import { workflowMapper } from "../store/modules/workflow";
 import {
   ICreateWorkflowStepDto,
@@ -45,8 +45,10 @@ const Mappers = Vue.extend({
   components: { Step, VJsoneditor },
   computed: {
     ...workflowMapper.mapGetters([
-      "currentWorkflow",
       "executedWorkflow",
+      "currentWorkflow",
+      "wfExecutionState",
+      "currentStep",
       "isLoading"
     ])
   },
@@ -54,40 +56,28 @@ const Mappers = Vue.extend({
     ...workflowMapper.mapActions({
       getWorkflowById: "getWorkflowById",
       executeWorkflow: "executeWorkflow",
-      getExecutionWorkflow: "getExecutionWorkflow"
+      getExecutionWorkflow: "getExecutionWorkflow",
+      workflowOnLoadAction: "workflowOnLoadAction",
+      workflowOnSubmitAction: "workflowOnSubmitAction"
     })
   }
 });
 
 @Component
 export default class Workflow extends Mappers {
-  @Prop() workflowType!: any;
-  @Provide() result: IAnswerResult = {};
   @Provide() radioAnswers: any = [];
   @Provide() stepJson: any = {};
-  @Provide() renderIndex: number = 0;
 
   async submit() {
-    let res;
-    const submitButton = this.executedWorkflow.wfStepsExecution[this.renderIndex]
-    .stepViewJson.stepViewElement.find(
-      e => e.onClick && e.onClick === "submit"
-    );
-    if (submitButton) {
-      res = await axios.put(
-        `http://localhost:4000/wf-executions/step/submit/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
-        .workflow_execution_id}`,
-        {
-          submitInfo: this.radioAnswers
-        }
-      );
-      if (res.data.finalStatus === "COMPLETE") {
-        this.renderIndex = this.renderIndex + 1;
-        this.stepJson = {
-          ...res.data.finalState
-        };
-      }
-    }
+    const submitInfo = {
+      id: this.wfExecutionState.renderStepId,
+      submitInfo: this.radioAnswers
+    };
+    await this.workflowOnSubmitAction(submitInfo);
+    const res = await this.workflowOnLoadAction(this.executedWorkflow.id);
+    this.stepJson = res.data.wfExecutionState.stepsState[2 - 2];
+    // Минус 2 потому что нумерация степов начинается с 0, тогда как у renderStepId с 1
+    // Ещё -1, чтобы обратиться к предыдущему степу
   }
 
   async mounted() {
@@ -98,16 +88,11 @@ export default class Workflow extends Mappers {
     } else {
       await this.getExecutionWorkflow(id.toString());
     }
-    
-    for( let i = 0; i <=this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions.length; i++){
-       if (this.executedWorkflow.wfStepsExecution[this.renderIndex].wfStepActionExecutions[i].actionType === "ON_START"){
-        let res = await axios.put(
-          `http://localhost:4000/wf-executions/step/start/${this.executedWorkflow.wfStepsExecution[this.renderIndex]
-          .workflow_execution_id}`)
-      }
+    const res = await this.workflowOnLoadAction(this.executedWorkflow.id);
+    if (res.data.wfExecutionState.stepsState) {
+      this.stepJson = res.data.wfExecutionState.stepsState[2 - 2];
     }
-   
-  } 
+  }
 }
 </script>
 

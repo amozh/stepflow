@@ -5,6 +5,7 @@ import { Workflow } from "./workflow.entity";
 import { ActionEntity } from "../action/action.entity"
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { WfStepModule } from "../wf-step/wf-step.module"
+import { ActionService } from './../action/action.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([
@@ -12,6 +13,6 @@ import { WfStepModule } from "../wf-step/wf-step.module"
     ActionEntity
   ]), WfStepModule],
   controllers: [WorkflowController],
-  providers: [WorkflowService]
+  providers: [WorkflowService, ActionService]
 })
 export class WorkflowModule { }

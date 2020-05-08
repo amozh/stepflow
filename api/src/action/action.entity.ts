@@ -19,7 +19,8 @@ export enum ActionType {
     ON_START = "ON_START",
     ON_SUBMIT = "ON_SUBMIT",
     ON_COMPLETE = "ON_COMPLETE",
-    CUSTOM = "CUSTOM"
+    CUSTOM = "CUSTOM",
+    ON_LOAD = "ON_LOAD"
 }
 
 @Entity("action")
@@ -36,13 +37,12 @@ export class ActionEntity {
     @Column({ type: "text" })
     body: string;
 
-    @Unique(["alias"])
+    // @Unique(["alias"]) // ВРЕМЕННО ЗАКОММЕНТИРОВАННАЯ СТРОКА ДЛЯ УДОБСТВА ТЕСТИРОВАНИЯ
     @Column({ type: "varchar", length: 512 })
     alias: string;
 
     @Column({ default: ActionType.ON_START })
     actionType: ActionType
-    // Нужно переделать логику ActionType. Он должен добавляться здесь, а не в Action Executed
 
     // @Unique(["version"])
     // @Column({ type: "varchar", length: 512 })

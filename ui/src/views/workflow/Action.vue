@@ -3,33 +3,44 @@
     <v-text-field
       label="Action name"
       v-model="actionName"
+      data-cy="action-name"
       prepend-icon="format_color_text"
       :rules="inputRules"
     ></v-text-field>
     <v-text-field
       label="Action description"
       v-model="actionDescription"
+      data-cy="action-description"
       prepend-icon="description"
       :rules="inputRules"
     ></v-text-field>
-    <v-select prepend-icon="apps" label="Action type" v-model="actionType" :items="TYPES"></v-select>
+    <v-select 
+      id='actionTypeId' 
+      prepend-icon="apps"
+      data-cy="action-type" 
+      label="Action type" 
+      v-model="actionType" 
+      :items="TYPES"
+     ></v-select>
     <v-text-field
       label="Action alias"
       v-model="actionAlias"
+      data-cy="action-alias"
       prepend-icon="comment"
       :rules="inputRules"
     ></v-text-field>
     <JavaScriptEditor
       :currentCode="currentAction.body"
       :currentAction="currentAction"
+      data-cy="action-js-editor"
       @change-js="changeJs"
     />
     <v-container class="d-flex flex-row btns">
-      <v-btn color="error" class="btn" @click="removeAction(currentAction.id)">
+      <v-btn color="error" class="btn" data-cy="delete-action-btn" @click="removeAction(currentAction.id)">
         Delete action
         <v-icon class="ml-2">delete_forever</v-icon>
       </v-btn>
-      <v-btn class="success btn" width="200" @click="saveCurrenAction">
+      <v-btn class="success btn" width="200"  data-cy="save-action-btn" @click="saveCurrenAction">
         Save action
         <v-icon class="ml-2">save</v-icon>
       </v-btn>

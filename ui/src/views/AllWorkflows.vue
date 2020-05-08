@@ -4,8 +4,12 @@
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
     <div v-else>
-      <WorkflowCards :workflows="allWorkflows" title="Workflows" />
-      <WorkflowCards :workflows="allExecutionWorkflows" title="Execution Workflows" />
+      <WorkflowCards data-cy="wf-card" workflowType="default" :workflows="allWorkflows" title="Workflows" />
+      <WorkflowCards
+        workflowType="execution"
+        :workflows="allExecutionWorkflows"
+        title="Execution Workflows"
+      />
     </div>
   </div>
 </template>

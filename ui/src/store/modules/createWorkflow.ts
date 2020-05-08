@@ -8,13 +8,49 @@ import {
   ICrumbDto,
   IActionDto,
   IWorkflowCreatedStatus,
-  ActionType
+  ActionType,
+  IStepViewElement,
+  IStepViewJson
 } from '@stepflow/shared';
 
 class RootState {
+  stepViewElements: IStepViewElement[] = [
+    // {
+    //   component: {
+    //     id: 2,
+    //     componentType: "json"
+    //   }
+    // },
+    // {
+    //   component: {
+    //     id: 1,
+    //     componentType: "test",
+    //     data: {
+    //       question: "First question",
+    //       options: [
+    //         { value: "First option", isCorrect: true },
+    //         { value: "Second option", isCorrect: false },
+    //         { value: "Third option", isCorrect: false }
+    //       ]
+    //     }
+    //   }
+    // },
+    // {
+    //   component: {
+    //     id: 3,
+    //     componentType: "button",
+    //     label: "Кнопка123",
+    //   },
+    //   onClick: "submit",
+    //   data: [{ source: "input" }]
+    // }
+  ]
+  stepViewJson: IStepViewJson = {
+    elements: this.stepViewElements
+  }
   workflow: ICreateWorkflowDto = {
     id: null,
-    name: "Workflow_1",
+    name: "Workflow_123",
     depth: 0,
     description:
       "Using display utilities you can turn any element into a flexbox container transforming direct children elements into flex items. Using additional flex property utilities, you can customize their interaction even further.",
@@ -22,48 +58,48 @@ class RootState {
       // wfInput: "someJson"
     },
     steps: [
-      {
-        id: uuidv4(),
-        name: "depth_2",
-        description: "step with depth 2 some description",
-        input: {
-          a: 51,
-          b: 14
-        },
-        steps: [],
-        depth: 1,
-        actions: [
-          {
-            id: "93adw12adwad",
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 999",
-            body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          }
-        ]
-      },
-      {
-        id: uuidv4(),
-        name: "depth_3",
-        description: "some description of step with  with the greatest depth",
-        input: {
-          a: 61,
-          b: 10
-        },
-        steps: [],
-        depth: 1,
-        actions: [
-          {
-            id: "u8qaowajdawd",
-            name: "first_ACTION",
-            actionType: ActionType.ON_START,
-            description: "first ACTION description",
-            alias: "action alias 12415",
-            body: "function fn(a,b){return a+b};  res = fn(a,b);"
-          }
-        ]
-      }
+      // {
+      //   id: uuidv4(),
+      //   name: "depth_2",
+      //   description: "step with depth 2 some description",
+      //   input: {
+      //     a: 51,
+      //     b: 14
+      //   },
+      //   steps: [],
+      //   depth: 1,
+      //   actions: [
+      //     {
+      //       id: "93adw12adwad",
+      //       name: "first_ACTION",
+      //       actionType: ActionType.ON_START,
+      //       description: "first ACTION description",
+      //       alias: "action alias 999",
+      //       body: "function fn(a,b){return a+b};  res = fn(a,b);"
+      //     }
+      //   ]
+      // },
+      // {
+      //   id: uuidv4(),
+      //   name: "depth_3",
+      //   description: "some description of step with  with the greatest depth",
+      //   input: {
+      //     a: 61,
+      //     b: 10
+      //   },
+      //   steps: [],
+      //   depth: 1,
+      //   actions: [
+      //     {
+      //       id: "u8qaowajdawd",
+      //       name: "first_ACTION",
+      //       actionType: ActionType.ON_START,
+      //       description: "first ACTION description",
+      //       alias: "action alias 12415",
+      //       body: "function fn(a,b){return a+b};  res = fn(a,b);"
+      //     }
+      //   ]
+      // }
     ]
   }
   currentStep: ICreateWorkflowStepDto | null = null
@@ -79,9 +115,16 @@ class RootState {
     depth: 0,
     text: this.workflow.name
   }]
+
 }
 
 class RootGetters extends Getters<RootState> {
+  get stepViewElements(): IStepViewElement {
+    return this.state.stepViewElements
+  }
+  get stepViewJson(): IStepViewJson {
+    return this.state.stepViewJson
+  }
   get workflow(): ICreateWorkflowDto {
     return this.state.workflow;
   }
@@ -134,6 +177,13 @@ class RootMutations extends Mutations<RootState> {
     return this.state.currentSteps = steps
   }
 
+  mutateStepViewElement(stepViewJson: any): any {
+    if (stepViewJson.stepViewElements.length) {
+      console.log("mutate stepView")
+      return this.state.stepViewElements = stepViewJson.stepViewElements
+    }
+  }
+
   addAction(): void {
     const action: IActionDto = {
       id: uuidv4(),
@@ -170,6 +220,9 @@ class RootMutations extends Mutations<RootState> {
       name: "New step",
       description: "some description",
       input: {},
+      stepViewJson: {
+        stepViewElements: []
+      },
       actions: [],
       steps: []
     }
@@ -234,6 +287,17 @@ class RootMutations extends Mutations<RootState> {
       }
     }
   }
+
+  // ------------------------------------
+  addQuestion(newQuestion: any): void {
+    this.state.stepViewElements.push(newQuestion)
+  }
+  addText(newText: string): void {
+    this.state.stepViewElements.push(newText)
+  }
+  addInput(newInput: any): void {
+    this.state.stepViewElements.push(newInput)
+  }
 }
 
 class RootActions extends Actions<
@@ -261,7 +325,6 @@ class RootActions extends Actions<
     this.commit("mutateWorkflowInfo", workflowInfo)
   }
   goToStep(step: ICreateWorkflowStepDto): void {
-    // console.log(this.state.workflow, 'wf')
     if (step.actions && step.actions.length) {
       this.commit("mutateCurrentAction", step.actions[0])
       this.commit("mutateCurrentStep", step)

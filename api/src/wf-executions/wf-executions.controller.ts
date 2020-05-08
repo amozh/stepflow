@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Param, ParseIntPipe, Put, UsePipes, Get, Delete } from '@nestjs/common';
 import { WfExecutionsService, IWorkflowActionExecutionInput } from "./wf-executions.service"
-import { IWorkflowExecutionDto, ITestDto2 } from '@stepflow/shared';
+import { IWorkflowExecutionDto, ITestDto2, } from '@stepflow/shared';
+import { WfStepExecutionEntity } from "../wf-step-execution/wf-step-execution.entity"
 // import { ValidationPipe } from "./wf-executions.pipe"
 import { IStepActionExecutionInput, WfStepExecutionService } from "../wf-step-execution/wf-step-execution.service";
 
@@ -28,7 +29,7 @@ export class WfExecutionsController {
 
     // @Post("test")
     // @UsePipes(new ValidationPipe())
-    // getSmt(@Body() body: ITestDto): ITestDto {
+    // getSmt(@Body() body: ITestDto): ITestDto {//
     //     return body
     // }
 
@@ -50,12 +51,17 @@ export class WfExecutionsController {
     @Post()
     createWfExecution(@Body() body: { workflowId: number }/*1*/): Promise<IWorkflowExecutionDto> {
         // if (!body || !body.workflowId) { /*2*/
-        //     throw new Error("workflowId should be a positive number");
+        //     throw new Error("workflowId should be a positive number");//
         // }
         return this.wfExecutionsService.createWfExecution(body.workflowId); /*3, 4*/
     }
 
-    // WORKFLOWS EXECUTIONS
+    @Get("sub/:id")
+    findSubStepsExecution(@Param('id', ParseIntPipe) stepExecutionId: number): Promise<WfStepExecutionEntity[]> {
+        return this.wfStepExecutionService.findSubStepsExecution(stepExecutionId);
+    }
+
+    // WORKFLOWS EXECUTIONS //
     @Put('start/:id')
     startWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfExecutionsService.startWfExecution(id, body)
@@ -79,7 +85,17 @@ export class WfExecutionsController {
         return this.wfExecutionsService.executeCustomWfAction(id, body.actionAlias, body.input)
     }
 
-    // STEPS EXECUTIONS //
+    @Get("load/:id")
+    loadWfExecution(@Param('id', ParseIntPipe) id: number): Promise<any> {
+        return this.wfExecutionsService.workflowExecutionOnLoadAction(id)
+    }
+
+    // STEPS EXECUTIONS // //
+    @Get("step/load/:id")
+    wfStepExecutionOnLoadAction(@Param('id', ParseIntPipe) stepExecId: number): Promise<any> {
+        return this.wfStepExecutionService.wfStepExecutionOnLoadAction(stepExecId)
+    }
+
     @Put('step/start/:id')
     startWfStepExecution(@Param('id', ParseIntPipe) id: number, @Body() body?: any): Promise<any> {
         return this.wfStepExecutionService.startWfStepExecution(id, body)

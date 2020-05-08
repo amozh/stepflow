@@ -1,68 +1,109 @@
 <template>
   <div class="container">
-    executedWorkflow: {{executedWorkflow}}
     <div v-if="isLoading" class="text-center mt-10">
       <v-progress-circular indeterminate :size="60" color="primary"></v-progress-circular>
     </div>
-    <div v-else>
-      <v-flex class="text-center">
-        <h1 class="subheading mb-5">{{currentWorkflow.name}}</h1>
-        <p>{{currentWorkflow.description}}</p>
-      </v-flex>
-      <Step
-        :step="step"
-        :index="index"
-        v-for="(step, index) in currentWorkflow.steps"
-        :key="step.id"
-        :result="result"
-      />
+    <div
+      v-else
+      v-for="(el,index) in currentStep.stepViewJson.stepViewElements"
+      :key="el.component.id"
+    >
+      <div v-if="el.component.componentType === 'test'">
+        <p>{{el.component.data.question}}</p>
+        <v-radio-group v-model="radioAnswers[index]">
+          <v-radio
+            v-for="(option) in el.component.data.options"
+            :key="option.id"
+            :label="option.value"
+            :value="option"
+          ></v-radio>
+        </v-radio-group>
+      </div>
+
+      <div v-if="el.component.componentType === 'button'">
+        <input @click="submit" type="submit" :value="el.component.label" class="button" />
+      </div>
+      <div v-if="el.component.componentType === 'json'">
+        <VJsoneditor height="500px" class="mt-5" v-model="stepJson"></VJsoneditor>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Provide } from "vue-property-decorator";
-// import WorkflowStore from "../store/modules/workflow";
+import { Vue, Component, Provide, Prop, Watch } from "vue-property-decorator";
 import { workflowMapper } from "../store/modules/workflow";
-import { ICreateWorkflowStepDto, AnswerDto, IAnswerResult } from "@stepflow/shared";
+import {
+  ICreateWorkflowStepDto,
+  AnswerDto,
+  IAnswerResult
+} from "@stepflow/shared";
+import axios from "axios";
 import Step from "../components/Step.vue";
+import VJsoneditor from "v-jsoneditor";
 
 const Mappers = Vue.extend({
-  components: { Step },
+  components: { Step, VJsoneditor },
   computed: {
     ...workflowMapper.mapGetters([
-      "currentWorkflow",
       "executedWorkflow",
+      "currentWorkflow",
+      "wfExecutionState",
+      "currentStep",
       "isLoading"
     ])
   },
   methods: {
     ...workflowMapper.mapActions({
       getWorkflowById: "getWorkflowById",
-      // checkAnswer: "checkAnswer",
       executeWorkflow: "executeWorkflow",
-      getExecutionWorkflow: "getExecutionWorkflow"
+      getExecutionWorkflow: "getExecutionWorkflow",
+      workflowOnLoadAction: "workflowOnLoadAction",
+      workflowOnSubmitAction: "workflowOnSubmitAction"
     })
   }
 });
 
 @Component
 export default class Workflow extends Mappers {
-  @Provide() result: IAnswerResult = {};
+  @Provide() radioAnswers: any = [];
+  @Provide() stepJson: any = {};
 
-  // async sendAnswer(answer: any): Promise<void> {
-  //   if (answer) {
-  //     const response = await this.checkAnswer(answer);
-  //     this.result = {
-  //       result: response.data,
-  //       stepId: answer.stepId
-  //     };
-  //   }
-  // }
+  async submit() {
+    const submitInfo = {
+      id: this.wfExecutionState.renderStepId,
+      submitInfo: this.radioAnswers
+    };
+    await this.workflowOnSubmitAction(submitInfo);
+    const res = await this.workflowOnLoadAction(this.executedWorkflow.id);
+    this.stepJson = res.data.wfExecutionState.stepsState[2 - 2];
+    // Минус 2 потому что нумерация степов начинается с 0, тогда как у renderStepId с 1
+    // Ещё -1, чтобы обратиться к предыдущему степу
+  }
 
   async mounted() {
-    // await this.getWorkflowById(this.$route.params.id);
-    await this.executeWorkflow(this.$route.params.id); // определиться с условиями для вызова этого метода
-    await this.getExecutionWorkflow(this.$route.params.id);
+    const { id, type } = this.$route.query;
+    if (type === "default") {
+      const wfId = await this.executeWorkflow(id.toString());
+      await this.getExecutionWorkflow(wfId);
+    } else {
+      await this.getExecutionWorkflow(id.toString());
+    }
+    const res = await this.workflowOnLoadAction(this.executedWorkflow.id);
+    if (res.data.wfExecutionState.stepsState) {
+      this.stepJson = res.data.wfExecutionState.stepsState[2 - 2];
+    }
   }
 }
 </script>
+
+<style scoped>
+.button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>

@@ -2,6 +2,7 @@
   <div class="d-flex flex-row">
     <div
       v-for="(crumb, crumbIndex) in breadCrumbs"
+      data-cy='bread-crumbs'
       :key="crumbIndex"
       :class="crumbIndex+1===breadCrumbs.length ?'d-flex current':'d-flex parent'"
     >

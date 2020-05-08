@@ -5,15 +5,18 @@
         label="Step name"
         v-model="stepName"
         prepend-icon="format_color_text"
+        data-cy="create-wf-step-name"
         :rules="inputRules"
       ></v-text-field>
       <v-text-field
         label="Step description"
         v-model="stepDescription"
         prepend-icon="description"
+        data-cy="create-wf-step-description"
         :rules="inputRules"
       ></v-text-field>
-      <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
+      <h3>Input editor</h3>
+      <VJsoneditor class="mt-3" v-model="stepJson"></VJsoneditor>
       <v-flex class="d-flex flex-row mt-10">
         <Slider
           orientation="vertical"
@@ -33,12 +36,15 @@
           <v-card-title class="text-center">Choose action</v-card-title>
         </v-card>
       </v-flex>
+      <h3 class="mt-4">View editor</h3>
+      <VJsoneditor height="400px" class="mt-3" v-model="stepViewJson"></VJsoneditor>
+      <GenerateContent />
       <v-container class="d-flex flex-row btns">
-        <v-btn color="error" class="btn" @click="removeStep(currentStep.id, currentStep.depth)">
+        <v-btn color="error" class="btn" data-cy="delete-step-btn" @click="removeStep(currentStep.id, currentStep.depth)">
           Delete step
           <v-icon class="ml-2">delete_forever</v-icon>
         </v-btn>
-        <v-btn text class="success btn" @click="saveCurrentStep">
+        <v-btn text class="success btn" data-cy="save-step-btn" @click="saveCurrentStep">
           Save step
           <v-icon class="ml-2">save</v-icon>
         </v-btn>
@@ -57,17 +63,19 @@ import {
   Ref,
   Watch
 } from "vue-property-decorator";
-import { ICreateWorkflowStepDto, IActionDto } from '@stepflow/shared';
+import { ICreateWorkflowStepDto, IActionDto } from "@stepflow/shared";
 import VJsoneditor from "v-jsoneditor";
 import Action from "./Action.vue";
 import Slider from "./Slider.vue";
 import { ValidationUtils } from "../../utils/validation-utils";
+import GenerateContent from "../../components/GenerateContent.vue";
 
 const Mappers = Vue.extend({
   components: {
     VJsoneditor,
     Action,
-    Slider
+    Slider,
+    GenerateContent
   }
 });
 
@@ -80,6 +88,7 @@ export default class Step extends Mappers {
   @Provide() stepName: string = "";
   @Provide() stepDescription: string = "";
   @Provide() stepJson: any = {};
+  @Provide() stepViewJson: any = {};
 
   @Emit("change-sub-steps")
   changeSubSteps(): void {
@@ -100,6 +109,7 @@ export default class Step extends Mappers {
       description: this.stepDescription,
       input: this.stepJson,
       actions: this.currentStep.actions,
+      stepViewJson: this.stepViewJson,
       steps: this.currentStep.steps
     };
     return step;
@@ -125,17 +135,26 @@ export default class Step extends Mappers {
     return;
   }
 
+  @Watch("stepViewJson")
+  @Emit("change-step-json")
+  changeStepViewJson(): any {
+    // console.log("workd");
+    return this.stepViewJson;
+  }
+
   @Watch("currentStep")
   changeStepInfo(val: boolean, oldVal: boolean) {
     this.stepName = this.currentStep.name;
     this.stepDescription = this.currentStep.description;
     this.stepJson = this.currentStep.input;
+    this.stepViewJson = this.currentStep.stepViewJson;
   }
 
   mounted() {
     this.stepName = this.currentStep.name;
     this.stepDescription = this.currentStep.description;
     this.stepJson = this.currentStep.input;
+    this.stepViewJson = this.currentStep.stepViewJson;
   }
 }
 </script>

@@ -6,6 +6,7 @@
         label="Wokrkflow name"
         v-model="wfName"
         prepend-icon="format_color_text"
+        data-cy="create-wf-name"
         :rules="inputRules"
       ></v-text-field>
       <v-text-field
@@ -13,19 +14,25 @@
         label="Wokrkflow description"
         v-model="wfDescription"
         prepend-icon="description"
+        data-cy="create-wf-description"
         :rules="inputRules"
       ></v-text-field>
-      <VJsoneditor :rules="inputRules" class="mt-5" height="500px" v-model="wfJson"></VJsoneditor>
+      <VJsoneditor data-cy="create-wf-json" :rules="inputRules" class="mt-5" height="500px" v-model="wfJson"></VJsoneditor>
       <v-container class="d-flex flex-row btns">
         <v-btn
           text
           class="success mr-10 btn"
+          data-cy="save-wf-btn"
           @click="changeWorkflowInfo({name:wfName, description:wfDescription, input:wfJson})"
         >
           Save Workflow
           <v-icon class="ml-2">save</v-icon>
         </v-btn>
-        <v-btn class="success btn" @click="createNewWorkflow">
+        <v-btn 
+          class="success btn" 
+          @click="createNewWorkflow" 
+          data-cy="create-wf-btn"
+        >
           Create Workflow
           <v-icon class="ml-2">create_new_folder</v-icon>
         </v-btn>

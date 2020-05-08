@@ -28,6 +28,9 @@ export class WfStepExecutionEntity {
     @Column({ default: 0 })
     workflow_execution_id: number;
 
+    @Column({ default: null })
+    parent: number | null;
+
     @Column({ type: "varchar", length: 512, default: "" }) // varchar - количество символов + байт для хранения длины
     name: string;
 

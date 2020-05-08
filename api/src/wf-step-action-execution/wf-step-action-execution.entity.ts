@@ -45,7 +45,7 @@ export class WfStepActionExecutionEntity {
     @Column()
     description: string;
 
-    @Column()
+    @Column({ type: "text" })
     body: string;
 
     @Column({ default: WorkflowStepActionExecutionStatus.NOT_EXECUTED })

@@ -9,51 +9,18 @@ import { Repository } from 'typeorm';
 import { ICreateWorkflowDto } from '@stepflow/shared';
 import { WorkflowStep } from './../wf-step/wf-step.entity';
 import { WfStepService } from "../wf-step/wf-step.service"
+import { ActionService } from './../action/action.service';
 
 @Injectable()
 export class WorkflowService {
   constructor(
     @InjectRepository(Workflow) private readonly workflowRepository: Repository<Workflow>,
-    private readonly wfStepService: WfStepService
+    private readonly wfStepService: WfStepService,
+    private readonly actionService: ActionService
   ) { }
 
-  async delete(id: number): Promise<any> {
-    try {
-      // const workflow = await this.workflowRepository.findOne({ id })
-      // console.log(workflow, "workflow?")
-      // workflow.actions = []
-      // await this.workflowRepository.save(workflow)
-      // await this.workflowRepository.remove(workflow)
-
-      // отфильтровать и сохранить без экшенов
-      return await this.workflowRepository.delete({ id })
-    } catch (e) {
-      throw new InternalServerErrorException(e)
-    }
-  }
-
-  async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
-    try {
-      const { name, description, steps, actions, wfExecutions, input } = workflowDto;
-      // console.log(steps, "steps?")
-      const wokflowSteps = await this.wfStepService.createWfSteps(steps)
-      // const workflowActions = await this
-      const workflow = new Workflow();
-      workflow.name = name;
-      workflow.description = description;
-      workflow.input = input;
-      workflow.steps = wokflowSteps
-      workflow.actions = actions;
-      workflow.wfExecutions = wfExecutions;
-
-      return this.workflowRepository.save(workflow);
-    } catch (error) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  findAll(): Promise<Workflow[]> {
-    return this.workflowRepository.find();
+  async findAll(): Promise<Workflow[]> {
+    return await this.workflowRepository.find();
   }
 
   async findById(id: number): Promise<Workflow> {
@@ -62,6 +29,40 @@ export class WorkflowService {
       throw new NotFoundException(`Workflow with id ${id} is not found`);
     } else {
       return workflow
+    }
+  }
+
+  async findSubSteps(stepId: number): Promise<WorkflowStep[]> {
+    return await this.wfStepService.findSubSteps(stepId)
+  }
+
+  async create(workflowDto: ICreateWorkflowDto): Promise<Workflow> {
+    try {
+      // console.log("WORKS?")
+      const { name, description, steps, actions, wfExecutions, input } = workflowDto;
+      const wokflowSteps = await this.wfStepService.createWfSteps(steps)
+      const wfActions = await this.actionService.createNewActions(actions)
+
+      const workflow = new Workflow();
+      workflow.name = name;
+      workflow.description = description;
+      workflow.input = input;
+      workflow.steps = wokflowSteps
+      workflow.actions = wfActions;
+      workflow.wfExecutions = wfExecutions;
+
+      return this.workflowRepository.save(workflow);
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async delete(id: number): Promise<any> {
+    try {
+      return await this.workflowRepository.delete({ id })
+    } catch (e) {
+      throw new InternalServerErrorException(e)
     }
   }
 }

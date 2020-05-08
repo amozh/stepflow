@@ -5,7 +5,7 @@
     </div>
     <div
       v-else
-      v-for="(el,index) in currentStep.stepViewJson.stepViewElement"
+      v-for="(el,index) in currentStep.stepViewJson.stepViewElements"
       :key="el.component.id"
     >
       <div v-if="el.component.componentType === 'test'">
@@ -24,7 +24,7 @@
         <input @click="submit" type="submit" :value="el.component.label" class="button" />
       </div>
       <div v-if="el.component.componentType === 'json'">
-        <VJsoneditor class="mt-5" v-model="stepJson"></VJsoneditor>
+        <VJsoneditor height="500px" class="mt-5" v-model="stepJson"></VJsoneditor>
       </div>
     </div>
   </div>
@@ -58,7 +58,6 @@ const Mappers = Vue.extend({
       executeWorkflow: "executeWorkflow",
       getExecutionWorkflow: "getExecutionWorkflow",
       workflowOnLoadAction: "workflowOnLoadAction",
-      // getCurrentStep: "getCurrentStep",
       workflowOnSubmitAction: "workflowOnSubmitAction"
     })
   }
@@ -68,7 +67,6 @@ const Mappers = Vue.extend({
 export default class Workflow extends Mappers {
   @Provide() radioAnswers: any = [];
   @Provide() stepJson: any = {};
-  // @Provide() currentStep: any = {};
 
   async submit() {
     const submitInfo = {
@@ -76,10 +74,10 @@ export default class Workflow extends Mappers {
       submitInfo: this.radioAnswers
     };
     await this.workflowOnSubmitAction(submitInfo);
-    // Минус 2 потому что нумерация степов начинается с 0, тогда как у renderStepId с 1
-    // Ещё -1, чтобы обратиться к предыдущему степу
     const res = await this.workflowOnLoadAction(this.executedWorkflow.id);
     this.stepJson = res.data.wfExecutionState.stepsState[2 - 2];
+    // Минус 2 потому что нумерация степов начинается с 0, тогда как у renderStepId с 1
+    // Ещё -1, чтобы обратиться к предыдущему степу
   }
 
   async mounted() {

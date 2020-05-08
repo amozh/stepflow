@@ -26,6 +26,7 @@
       @add-new-action="addNewAction"
       @remove-action="removeAction"
       @save-current-action="saveCurrenAction"
+      @change-step-json="changeStepViewJson"
     />
   </div>
 </template>
@@ -76,7 +77,8 @@ const Mappers = Vue.extend({
       addStep: "addStep",
       mutateCurrentAction: "mutateCurrentAction",
       addAction: "addAction",
-      deleteAction: "deleteAction"
+      deleteAction: "deleteAction",
+      mutateStepViewElement: "mutateStepViewElement"
     }),
     ...createWorkflowMapper.mapActions({
       createWorkflow: "createWorkflow",
@@ -137,6 +139,10 @@ export default class CreateWorkflow extends Mappers {
 
   createNewWorkflow(): Promise<ICreateWorkflowDto> {
     return this.createWorkflow();
+  }
+
+  changeStepViewJson(stepViewJson: any): any {
+    return this.mutateStepViewElement(stepViewJson);
   }
 
   openStep(step: ICreateWorkflowStepDto): void {

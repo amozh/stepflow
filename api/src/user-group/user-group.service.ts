@@ -164,7 +164,7 @@ export class UserGroupService implements OnModuleInit {
               h: 12
             },
             stepViewJson: {
-              stepViewElement:
+              stepViewElements:
                 [
                   {
                     component: {
@@ -242,7 +242,7 @@ export class UserGroupService implements OnModuleInit {
                       componentType: "button",
                       label: "Завершити тест"
                     },
-                    onClick: "submit",
+                    onClick: "submit", // тип экшена ..
                     data: [{ source: "input" }] // для submittedData (информация, которую отправит юзер)//
                   }
                 ]
@@ -266,7 +266,7 @@ export class UserGroupService implements OnModuleInit {
               h: 7
             },
             stepViewJson: {
-              stepViewElement:
+              stepViewElements:
                 [
                   {
                     component: {

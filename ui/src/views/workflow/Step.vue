@@ -15,8 +15,6 @@
       ></v-text-field>
       <h3>Input editor</h3>
       <VJsoneditor class="mt-3" v-model="stepJson"></VJsoneditor>
-      <h3 class="mt-4">View editor</h3>
-      <VJsoneditor class="mt-3" v-model="stepViewJson"></VJsoneditor>
       <v-flex class="d-flex flex-row mt-10">
         <Slider
           orientation="vertical"
@@ -36,6 +34,8 @@
           <v-card-title class="text-center">Choose action</v-card-title>
         </v-card>
       </v-flex>
+      <h3 class="mt-4">View editor</h3>
+      <VJsoneditor height="400px" class="mt-3" v-model="stepViewJson"></VJsoneditor>
       <GenerateContent />
       <v-container class="d-flex flex-row btns">
         <v-btn color="error" class="btn" @click="removeStep(currentStep.id, currentStep.depth)">
@@ -131,6 +131,13 @@ export default class Step extends Mappers {
   @Emit("save-current-action")
   saveCurrenAction(): void {
     return;
+  }
+
+  @Watch("stepViewJson")
+  @Emit("change-step-json")
+  changeStepViewJson(): any {
+    // console.log("workd");
+    return this.stepViewJson;
   }
 
   @Watch("currentStep")

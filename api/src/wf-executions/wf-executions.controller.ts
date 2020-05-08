@@ -61,7 +61,7 @@ export class WfExecutionsController {
         return this.wfStepExecutionService.findSubStepsExecution(stepExecutionId);
     }
 
-    // WORKFLOWS EXECUTIONS
+    // WORKFLOWS EXECUTIONS //
     @Put('start/:id')
     startWfExecution(@Param('id', ParseIntPipe) id: number, @Body() body: any): Promise<any> {
         return this.wfExecutionsService.startWfExecution(id, body)
@@ -90,7 +90,7 @@ export class WfExecutionsController {
         return this.wfExecutionsService.workflowExecutionOnLoadAction(id)
     }
 
-    // STEPS EXECUTIONS //
+    // STEPS EXECUTIONS // //
     @Get("step/load/:id")
     wfStepExecutionOnLoadAction(@Param('id', ParseIntPipe) stepExecId: number): Promise<any> {
         return this.wfStepExecutionService.wfStepExecutionOnLoadAction(stepExecId)

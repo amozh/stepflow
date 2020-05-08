@@ -1,11 +1,10 @@
 <template>
   <div>
-    <GenerateContentTabs />
+    <!-- <GenerateContentTabs /> -->
     <Sandbox />
   </div>
 </template>
 <script lang="ts">
-
 import { Vue, Component, Provide, Ref, Emit } from "vue-property-decorator";
 import GenerateContentTabs from "../components/GenerateContentTabs.vue";
 import Sandbox from "../components/Sandbox.vue";
@@ -18,11 +17,5 @@ const Mappers = Vue.extend({
 });
 
 @Component
-export default class GenerateContent extends Mappers {
-  
-}
+export default class GenerateContent extends Mappers {}
 </script>
-
-<style scoped>
-
-</style>
